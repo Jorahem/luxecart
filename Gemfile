@@ -28,6 +28,7 @@ gem "pg_search", "~> 2.3"
 
 # Pagination
 gem "pagy", "~> 6.2"
+gem "kaminari", "~> 1.2"
 
 # Background Jobs
 gem "sidekiq", "~> 7.2"

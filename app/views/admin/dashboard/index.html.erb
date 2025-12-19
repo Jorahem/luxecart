@@ -1,0 +1,118 @@
+<% content_for :title, "Dashboard" %>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  <!-- Stats Cards -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center">
+      <div class="flex-1">
+        <p class="text-sm font-medium text-gray-600">Total Orders</p>
+        <p class="text-3xl font-bold text-gray-900"><%= @total_orders %></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center">
+      <div class="flex-1">
+        <p class="text-sm font-medium text-gray-600">Total Users</p>
+        <p class="text-3xl font-bold text-gray-900"><%= @total_users %></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center">
+      <div class="flex-1">
+        <p class="text-sm font-medium text-gray-600">Total Products</p>
+        <p class="text-3xl font-bold text-gray-900"><%= @total_products %></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center">
+      <div class="flex-1">
+        <p class="text-sm font-medium text-gray-600">Total Revenue</p>
+        <p class="text-3xl font-bold text-gray-900"><%= currency_format(@total_revenue) %></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <!-- Recent Orders -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b">
+      <h2 class="text-lg font-semibold">Recent Orders</h2>
+    </div>
+    <div class="p-6">
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-2">Order #</th>
+              <th class="text-left py-2">Customer</th>
+              <th class="text-left py-2">Status</th>
+              <th class="text-right py-2">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @recent_orders.each do |order| %>
+              <tr class="border-b hover:bg-gray-50">
+                <td class="py-2">
+                  <%= link_to order.order_number, admin_order_path(order), class: "text-indigo-600 hover:text-indigo-900" %>
+                </td>
+                <td class="py-2"><%= order.user.full_name %></td>
+                <td class="py-2"><%= status_badge(order.status) %></td>
+                <td class="text-right py-2"><%= currency_format(order.total_price) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Low Stock Products -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b">
+      <h2 class="text-lg font-semibold">Low Stock Products</h2>
+    </div>
+    <div class="p-6">
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-2">Product</th>
+              <th class="text-right py-2">Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @low_stock_products.each do |product| %>
+              <tr class="border-b hover:bg-gray-50">
+                <td class="py-2">
+                  <%= link_to product.name, [:edit, :admin, product], class: "text-indigo-600 hover:text-indigo-900" %>
+                </td>
+                <td class="text-right py-2">
+                  <span class="<%= product.stock_quantity < 5 ? 'text-red-600' : 'text-yellow-600' %> font-semibold">
+                    <%= product.stock_quantity %>
+                  </span>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-6 bg-white rounded-lg shadow p-6">
+  <h2 class="text-lg font-semibold mb-4">Quick Stats</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="p-4 bg-yellow-50 rounded">
+      <p class="text-sm text-gray-600">Pending Reviews</p>
+      <p class="text-2xl font-bold text-yellow-600"><%= @pending_reviews %></p>
+    </div>
+  </div>
+</div>
