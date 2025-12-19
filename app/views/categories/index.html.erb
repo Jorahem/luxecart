@@ -1,0 +1,14 @@
+<div class="space-y-6">
+  <h1 class="text-3xl font-bold">Categories</h1>
+
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <% @categories.each do |category| %>
+      <%= link_to category_path(category), class: "bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow" do %>
+        <div class="text-center">
+          <h3 class="font-semibold text-lg mb-2"><%= category.name %></h3>
+          <p class="text-gray-600 text-sm"><%= category.products_count %> products</p>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

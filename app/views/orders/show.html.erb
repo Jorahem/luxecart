@@ -1,0 +1,105 @@
+<div class="space-y-6">
+  <div class="flex justify-between items-center">
+    <h1 class="text-3xl font-bold">Order #<%= @order.order_number %></h1>
+    <%= link_to "Back to Orders", orders_path, class: "text-indigo-600 hover:text-indigo-900" %>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Order Details -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Order Status -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold mb-4">Order Status</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-sm text-gray-600">Status</p>
+            <p class="mt-1"><%= status_badge(@order.status) %></p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-600">Payment Status</p>
+            <p class="mt-1">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <%= @order.paid? ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
+                <%= @order.payment_status.titleize %>
+              </span>
+            </p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-600">Order Date</p>
+            <p class="font-medium"><%= @order.created_at.strftime('%B %d, %Y at %I:%M %p') %></p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-600">Payment Method</p>
+            <p class="font-medium"><%= @order.payment_method.titleize %></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Items -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold mb-4">Order Items</h2>
+        <div class="space-y-4">
+          <% @order.order_items.includes(:product).each do |item| %>
+            <div class="flex items-center space-x-4 border-b pb-4">
+              <div class="w-20 h-20 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center">
+                <span class="text-gray-500 text-xs">Image</span>
+              </div>
+              
+              <div class="flex-1">
+                <h3 class="font-semibold"><%= link_to item.product.name, product_path(item.product), class: "hover:text-indigo-600" %></h3>
+                <p class="text-gray-600 text-sm">Quantity: <%= item.quantity %></p>
+              </div>
+              
+              <div class="text-right">
+                <p class="text-gray-600 text-sm"><%= currency_format(item.unit_price) %> each</p>
+                <p class="font-semibold"><%= currency_format(item.unit_price * item.quantity) %></p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="lg:col-span-1">
+      <div class="bg-white rounded-lg shadow p-6 sticky top-4">
+        <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+        
+        <div class="space-y-2 mb-4">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Subtotal</span>
+            <span class="font-semibold"><%= currency_format(@order.subtotal) %></span>
+          </div>
+          <% if @order.tax_amount && @order.tax_amount > 0 %>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Tax</span>
+              <span class="font-semibold"><%= currency_format(@order.tax_amount) %></span>
+            </div>
+          <% end %>
+          <% if @order.shipping_cost && @order.shipping_cost > 0 %>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Shipping</span>
+              <span class="font-semibold"><%= currency_format(@order.shipping_cost) %></span>
+            </div>
+          <% end %>
+          <% if @order.discount_amount && @order.discount_amount > 0 %>
+            <div class="flex justify-between text-green-600">
+              <span>Discount</span>
+              <span class="font-semibold">-<%= currency_format(@order.discount_amount) %></span>
+            </div>
+          <% end %>
+        </div>
+        
+        <div class="border-t pt-4 mb-6">
+          <div class="flex justify-between text-lg font-bold">
+            <span>Total</span>
+            <span class="text-indigo-600"><%= currency_format(@order.total_price) %></span>
+          </div>
+        </div>
+
+        <% if @order.pending? %>
+          <%= button_to "Cancel Order", cancel_order_path(@order), method: :post, data: { confirm: 'Are you sure you want to cancel this order?' }, class: "w-full bg-red-600 text-white px-6 py-3 rounded hover:bg-red-700 font-semibold text-center block" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
