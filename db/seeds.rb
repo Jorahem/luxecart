@@ -60,8 +60,7 @@ brands = brands_data.map do |data|
   Brand.create!(
     name: data[:name],
     description: data[:description],
-    active: true,
-    featured: [true, false].sample
+    active: true
   )
 end
 puts "✅ #{brands.count} brands created"

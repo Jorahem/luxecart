@@ -7,14 +7,12 @@ class Product < ApplicationRecord
   # Associations
   belongs_to :category
   belongs_to :brand
-  has_many :product_images, dependent: :destroy
   has_many :reviews, dependent: :destroy
   has_many :cart_items, dependent: :destroy
   has_many :order_items, dependent: :destroy
-  has_many :product_variants, dependent: :destroy
 
   # Serialize tags (SQLite-safe)
-  serialize :tags, Array
+  serialize :tags, coder: JSON
 
   # Validations
   validates :name, presence: true, length: { maximum: 255 }

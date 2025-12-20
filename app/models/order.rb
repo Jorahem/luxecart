@@ -5,7 +5,7 @@ class Order < ApplicationRecord
 
   # Validations
   validates :order_number, presence: true, uniqueness: true
-  validates :total_price, presence: true, numericality: { greater_than: 0 }
+  validates :total_price, numericality: { greater_than: 0 }, if: :persisted?
 
   # Callbacks
   before_validation :generate_order_number, on: :create
@@ -13,7 +13,7 @@ class Order < ApplicationRecord
 
   # Enums
   enum status: { pending: 0, processing: 1, shipped: 2, delivered: 3, cancelled: 4, refunded: 5 }
-  enum payment_status: { unpaid: 0, paid: 1, failed: 2, refunded: 3 }
+  enum payment_status: { unpaid: 0, paid: 1, failed: 2, payment_refunded: 3 }, _suffix: true
 
   # Scopes
   scope :recent, -> { order(created_at: :desc) }
