@@ -14,8 +14,15 @@ class CartItemsController < ApplicationController
   end
 
   def update
-    @cart.update_quantity(params[:id], params[:quantity].to_i)
-    redirect_to cart_path, notice: 'Cart updated successfully.'
+    quantity = params[:quantity].to_i
+    
+    # Validate quantity is positive
+    if quantity > 0
+      @cart.update_quantity(params[:id], quantity)
+      redirect_to cart_path, notice: 'Cart updated successfully.'
+    else
+      redirect_to cart_path, alert: 'Invalid quantity. Please enter a positive number.'
+    end
   end
 
   def destroy

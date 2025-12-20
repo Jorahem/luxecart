@@ -8,7 +8,9 @@ class ApplicationController < ActionController::Base
     if user_signed_in?
       @current_cart ||= current_user.cart || current_user.create_cart
     else
-      @current_cart ||= Cart.find_or_create_by(session_id: session.id.to_s)
+      # Use a secure random token for guest carts instead of session.id
+      cart_token = session[:cart_token] ||= SecureRandom.hex(16)
+      @current_cart ||= Cart.find_or_create_by(session_id: cart_token)
     end
   end
 
