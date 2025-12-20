@@ -8,8 +8,11 @@ gem "rails", "~> 7.1.6"
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
-# Use sqlite3 as the database for Active Record
-gem "sqlite3", ">= 1.4"
+# Use sqlite3 as the database for Active Record (development/test)
+gem "sqlite3", ">= 1.4", group: [:development, :test]
+
+# PostgreSQL for production
+gem "pg", "~> 1.5", group: :production
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
@@ -27,13 +30,7 @@ gem "stimulus-rails"
 gem "jbuilder"
 
 # Use Redis adapter to run Action Cable in production
-# gem "redis", ">= 4.0.1"
-
-# Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
-# gem "kredis"
-
-# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem "bcrypt", "~> 3.1.7"
+gem "redis", "~> 5.0"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
@@ -41,12 +38,45 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-# gem "image_processing", "~> 1.2"
+# Authentication
+gem "devise", "~> 4.9"
+
+# Friendly URLs
+gem "friendly_id", "~> 5.5"
+
+# Search functionality
+gem "pg_search", "~> 2.3"
+
+# Pagination
+gem "kaminari", "~> 1.2"
+
+# Payment processing
+gem "stripe", "~> 10.0"
+
+# Image processing
+gem "image_processing", "~> 1.12"
+
+# Money handling
+gem "money-rails", "~> 1.15"
+
+# Background jobs
+gem "sidekiq", "~> 7.0"
+
+# CORS for API
+gem "rack-cors"
+
+# Security
+gem "rack-attack", "~> 6.0"
+
+# Authorization
+gem "pundit", "~> 2.3"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
+  
+  # Environment variables
+  gem "dotenv-rails"
 end
 
 group :development do
