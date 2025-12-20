@@ -1,0 +1,82 @@
+<div class="space-y-6">
+  <h1 class="text-3xl font-bold">Shopping Cart</h1>
+
+  <% if @cart.empty? %>
+    <div class="bg-white rounded-lg shadow p-12 text-center">
+      <p class="text-gray-600 text-lg mb-4">Your cart is empty</p>
+      <%= link_to "Continue Shopping", products_path, class: "bg-indigo-600 text-white px-6 py-3 rounded hover:bg-indigo-700 inline-block" %>
+    </div>
+  <% else %>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Cart Items -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg shadow">
+          <div class="p-6">
+            <h2 class="text-xl font-semibold mb-4">Cart Items (<%= @cart.total_items %>)</h2>
+            
+            <div class="space-y-4">
+              <% @cart.cart_items.includes(:product).each do |item| %>
+                <div class="flex items-center space-x-4 border-b pb-4">
+                  <div class="w-20 h-20 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center">
+                    <span class="text-gray-500 text-xs">Image</span>
+                  </div>
+                  
+                  <div class="flex-1">
+                    <h3 class="font-semibold"><%= link_to item.product.name, product_path(item.product), class: "hover:text-indigo-600" %></h3>
+                    <p class="text-gray-600 text-sm"><%= item.product.category.name %></p>
+                    <p class="text-indigo-600 font-semibold"><%= currency_format(item.product.current_price) %></p>
+                  </div>
+                  
+                  <div class="flex items-center space-x-2">
+                    <%= form_with url: cart_update_quantity_path(item), method: :patch, class: "flex items-center space-x-2" do |f| %>
+                      <%= number_field_tag :quantity, item.quantity, min: 1, max: item.product.stock_quantity, class: "w-20 rounded-md border-gray-300" %>
+                      <%= button_tag "Update", class: "bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300 text-sm" %>
+                    <% end %>
+                  </div>
+                  
+                  <div class="text-right">
+                    <p class="font-semibold"><%= currency_format(item.product.current_price * item.quantity) %></p>
+                    <%= button_to "Remove", cart_remove_item_path(item), method: :delete, class: "text-red-600 hover:text-red-900 text-sm mt-2" %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow p-6 sticky top-4">
+          <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+          
+          <div class="space-y-2 mb-4">
+            <div class="flex justify-between">
+              <span class="text-gray-600">Subtotal</span>
+              <span class="font-semibold"><%= currency_format(@cart.subtotal) %></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Shipping</span>
+              <span class="font-semibold">Calculated at checkout</span>
+            </div>
+          </div>
+          
+          <div class="border-t pt-4 mb-6">
+            <div class="flex justify-between text-lg font-bold">
+              <span>Total</span>
+              <span class="text-indigo-600"><%= currency_format(@cart.subtotal) %></span>
+            </div>
+          </div>
+          
+          <% if user_signed_in? %>
+            <%= link_to "Proceed to Checkout", checkout_shipping_path, class: "w-full bg-indigo-600 text-white px-6 py-3 rounded hover:bg-indigo-700 font-semibold text-center block mb-3" %>
+          <% else %>
+            <%= link_to "Sign In to Checkout", new_user_session_path, class: "w-full bg-indigo-600 text-white px-6 py-3 rounded hover:bg-indigo-700 font-semibold text-center block mb-3" %>
+          <% end %>
+          
+          <%= link_to "Continue Shopping", products_path, class: "w-full bg-gray-200 text-gray-700 px-6 py-3 rounded hover:bg-gray-300 font-semibold text-center block" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

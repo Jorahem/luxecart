@@ -1,0 +1,136 @@
+<div class="space-y-6">
+  <h1 class="text-3xl font-bold">Checkout</h1>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Checkout Form -->
+    <div class="lg:col-span-2">
+      <%= form_with model: @order, url: checkout_index_path, class: "space-y-6" do |f| %>
+        <!-- Shipping Address -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-semibold mb-4">Shipping Address</h2>
+          
+          <% if @addresses.any? %>
+            <div class="space-y-3 mb-4">
+              <% @addresses.each do |address| %>
+                <div class="border rounded p-4 <%= address.is_default? ? 'border-indigo-600 bg-indigo-50' : 'border-gray-300' %>">
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <p class="font-semibold"><%= address.full_name %></p>
+                      <p class="text-gray-600 text-sm"><%= address.street_address %></p>
+                      <% if address.apartment.present? %>
+                        <p class="text-gray-600 text-sm"><%= address.apartment %></p>
+                      <% end %>
+                      <p class="text-gray-600 text-sm">
+                        <%= address.city %>, <%= address.state %> <%= address.postal_code %>
+                      </p>
+                      <p class="text-gray-600 text-sm"><%= address.country %></p>
+                      <p class="text-gray-600 text-sm">Phone: <%= address.phone %></p>
+                    </div>
+                    <% if address.is_default? %>
+                      <span class="bg-indigo-600 text-white text-xs px-2 py-1 rounded">Default</span>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+            <%= link_to "Manage Addresses", addresses_path, class: "text-indigo-600 hover:text-indigo-900 text-sm" %>
+          <% else %>
+            <div class="bg-yellow-50 border border-yellow-200 rounded p-4 mb-4">
+              <p class="text-yellow-800">You haven't added any shipping addresses yet.</p>
+              <%= link_to "Add Address", new_address_path, class: "text-indigo-600 hover:text-indigo-900 font-semibold" %>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-semibold mb-4">Payment Method</h2>
+          
+          <div class="space-y-3">
+            <div class="flex items-center">
+              <%= f.radio_button :payment_method, "stripe", checked: true, class: "mr-2" %>
+              <%= f.label :payment_method_stripe, "Credit Card (Stripe)", class: "flex items-center" do %>
+                <span>Credit Card (Stripe)</span>
+                <svg class="ml-2 h-5 w-auto" viewBox="0 0 60 25" fill="none">
+                  <rect width="60" height="25" rx="3" fill="#635BFF"/>
+                  <path d="M14 12.5C14 10.29 15.79 8.5 18 8.5C20.21 8.5 22 10.29 22 12.5C22 14.71 20.21 16.5 18 16.5C15.79 16.5 14 14.71 14 12.5Z" fill="white"/>
+                </svg>
+              <% end %>
+            </div>
+            
+            <div class="flex items-center">
+              <%= f.radio_button :payment_method, "paypal", class: "mr-2" %>
+              <%= f.label :payment_method_paypal, "PayPal" %>
+            </div>
+            
+            <div class="flex items-center">
+              <%= f.radio_button :payment_method, "cod", class: "mr-2" %>
+              <%= f.label :payment_method_cod, "Cash on Delivery" %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coupon Code -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-semibold mb-4">Coupon Code</h2>
+          <div class="flex space-x-2">
+            <%= text_field_tag :coupon_code, params[:coupon_code], placeholder: "Enter coupon code", class: "flex-1 rounded-md border-gray-300" %>
+            <button type="button" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">
+              Apply
+            </button>
+          </div>
+        </div>
+
+        <!-- Order Notes -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-semibold mb-4">Order Notes (Optional)</h2>
+          <%= f.text_area :notes, rows: 3, placeholder: "Special instructions for delivery...", class: "w-full rounded-md border-gray-300" %>
+        </div>
+      
+    </div>
+
+    <!-- Order Summary -->
+    <div class="lg:col-span-1">
+      <div class="bg-white rounded-lg shadow p-6 sticky top-4">
+        <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+        
+        <div class="space-y-4 mb-4">
+          <% @cart.cart_items.includes(:product).each do |item| %>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">
+                <%= item.product.name %> × <%= item.quantity %>
+              </span>
+              <span class="font-semibold"><%= currency_format(item.product.current_price * item.quantity) %></span>
+            </div>
+          <% end %>
+        </div>
+        
+        <div class="border-t pt-4 space-y-2 mb-4">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Subtotal</span>
+            <span class="font-semibold"><%= currency_format(@cart.subtotal) %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Shipping</span>
+            <span class="font-semibold"><%= currency_format(9.99) %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Tax (10%)</span>
+            <span class="font-semibold"><%= currency_format(@cart.subtotal * 0.10) %></span>
+          </div>
+        </div>
+        
+        <div class="border-t pt-4 mb-6">
+          <div class="flex justify-between text-lg font-bold">
+            <span>Total</span>
+            <span class="text-indigo-600"><%= currency_format(@cart.subtotal + 9.99 + (@cart.subtotal * 0.10)) %></span>
+          </div>
+        </div>
+        
+        <%= f.submit "Place Order", class: "w-full bg-indigo-600 text-white px-6 py-3 rounded hover:bg-indigo-700 font-semibold cursor-pointer" %>
+        <%= link_to "Back to Cart", cart_path, class: "w-full bg-gray-200 text-gray-700 px-6 py-3 rounded hover:bg-gray-300 font-semibold text-center block mt-3" %>
+      </div>
+    </div>
+      <% end %>
+  </div>
+</div>
