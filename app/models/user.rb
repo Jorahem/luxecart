@@ -1,13 +1,14 @@
 class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  # Devise modules
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable,
+         :trackable
 
-  # Associations
+  # Associations - CRITICAL ADDITIONS
+  has_one :cart, dependent: :destroy
+  has_one :wishlist, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :reviews, dependent: :destroy
-  has_many :cart_items, dependent: :destroy
   has_many :addresses, dependent: :destroy
 
   # Validations
@@ -17,6 +18,10 @@ class User < ApplicationRecord
 
   # Callbacks
   before_save :normalize_email
+  after_create :create_cart_and_wishlist
+
+  # Enums
+  enum role: { customer: 0, admin: 1 }
 
   # Instance methods
   def full_name
@@ -31,5 +36,10 @@ class User < ApplicationRecord
 
   def normalize_email
     self.email = email.downcase.strip if email.present?
+  end
+
+  def create_cart_and_wishlist
+    create_cart unless cart
+    create_wishlist unless wishlist
   end
 end

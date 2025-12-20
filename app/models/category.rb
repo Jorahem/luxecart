@@ -4,22 +4,22 @@ class Category < ApplicationRecord
 
   # Associations
   has_many :products, dependent: :restrict_with_error
-  belongs_to :parent_category, class_name: 'Category', optional: true
-  has_many :subcategories, class_name: 'Category', foreign_key: 'parent_category_id', dependent: :destroy
+  belongs_to :parent_category, class_name: 'Category', foreign_key: 'parent_id', optional: true
+  has_many :subcategories, class_name: 'Category', foreign_key: 'parent_id', dependent: :destroy
 
   # Validations
-  validates :name, presence: true, uniqueness: { scope: :parent_category_id }, length: { maximum: 100 }
+  validates :name, presence: true, uniqueness: { scope: :parent_id }, length: { maximum: 100 }
   validates :description, length: { maximum: 500 }, allow_blank: true
   validate :prevent_circular_reference
 
   # Scopes
   scope :active, -> { where(active: true) }
-  scope :root_categories, -> { where(parent_category_id: nil) }
+  scope :root, -> { where(parent_id: nil) }
   scope :ordered_by_name, -> { order(:name) }
 
   # Instance methods
   def root?
-    parent_category_id.nil?
+    parent_id.nil?
   end
 
   def has_subcategories?
@@ -50,12 +50,12 @@ class Category < ApplicationRecord
   private
 
   def prevent_circular_reference
-    return unless parent_category_id
+    return unless parent_id
 
-    category = Category.find_by(id: parent_category_id)
+    category = Category.find_by(id: parent_id)
     while category.present?
       if category.id == id
-        errors.add(:parent_category_id, 'cannot create circular reference')
+        errors.add(:parent_id, 'cannot create circular reference')
         break
       end
       category = category.parent_category

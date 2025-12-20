@@ -42,6 +42,10 @@ class Product < ApplicationRecord
     reviews.average(:rating).to_f.round(1)
   end
 
+  def current_price
+    compare_price.present? && compare_price > 0 ? compare_price : price
+  end
+
   def should_generate_new_friendly_id?
     name_changed? || super
   end
