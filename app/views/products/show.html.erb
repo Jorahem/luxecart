@@ -1,0 +1,161 @@
+<div class="product-detail">
+  <div class="product-layout">
+    <div class="product-gallery">
+      <% if @product.product_images.any? %>
+        <div class="main-image">
+          <% primary_image = @product.product_images.primary.first || @product.product_images.first %>
+          <% if primary_image.image.attached? %>
+            <%= image_tag primary_image.image, alt: @product.name %>
+          <% end %>
+        </div>
+        
+        <% if @product.product_images.count > 1 %>
+          <div class="image-thumbnails">
+            <% @product.product_images.ordered.each do |image| %>
+              <% if image.image.attached? %>
+                <div class="thumbnail">
+                  <%= image_tag image.image, alt: @product.name %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="placeholder-image-large">No Image Available</div>
+      <% end %>
+    </div>
+    
+    <div class="product-details">
+      <h1><%= @product.name %></h1>
+      
+      <div class="product-meta">
+        <p class="product-sku">SKU: <%= @product.sku %></p>
+        <p class="product-category">Category: <%= link_to @product.category.name, category_path(@product.category) %></p>
+        <p class="product-brand">Brand: <%= link_to @product.brand.name, brand_path(@product.brand) %></p>
+      </div>
+      
+      <div class="product-rating">
+        <% if @product.reviews.any? %>
+          <span class="rating-stars">★ <%= @product.average_rating %>/5</span>
+          <span class="rating-count">(<%= @product.reviews.count %> reviews)</span>
+        <% else %>
+          <span>No reviews yet</span>
+        <% end %>
+      </div>
+      
+      <div class="product-price">
+        <% if @product.compare_price.present? && @product.compare_price > @product.price %>
+          <span class="original-price">$<%= number_with_precision(@product.compare_price, precision: 2) %></span>
+        <% end %>
+        <span class="current-price">$<%= number_with_precision(@product.price, precision: 2) %></span>
+      </div>
+      
+      <div class="product-stock">
+        <% if @product.in_stock? %>
+          <span class="in-stock">In Stock (<%= @product.stock_quantity %> available)</span>
+        <% else %>
+          <span class="out-of-stock">Out of Stock</span>
+        <% end %>
+      </div>
+      
+      <div class="product-actions">
+        <% if @product.in_stock? %>
+          <%= form_with url: cart_items_path, method: :post do |f| %>
+            <%= f.hidden_field :product_id, value: @product.id %>
+            <div class="quantity-selector">
+              <%= f.label :quantity %>
+              <%= f.number_field :quantity, value: 1, min: 1, max: @product.stock_quantity, class: "quantity-input" %>
+            </div>
+            <%= f.submit "Add to Cart", class: "btn btn-primary" %>
+          <% end %>
+          
+          <% if user_signed_in? %>
+            <%= button_to "Add to Wishlist", wishlist_items_path(product_id: @product.id), class: "btn btn-secondary" %>
+          <% end %>
+        <% end %>
+      </div>
+      
+      <div class="product-description">
+        <h3>Description</h3>
+        <%= simple_format(@product.description) %>
+      </div>
+    </div>
+  </div>
+  
+  <section class="product-reviews">
+    <h2>Customer Reviews</h2>
+    
+    <% if user_signed_in? %>
+      <div class="review-form">
+        <h3>Write a Review</h3>
+        <%= form_with url: product_reviews_path(@product), method: :post do |f| %>
+          <div class="form-group">
+            <%= f.label :rating, "Rating" %>
+            <%= f.select :rating, (1..5).to_a.reverse.map { |i| [("★" * i), i] }, {}, class: "form-control" %>
+          </div>
+          
+          <div class="form-group">
+            <%= f.label :title, "Title" %>
+            <%= f.text_field :title, class: "form-control" %>
+          </div>
+          
+          <div class="form-group">
+            <%= f.label :comment, "Comment" %>
+            <%= f.text_area :comment, rows: 4, class: "form-control" %>
+          </div>
+          
+          <%= f.submit "Submit Review", class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    <% end %>
+    
+    <div class="reviews-list">
+      <% if @reviews.any? %>
+        <% @reviews.each do |review| %>
+          <div class="review">
+            <div class="review-header">
+              <span class="review-author"><%= review.user.full_name %></span>
+              <span class="review-rating">★ <%= review.rating %>/5</span>
+              <span class="review-date"><%= review.created_at.strftime("%B %d, %Y") %></span>
+            </div>
+            <% if review.title.present? %>
+              <h4 class="review-title"><%= review.title %></h4>
+            <% end %>
+            <p class="review-comment"><%= review.comment %></p>
+          </div>
+        <% end %>
+        
+        <div class="pagination">
+          <%= paginate @reviews, param_name: :page %>
+        </div>
+      <% else %>
+        <p>No reviews yet. Be the first to review this product!</p>
+      <% end %>
+    </div>
+  </section>
+  
+  <% if @related_products.any? %>
+    <section class="related-products">
+      <h2>You May Also Like</h2>
+      <div class="product-grid">
+        <% @related_products.each do |product| %>
+          <div class="product-card">
+            <div class="product-image">
+              <%= link_to product_path(product) do %>
+                <% if product.product_images.any? && product.product_images.first.image.attached? %>
+                  <%= image_tag product.product_images.first.image, alt: product.name %>
+                <% else %>
+                  <div class="placeholder-image">No Image</div>
+                <% end %>
+              <% end %>
+            </div>
+            <div class="product-info">
+              <h3><%= link_to product.name, product_path(product) %></h3>
+              <p class="product-price">$<%= number_with_precision(product.price, precision: 2) %></p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

@@ -1,0 +1,86 @@
+<div class="products-page">
+  <h1>All Products</h1>
+  
+  <div class="products-layout">
+    <aside class="filters-sidebar">
+      <h3>Filters</h3>
+      
+      <%= form_with url: products_path, method: :get, class: "filter-form" do |f| %>
+        <div class="filter-group">
+          <h4>Category</h4>
+          <%= f.select :category_id, 
+              options_from_collection_for_select(@categories, :id, :name, params[:category_id]),
+              { include_blank: "All Categories" },
+              { class: "filter-select" } %>
+        </div>
+        
+        <div class="filter-group">
+          <h4>Brand</h4>
+          <%= f.select :brand_id,
+              options_from_collection_for_select(@brands, :id, :name, params[:brand_id]),
+              { include_blank: "All Brands" },
+              { class: "filter-select" } %>
+        </div>
+        
+        <div class="filter-group">
+          <h4>Price Range</h4>
+          <%= f.number_field :min_price, placeholder: "Min", value: params[:min_price], class: "filter-input" %>
+          <%= f.number_field :max_price, placeholder: "Max", value: params[:max_price], class: "filter-input" %>
+        </div>
+        
+        <div class="filter-group">
+          <h4>Sort By</h4>
+          <%= f.select :sort,
+              options_for_select([
+                ["Newest", "newest"],
+                ["Price: Low to High", "price_low"],
+                ["Price: High to Low", "price_high"],
+                ["Most Popular", "popular"]
+              ], params[:sort]),
+              { include_blank: "Default" },
+              { class: "filter-select" } %>
+        </div>
+        
+        <%= f.submit "Apply Filters", class: "btn btn-primary" %>
+        <%= link_to "Clear Filters", products_path, class: "btn btn-secondary" %>
+      <% end %>
+    </aside>
+    
+    <div class="products-content">
+      <div class="products-header">
+        <p><%= @products.total_count %> products found</p>
+      </div>
+      
+      <div class="product-grid">
+        <% @products.each do |product| %>
+          <div class="product-card">
+            <div class="product-image">
+              <%= link_to product_path(product) do %>
+                <% if product.product_images.any? && product.product_images.first.image.attached? %>
+                  <%= image_tag product.product_images.first.image, alt: product.name %>
+                <% else %>
+                  <div class="placeholder-image">No Image</div>
+                <% end %>
+              <% end %>
+            </div>
+            <div class="product-info">
+              <h3><%= link_to product.name, product_path(product) %></h3>
+              <p class="product-category"><%= product.category.name %></p>
+              <p class="product-brand"><%= product.brand.name %></p>
+              <p class="product-price">$<%= number_with_precision(product.price, precision: 2) %></p>
+              <% if product.in_stock? %>
+                <%= button_to "Add to Cart", cart_items_path(product_id: product.id), class: "btn btn-sm" %>
+              <% else %>
+                <span class="out-of-stock">Out of Stock</span>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      
+      <div class="pagination">
+        <%= paginate @products %>
+      </div>
+    </div>
+  </div>
+</div>

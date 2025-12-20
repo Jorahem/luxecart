@@ -1,0 +1,93 @@
+<div class="cart-page">
+  <h1>Shopping Cart</h1>
+  
+  <% if @cart_items.any? %>
+    <div class="cart-layout">
+      <div class="cart-items">
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Total</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @cart_items.each do |item| %>
+              <tr class="cart-item">
+                <td class="product-info">
+                  <div class="product-image">
+                    <% if item.product.product_images.any? && item.product.product_images.first.image.attached? %>
+                      <%= image_tag item.product.product_images.first.image, alt: item.product.name, size: "80x80" %>
+                    <% else %>
+                      <div class="placeholder-image-sm">No Image</div>
+                    <% end %>
+                  </div>
+                  <div class="product-details">
+                    <h3><%= link_to item.product.name, product_path(item.product) %></h3>
+                    <p class="product-sku">SKU: <%= item.product.sku %></p>
+                  </div>
+                </td>
+                <td class="product-price">
+                  $<%= number_with_precision(item.product.price, precision: 2) %>
+                </td>
+                <td class="product-quantity">
+                  <%= form_with url: cart_item_path(item.product_id), method: :patch, class: "quantity-form" do |f| %>
+                    <%= f.number_field :quantity, value: item.quantity, min: 1, max: item.product.stock_quantity, class: "quantity-input" %>
+                    <%= f.submit "Update", class: "btn btn-sm" %>
+                  <% end %>
+                </td>
+                <td class="product-total">
+                  $<%= number_with_precision(item.product.price * item.quantity, precision: 2) %>
+                </td>
+                <td class="product-actions">
+                  <%= button_to "Remove", cart_item_path(item.product_id), method: :delete, class: "btn btn-danger btn-sm" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="cart-summary">
+        <h2>Order Summary</h2>
+        
+        <div class="summary-line">
+          <span>Subtotal:</span>
+          <span class="summary-value">$<%= number_with_precision(@cart.subtotal, precision: 2) %></span>
+        </div>
+        
+        <div class="summary-line">
+          <span>Tax (10%):</span>
+          <span class="summary-value">$<%= number_with_precision(@cart.subtotal * 0.10, precision: 2) %></span>
+        </div>
+        
+        <div class="summary-line">
+          <span>Shipping:</span>
+          <span class="summary-value">$9.99</span>
+        </div>
+        
+        <div class="summary-line total">
+          <span>Total:</span>
+          <span class="summary-value">$<%= number_with_precision(@cart.subtotal * 1.10 + 9.99, precision: 2) %></span>
+        </div>
+        
+        <div class="cart-actions">
+          <%= link_to "Continue Shopping", products_path, class: "btn btn-secondary" %>
+          <% if user_signed_in? %>
+            <%= link_to "Proceed to Checkout", new_checkout_path, class: "btn btn-primary" %>
+          <% else %>
+            <%= link_to "Login to Checkout", new_user_session_path, class: "btn btn-primary" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="empty-cart">
+      <p>Your cart is empty.</p>
+      <%= link_to "Start Shopping", products_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

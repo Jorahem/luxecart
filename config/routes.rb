@@ -11,8 +11,8 @@ Rails.application.routes.draw do
     end
   end
   
-  resources :categories, only: [:show]
-  resources :brands, only: [:show]
+  resources :categories, only: [:index, :show]
+  resources :brands, only: [:index, :show]
   resource :cart, only: [:show]
   resources :cart_items, only: [:create, :update, :destroy]
   resource :wishlist, only: [:show]

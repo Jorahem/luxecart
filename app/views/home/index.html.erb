@@ -1,0 +1,77 @@
+<div class="hero-section">
+  <div class="hero-content">
+    <h1>Welcome to LuxeCart</h1>
+    <p>Discover premium products at unbeatable prices</p>
+    <%= link_to "Shop Now", products_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<section class="featured-products">
+  <h2>Featured Products</h2>
+  <div class="product-grid">
+    <% @featured_products.each do |product| %>
+      <div class="product-card">
+        <div class="product-image">
+          <%= link_to product_path(product) do %>
+            <% if product.product_images.any? && product.product_images.first.image.attached? %>
+              <%= image_tag product.product_images.first.image, alt: product.name %>
+            <% else %>
+              <div class="placeholder-image">No Image</div>
+            <% end %>
+          <% end %>
+        </div>
+        <div class="product-info">
+          <h3><%= link_to product.name, product_path(product) %></h3>
+          <p class="product-price">$<%= number_with_precision(product.price, precision: 2) %></p>
+          <% if product.in_stock? %>
+            <%= button_to "Add to Cart", cart_items_path(product_id: product.id), class: "btn btn-sm" %>
+          <% else %>
+            <span class="out-of-stock">Out of Stock</span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<section class="categories-section">
+  <h2>Shop by Category</h2>
+  <div class="category-grid">
+    <% @categories.each do |category| %>
+      <div class="category-card">
+        <%= link_to category_path(category) do %>
+          <h3><%= category.name %></h3>
+          <p><%= category.products_count %> products</p>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<section class="new-arrivals">
+  <h2>New Arrivals</h2>
+  <div class="product-grid">
+    <% @new_arrivals.each do |product| %>
+      <div class="product-card">
+        <div class="product-image">
+          <%= link_to product_path(product) do %>
+            <% if product.product_images.any? && product.product_images.first.image.attached? %>
+              <%= image_tag product.product_images.first.image, alt: product.name %>
+            <% else %>
+              <div class="placeholder-image">No Image</div>
+            <% end %>
+          <% end %>
+        </div>
+        <div class="product-info">
+          <h3><%= link_to product.name, product_path(product) %></h3>
+          <p class="product-price">$<%= number_with_precision(product.price, precision: 2) %></p>
+          <% if product.in_stock? %>
+            <%= button_to "Add to Cart", cart_items_path(product_id: product.id), class: "btn btn-sm" %>
+          <% else %>
+            <span class="out-of-stock">Out of Stock</span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>

@@ -1,0 +1,44 @@
+<div class="admin-orders">
+  <h1>Orders</h1>
+  
+  <div class="filters">
+    <%= form_with url: admin_orders_path, method: :get, class: "filter-form" do |f| %>
+      <%= f.select :status, 
+          options_for_select(Order.statuses.keys.map { |k| [k.humanize, k] }, params[:status]),
+          { include_blank: "All Statuses" },
+          { class: "filter-select" } %>
+      <%= f.submit "Filter", class: "btn btn-sm" %>
+    <% end %>
+  </div>
+  
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Order #</th>
+        <th>Customer</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th>Payment Status</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @orders.each do |order| %>
+        <tr>
+          <td><%= link_to order.order_number, admin_order_path(order) %></td>
+          <td><%= order.user.full_name %></td>
+          <td>$<%= number_with_precision(order.total_price, precision: 2) %></td>
+          <td><span class="badge badge-<%= order.status %>"><%= order.status.humanize %></span></td>
+          <td><span class="badge badge-<%= order.payment_status %>"><%= order.payment_status.humanize %></span></td>
+          <td><%= order.created_at.strftime("%B %d, %Y") %></td>
+          <td><%= link_to "View", admin_order_path(order), class: "btn btn-sm" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  
+  <div class="pagination">
+    <%= paginate @orders %>
+  </div>
+</div>

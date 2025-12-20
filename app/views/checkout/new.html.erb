@@ -1,0 +1,111 @@
+<div class="checkout-page">
+  <h1>Checkout</h1>
+  
+  <%= form_with url: checkout_path, method: :post, class: "checkout-form" do |f| %>
+    <div class="checkout-layout">
+      <div class="checkout-main">
+        <section class="checkout-section">
+          <h2>Shipping Address</h2>
+          
+          <% if @addresses.any? %>
+            <div class="address-selection">
+              <% @addresses.each do |address| %>
+                <label class="address-option">
+                  <%= radio_button_tag :address_id, address.id, address.is_default? %>
+                  <div class="address-details">
+                    <p><strong><%= address.first_name %> <%= address.last_name %></strong></p>
+                    <p><%= address.street_address %></p>
+                    <% if address.apartment.present? %>
+                      <p><%= address.apartment %></p>
+                    <% end %>
+                    <p><%= address.city %>, <%= address.state %> <%= address.postal_code %></p>
+                    <p><%= address.country %></p>
+                    <% if address.phone.present? %>
+                      <p>Phone: <%= address.phone %></p>
+                    <% end %>
+                  </div>
+                </label>
+              <% end %>
+            </div>
+            
+            <p><%= link_to "Add New Address", new_address_path %></p>
+          <% else %>
+            <p>No saved addresses. <%= link_to "Add an address", new_address_path %></p>
+          <% end %>
+        </section>
+        
+        <section class="checkout-section">
+          <h2>Payment Method</h2>
+          
+          <div class="payment-options">
+            <label class="payment-option">
+              <%= f.radio_button :payment_method, "stripe", checked: true %>
+              <span>Credit/Debit Card (Stripe)</span>
+            </label>
+            
+            <label class="payment-option">
+              <%= f.radio_button :payment_method, "cash_on_delivery" %>
+              <span>Cash on Delivery</span>
+            </label>
+          </div>
+          
+          <div class="stripe-payment" id="stripe-payment-section">
+            <p class="payment-note">Note: Payment will be processed securely through Stripe</p>
+          </div>
+        </section>
+        
+        <section class="checkout-section">
+          <h2>Coupon Code</h2>
+          
+          <div class="coupon-input">
+            <%= text_field_tag :coupon_code, nil, placeholder: "Enter coupon code", class: "form-control" %>
+          </div>
+        </section>
+        
+        <section class="checkout-section">
+          <h2>Order Notes (Optional)</h2>
+          <%= f.text_area :notes, rows: 3, placeholder: "Special delivery instructions...", class: "form-control" %>
+        </section>
+      </div>
+      
+      <div class="checkout-sidebar">
+        <div class="order-summary">
+          <h2>Order Summary</h2>
+          
+          <div class="summary-items">
+            <% @cart.cart_items.each do |item| %>
+              <div class="summary-item">
+                <span><%= item.product.name %> × <%= item.quantity %></span>
+                <span>$<%= number_with_precision(item.product.price * item.quantity, precision: 2) %></span>
+              </div>
+            <% end %>
+          </div>
+          
+          <div class="summary-totals">
+            <div class="summary-line">
+              <span>Subtotal:</span>
+              <span>$<%= number_with_precision(@cart.subtotal, precision: 2) %></span>
+            </div>
+            
+            <div class="summary-line">
+              <span>Tax (10%):</span>
+              <span>$<%= number_with_precision(@cart.subtotal * 0.10, precision: 2) %></span>
+            </div>
+            
+            <div class="summary-line">
+              <span>Shipping:</span>
+              <span>$9.99</span>
+            </div>
+            
+            <div class="summary-line total">
+              <span>Total:</span>
+              <span>$<%= number_with_precision(@cart.subtotal * 1.10 + 9.99, precision: 2) %></span>
+            </div>
+          </div>
+          
+          <%= f.submit "Place Order", class: "btn btn-primary btn-block" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
