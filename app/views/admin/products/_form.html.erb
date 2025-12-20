@@ -1,0 +1,105 @@
+<div class="admin-product-form">
+  <h1><%= @product.persisted? ? 'Edit Product' : 'New Product' %></h1>
+  
+  <%= form_with model: [:admin, @product], local: true do |f| %>
+    <% if @product.errors.any? %>
+      <div class="error-messages">
+        <h3><%= pluralize(@product.errors.count, "error") %> prohibited this product from being saved:</h3>
+        <ul>
+          <% @product.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    
+    <div class="form-group">
+      <%= f.label :name %>
+      <%= f.text_field :name, class: 'form-control', required: true %>
+    </div>
+    
+    <div class="form-group">
+      <%= f.label :description %>
+      <%= f.text_area :description, rows: 5, class: 'form-control', required: true %>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :sku, "SKU" %>
+        <%= f.text_field :sku, class: 'form-control', required: true %>
+      </div>
+      
+      <div class="form-group">
+        <%= f.label :barcode %>
+        <%= f.text_field :barcode, class: 'form-control' %>
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :price %>
+        <%= f.number_field :price, step: 0.01, class: 'form-control', required: true %>
+      </div>
+      
+      <div class="form-group">
+        <%= f.label :compare_price, "Compare Price" %>
+        <%= f.number_field :compare_price, step: 0.01, class: 'form-control' %>
+      </div>
+      
+      <div class="form-group">
+        <%= f.label :cost_price, "Cost Price" %>
+        <%= f.number_field :cost_price, step: 0.01, class: 'form-control' %>
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :category_id, "Category" %>
+        <%= f.collection_select :category_id, @categories, :id, :name, { prompt: "Select Category" }, { class: 'form-control', required: true } %>
+      </div>
+      
+      <div class="form-group">
+        <%= f.label :brand_id, "Brand" %>
+        <%= f.collection_select :brand_id, @brands, :id, :name, { prompt: "Select Brand" }, { class: 'form-control', required: true } %>
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :stock_quantity, "Stock Quantity" %>
+        <%= f.number_field :stock_quantity, class: 'form-control', required: true %>
+      </div>
+      
+      <div class="form-group">
+        <%= f.label :status %>
+        <%= f.select :status, Product.statuses.keys.map { |s| [s.humanize, s] }, {}, { class: 'form-control' } %>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <%= f.label :featured %>
+      <%= f.check_box :featured %>
+      <span>Display on homepage</span>
+    </div>
+    
+    <div class="form-group">
+      <%= f.label :track_inventory, "Track Inventory" %>
+      <%= f.check_box :track_inventory %>
+    </div>
+    
+    <div class="form-group">
+      <%= f.label :meta_title, "SEO Title" %>
+      <%= f.text_field :meta_title, class: 'form-control' %>
+    </div>
+    
+    <div class="form-group">
+      <%= f.label :meta_description, "SEO Description" %>
+      <%= f.text_area :meta_description, rows: 3, class: 'form-control' %>
+    </div>
+    
+    <div class="form-actions">
+      <%= f.submit @product.persisted? ? 'Update Product' : 'Create Product', class: 'btn btn-primary' %>
+      <%= link_to 'Cancel', admin_products_path, class: 'btn btn-secondary' %>
+    </div>
+  <% end %>
+</div>

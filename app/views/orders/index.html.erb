@@ -1,0 +1,39 @@
+<div class="orders-page">
+  <h1>My Orders</h1>
+  
+  <% if @orders.any? %>
+    <div class="orders-list">
+      <% @orders.each do |order| %>
+        <div class="order-card">
+          <div class="order-header">
+            <h3><%= link_to order.order_number, order_path(order) %></h3>
+            <span class="order-status badge badge-<%= order.status %>"><%= order.status.humanize %></span>
+          </div>
+          
+          <div class="order-info">
+            <p><strong>Date:</strong> <%= order.created_at.strftime("%B %d, %Y") %></p>
+            <p><strong>Total:</strong> $<%= number_with_precision(order.total_price, precision: 2) %></p>
+            <p><strong>Payment Status:</strong> <%= order.payment_status.humanize %></p>
+            <p><strong>Items:</strong> <%= order.total_items %></p>
+          </div>
+          
+          <div class="order-actions">
+            <%= link_to "View Details", order_path(order), class: "btn btn-sm" %>
+            <% if order.pending? || order.processing? %>
+              <%= button_to "Cancel Order", cancel_order_path(order), method: :patch, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    
+    <div class="pagination">
+      <%= paginate @orders %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <p>You haven't placed any orders yet.</p>
+      <%= link_to "Start Shopping", products_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

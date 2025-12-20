@@ -1,0 +1,42 @@
+<div class="admin-products">
+  <div class="page-header">
+    <h1>Products</h1>
+    <%= link_to "Add New Product", new_admin_product_path, class: "btn btn-primary" %>
+  </div>
+  
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>SKU</th>
+        <th>Category</th>
+        <th>Brand</th>
+        <th>Price</th>
+        <th>Stock</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @products.each do |product| %>
+        <tr>
+          <td><%= link_to product.name, admin_product_path(product) %></td>
+          <td><%= product.sku %></td>
+          <td><%= product.category.name %></td>
+          <td><%= product.brand.name %></td>
+          <td>$<%= number_with_precision(product.price, precision: 2) %></td>
+          <td><%= product.stock_quantity %></td>
+          <td><span class="badge badge-<%= product.status %>"><%= product.status.humanize %></span></td>
+          <td>
+            <%= link_to "Edit", edit_admin_product_path(product), class: "btn btn-sm" %>
+            <%= button_to "Delete", admin_product_path(product), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  
+  <div class="pagination">
+    <%= paginate @products %>
+  </div>
+</div>

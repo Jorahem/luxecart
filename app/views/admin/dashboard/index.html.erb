@@ -1,0 +1,117 @@
+<div class="admin-dashboard">
+  <h1>Dashboard</h1>
+  
+  <div class="dashboard-stats">
+    <div class="stat-card">
+      <h3>Total Revenue</h3>
+      <p class="stat-value">$<%= number_with_precision(@total_revenue, precision: 2) %></p>
+    </div>
+    
+    <div class="stat-card">
+      <h3>Total Orders</h3>
+      <p class="stat-value"><%= @total_orders %></p>
+    </div>
+    
+    <div class="stat-card">
+      <h3>Total Customers</h3>
+      <p class="stat-value"><%= @total_customers %></p>
+    </div>
+    
+    <div class="stat-card">
+      <h3>Total Products</h3>
+      <p class="stat-value"><%= @total_products %></p>
+    </div>
+  </div>
+  
+  <div class="dashboard-grid">
+    <section class="dashboard-section">
+      <h2>Recent Orders</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @recent_orders.each do |order| %>
+            <tr>
+              <td><%= link_to order.order_number, admin_order_path(order) %></td>
+              <td><%= order.user.full_name %></td>
+              <td>$<%= number_with_precision(order.total_price, precision: 2) %></td>
+              <td><span class="badge badge-<%= order.status %>"><%= order.status.humanize %></span></td>
+              <td><%= order.created_at.strftime("%B %d, %Y") %></td>
+              <td><%= link_to "View", admin_order_path(order), class: "btn btn-sm" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <%= link_to "View All Orders", admin_orders_path, class: "btn btn-primary" %>
+    </section>
+    
+    <section class="dashboard-section">
+      <h2>Low Stock Products</h2>
+      <% if @low_stock_products.any? %>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>SKU</th>
+              <th>Stock</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @low_stock_products.each do |product| %>
+              <tr>
+                <td><%= link_to product.name, admin_product_path(product) %></td>
+                <td><%= product.sku %></td>
+                <td class="text-warning"><%= product.stock_quantity %></td>
+                <td><%= link_to "Edit", edit_admin_product_path(product), class: "btn btn-sm" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p>No low stock products</p>
+      <% end %>
+    </section>
+    
+    <section class="dashboard-section">
+      <h2>Pending Reviews</h2>
+      <% if @pending_reviews.any? %>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Customer</th>
+              <th>Rating</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @pending_reviews.each do |review| %>
+              <tr>
+                <td><%= link_to review.product.name, admin_review_path(review) %></td>
+                <td><%= review.user.full_name %></td>
+                <td>★ <%= review.rating %>/5</td>
+                <td><%= review.created_at.strftime("%B %d, %Y") %></td>
+                <td>
+                  <%= button_to "Approve", approve_admin_review_path(review), method: :patch, class: "btn btn-sm btn-success" %>
+                  <%= button_to "Reject", reject_admin_review_path(review), method: :patch, class: "btn btn-sm btn-danger" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p>No pending reviews</p>
+      <% end %>
+    </section>
+  </div>
+</div>

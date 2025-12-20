@@ -4,11 +4,19 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  # Enums
+  enum role: { customer: 0, admin: 1, super_admin: 2 }
+
   # Associations
+  has_one :cart, dependent: :destroy
+  has_one :wishlist, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :reviews, dependent: :destroy
-  has_many :cart_items, dependent: :destroy
   has_many :addresses, dependent: :destroy
+
+  # Scopes
+  scope :customer, -> { where(role: :customer) }
+  scope :admins, -> { where(role: [:admin, :super_admin]) }
 
   # Validations
   validates :email, presence: true, uniqueness: true
@@ -24,7 +32,11 @@ class User < ApplicationRecord
   end
 
   def admin?
-    role == 'admin'
+    role == 'admin' || role == 'super_admin'
+  end
+
+  def super_admin?
+    role == 'super_admin'
   end
 
   private

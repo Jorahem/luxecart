@@ -29,6 +29,10 @@ class Product < ApplicationRecord
   scope :by_category, ->(category_id) { where(category_id: category_id) }
   scope :by_brand, ->(brand_id) { where(brand_id: brand_id) }
   scope :price_range, ->(min, max) { where(price: min..max) }
+  scope :search_by_full_text, ->(query) {
+    sanitized_query = "%#{sanitize_sql_like(query)}%"
+    where("name LIKE ? OR description LIKE ? OR sku LIKE ?", sanitized_query, sanitized_query, sanitized_query)
+  }
 
   # Status enum (recommended)
   enum status: { draft: 0, active: 1, archived: 2 }

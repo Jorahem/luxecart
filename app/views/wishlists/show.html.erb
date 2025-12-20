@@ -1,0 +1,40 @@
+<div class="wishlist-page">
+  <h1>My Wishlist</h1>
+  
+  <% if defined?(@wishlist) && @wishlist && @wishlist.wishlist_items.any? %>
+    <div class="product-grid">
+      <% @wishlist.wishlist_items.includes(:product).each do |item| %>
+        <div class="product-card">
+          <div class="product-image">
+            <%= link_to product_path(item.product) do %>
+              <% if item.product.product_images.any? && item.product.product_images.first.image.attached? %>
+                <%= image_tag item.product.product_images.first.image, alt: item.product.name %>
+              <% else %>
+                <div class="placeholder-image">No Image</div>
+              <% end %>
+            <% end %>
+          </div>
+          <div class="product-info">
+            <h3><%= link_to item.product.name, product_path(item.product) %></h3>
+            <p class="product-price">$<%= number_with_precision(item.product.price, precision: 2) %></p>
+            
+            <% if item.product.in_stock? %>
+              <div class="product-actions">
+                <%= button_to "Add to Cart", cart_items_path(product_id: item.product.id), class: "btn btn-sm btn-primary" %>
+                <%= button_to "Remove", wishlist_item_path(item), method: :delete, class: "btn btn-sm btn-secondary" %>
+              </div>
+            <% else %>
+              <p class="out-of-stock">Out of Stock</p>
+              <%= button_to "Remove", wishlist_item_path(item), method: :delete, class: "btn btn-sm btn-secondary" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <p>Your wishlist is empty.</p>
+      <%= link_to "Browse Products", products_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

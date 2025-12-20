@@ -1,0 +1,44 @@
+<footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>LuxeCart</h3>
+      <p>Your premium e-commerce destination</p>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Shop</h4>
+      <ul>
+        <li><%= link_to "All Products", products_path %></li>
+        <li><%= link_to "Categories", categories_path %></li>
+        <li><%= link_to "Brands", brands_path %></li>
+      </ul>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Customer Service</h4>
+      <ul>
+        <li><%= link_to "Contact Us", "#" %></li>
+        <li><%= link_to "Shipping Info", "#" %></li>
+        <li><%= link_to "Returns", "#" %></li>
+        <li><%= link_to "FAQ", "#" %></li>
+      </ul>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Account</h4>
+      <ul>
+        <% if user_signed_in? %>
+          <li><%= link_to "My Orders", orders_path %></li>
+          <li><%= link_to "Wishlist", wishlist_path %></li>
+        <% else %>
+          <li><%= link_to "Login", new_user_session_path %></li>
+          <li><%= link_to "Sign Up", new_user_registration_path %></li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="footer-bottom">
+    <p>&copy; <%= Time.current.year %> LuxeCart. All rights reserved.</p>
+  </div>
+</footer>
