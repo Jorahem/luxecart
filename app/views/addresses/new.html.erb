@@ -1,0 +1,82 @@
+<div class="max-w-2xl mx-auto space-y-6">
+  <h1 class="text-3xl font-bold">Add New Address</h1>
+
+  <%= form_with model: @address, url: addresses_path, class: "bg-white rounded-lg shadow p-6 space-y-6" do |f| %>
+    <% if @address.errors.any? %>
+      <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded">
+        <h3 class="font-semibold mb-2"><%= pluralize(@address.errors.count, "error") %> prohibited this address from being saved:</h3>
+        <ul class="list-disc list-inside">
+          <% @address.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <%= f.label :first_name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :first_name, class: "w-full rounded-md border-gray-300", required: true %>
+      </div>
+      
+      <div>
+        <%= f.label :last_name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :last_name, class: "w-full rounded-md border-gray-300", required: true %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :street_address, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.text_field :street_address, class: "w-full rounded-md border-gray-300", required: true %>
+    </div>
+
+    <div>
+      <%= f.label :apartment, "Apartment, suite, etc. (optional)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.text_field :apartment, class: "w-full rounded-md border-gray-300" %>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <%= f.label :city, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :city, class: "w-full rounded-md border-gray-300", required: true %>
+      </div>
+      
+      <div>
+        <%= f.label :state, "State/Province", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :state, class: "w-full rounded-md border-gray-300", required: true %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <%= f.label :postal_code, "ZIP/Postal Code", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :postal_code, class: "w-full rounded-md border-gray-300", required: true %>
+      </div>
+      
+      <div>
+        <%= f.label :country, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :country, value: f.object.country || "USA", class: "w-full rounded-md border-gray-300", required: true %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :phone, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.telephone_field :phone, class: "w-full rounded-md border-gray-300", required: true %>
+    </div>
+
+    <div>
+      <%= f.label :address_type, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.select :address_type, [['Shipping', 'shipping'], ['Billing', 'billing'], ['Both', 'both']], { include_blank: 'Select type' }, class: "w-full rounded-md border-gray-300" %>
+    </div>
+
+    <div class="flex items-center">
+      <%= f.check_box :is_default, class: "rounded border-gray-300" %>
+      <%= f.label :is_default, "Set as default address", class: "ml-2 text-sm font-medium text-gray-700" %>
+    </div>
+
+    <div class="flex space-x-4 pt-4">
+      <%= f.submit "Save Address", class: "bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 cursor-pointer" %>
+      <%= link_to "Cancel", addresses_path, class: "bg-gray-200 text-gray-700 px-6 py-2 rounded hover:bg-gray-300" %>
+    </div>
+  <% end %>
+</div>

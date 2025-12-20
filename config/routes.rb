@@ -54,7 +54,11 @@ Rails.application.routes.draw do
 
   # User account routes
   resource :account, only: [:show, :edit, :update]
-  resources :addresses
+  resources :addresses do
+    member do
+      patch :set_default
+    end
+  end
 
   # Search
   get 'search', to: 'search#index'

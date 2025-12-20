@@ -26,7 +26,7 @@ All components from the original requirements have been successfully implemented
 1. ✅ `db/seeds.rb` - Sample data with admin user, products, categories, brands, orders
 2. ✅ `app/models/user.rb` - Updated with cart and wishlist associations
 
-### ✅ Views (32 files - COMPLETE)
+### ✅ Views (35 files - COMPLETE)
 
 #### Layouts (2 files)
 1. ✅ `app/views/layouts/application.html.erb` - Customer-facing layout
@@ -47,7 +47,7 @@ All components from the original requirements have been successfully implemented
 12. ✅ `app/views/admin/users/edit.html.erb` - Edit user form
 13. ✅ `app/views/admin/reviews/index.html.erb` - Review moderation
 
-#### Customer-Facing Views (11 files)
+#### Customer-Facing Views (14 files)
 1. ✅ `app/views/home/index.html.erb` - Homepage with featured products
 2. ✅ `app/views/products/index.html.erb` - Product listing page
 3. ✅ `app/views/products/show.html.erb` - Product detail page with reviews
@@ -60,6 +60,11 @@ All components from the original requirements have been successfully implemented
 10. ✅ `app/views/categories/show.html.erb` - Category products
 11. ✅ `app/views/brands/index.html.erb` - Brand listing
 12. ✅ `app/views/brands/show.html.erb` - Brand products
+
+#### Address Management Views (3 files) **[NEW - ADDED]**
+1. ✅ `app/views/addresses/index.html.erb` - Address listing
+2. ✅ `app/views/addresses/new.html.erb` - Create address form
+3. ✅ `app/views/addresses/edit.html.erb` - Edit address form
 
 #### Authentication Views (5 files) **[ADDED IN LATEST COMMIT]**
 1. ✅ `app/views/devise/sessions/new.html.erb` - Sign in page
@@ -132,9 +137,9 @@ All components from the original requirements have been successfully implemented
 | Database Seeds | 1 | ✅ Complete |
 | Layouts | 2 | ✅ Complete |
 | Admin Views | 13 | ✅ Complete |
-| Customer Views | 11 | ✅ Complete |
+| Customer Views | 14 | ✅ Complete |
 | Authentication Views | 5 | ✅ Complete |
-| **TOTAL FILES** | **42** | ✅ **100% COMPLETE** |
+| **TOTAL FILES** | **45** | ✅ **100% COMPLETE** |
 
 ---
 
