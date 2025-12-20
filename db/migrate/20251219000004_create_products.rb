@@ -17,7 +17,8 @@ class CreateProducts < ActiveRecord::Migration[7.1]
       t.string :weight_unit
       t.string :meta_title
       t.text :meta_description
-      t.string :tags, array: true, default: []
+t.text :tags
+
       t.integer :views_count, default: 0
       t.integer :sales_count, default: 0
       t.references :category, foreign_key: true
