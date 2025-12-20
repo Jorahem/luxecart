@@ -1,0 +1,19 @@
+<div class="brands-page">
+  <h1>Shop by Brand</h1>
+  
+  <div class="brands-grid">
+    <% @brands.each do |brand| %>
+      <div class="brand-card">
+        <%= link_to brand_path(brand), class: "brand-link" do %>
+          <div class="brand-content">
+            <h2><%= brand.name %></h2>
+            <% if brand.description.present? %>
+              <p class="brand-description"><%= truncate(brand.description, length: 150) %></p>
+            <% end %>
+            <p class="brand-count"><%= pluralize(brand.products_count, 'product') %></p>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

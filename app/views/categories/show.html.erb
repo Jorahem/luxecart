@@ -1,0 +1,71 @@
+<div class="category-page">
+  <div class="category-header">
+    <nav class="breadcrumb">
+      <%= link_to "Home", root_path %>
+      <% if @category.parent_category %>
+        &gt; <%= link_to @category.parent_category.name, category_path(@category.parent_category) %>
+      <% end %>
+      &gt; <%= @category.name %>
+    </nav>
+    
+    <h1><%= @category.name %></h1>
+    
+    <% if @category.description.present? %>
+      <p class="category-description"><%= @category.description %></p>
+    <% end %>
+  </div>
+  
+  <% if @subcategories.any? %>
+    <section class="subcategories-section">
+      <h2>Subcategories</h2>
+      <div class="subcategories-grid">
+        <% @subcategories.each do |subcategory| %>
+          <div class="subcategory-card">
+            <%= link_to category_path(subcategory) do %>
+              <h3><%= subcategory.name %></h3>
+              <p><%= pluralize(subcategory.products_count, 'product') %></p>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+  
+  <section class="products-section">
+    <h2>Products</h2>
+    
+    <% if @products.any? %>
+      <div class="product-grid">
+        <% @products.each do |product| %>
+          <div class="product-card">
+            <div class="product-image">
+              <%= link_to product_path(product) do %>
+                <% if product.product_images.any? && product.product_images.first.image.attached? %>
+                  <%= image_tag product.product_images.first.image, alt: product.name %>
+                <% else %>
+                  <div class="placeholder-image">No Image</div>
+                <% end %>
+              <% end %>
+            </div>
+            <div class="product-info">
+              <h3><%= link_to product.name, product_path(product) %></h3>
+              <p class="product-brand"><%= product.brand.name %></p>
+              <p class="product-price">$<%= number_with_precision(product.price, precision: 2) %></p>
+              <% if product.in_stock? %>
+                <%= button_to "Add to Cart", cart_items_path(product_id: product.id), class: "btn btn-sm" %>
+              <% else %>
+                <span class="out-of-stock">Out of Stock</span>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      
+      <div class="pagination">
+        <%= paginate @products %>
+      </div>
+    <% else %>
+      <p>No products available in this category.</p>
+    <% end %>
+  </section>
+</div>

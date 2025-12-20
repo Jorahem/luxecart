@@ -1,0 +1,53 @@
+<div class="brand-page">
+  <div class="brand-header">
+    <h1><%= @brand.name %></h1>
+    
+    <% if @brand.description.present? %>
+      <p class="brand-description"><%= @brand.description %></p>
+    <% end %>
+    
+    <% if @brand.website.present? %>
+      <p class="brand-website">
+        <%= link_to "Visit Official Website", @brand.website, target: "_blank", rel: "noopener" %>
+      </p>
+    <% end %>
+  </div>
+  
+  <section class="products-section">
+    <h2>Products by <%= @brand.name %></h2>
+    
+    <% if @products.any? %>
+      <div class="product-grid">
+        <% @products.each do |product| %>
+          <div class="product-card">
+            <div class="product-image">
+              <%= link_to product_path(product) do %>
+                <% if product.product_images.any? && product.product_images.first.image.attached? %>
+                  <%= image_tag product.product_images.first.image, alt: product.name %>
+                <% else %>
+                  <div class="placeholder-image">No Image</div>
+                <% end %>
+              <% end %>
+            </div>
+            <div class="product-info">
+              <h3><%= link_to product.name, product_path(product) %></h3>
+              <p class="product-category"><%= product.category.name %></p>
+              <p class="product-price">$<%= number_with_precision(product.price, precision: 2) %></p>
+              <% if product.in_stock? %>
+                <%= button_to "Add to Cart", cart_items_path(product_id: product.id), class: "btn btn-sm" %>
+              <% else %>
+                <span class="out-of-stock">Out of Stock</span>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      
+      <div class="pagination">
+        <%= paginate @products %>
+      </div>
+    <% else %>
+      <p>No products available from this brand.</p>
+    <% end %>
+  </section>
+</div>

@@ -1,0 +1,30 @@
+<div class="categories-page">
+  <h1>Shop by Category</h1>
+  
+  <div class="categories-grid">
+    <% @categories.each do |category| %>
+      <div class="category-card">
+        <%= link_to category_path(category), class: "category-link" do %>
+          <div class="category-content">
+            <h2><%= category.name %></h2>
+            <% if category.description.present? %>
+              <p class="category-description"><%= truncate(category.description, length: 100) %></p>
+            <% end %>
+            <p class="category-count"><%= pluralize(category.products_count, 'product') %></p>
+            
+            <% if category.subcategories.active.any? %>
+              <div class="subcategories">
+                <strong>Subcategories:</strong>
+                <ul>
+                  <% category.subcategories.active.limit(5).each do |subcat| %>
+                    <li><%= subcat.name %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

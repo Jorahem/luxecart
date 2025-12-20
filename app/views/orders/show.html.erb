@@ -1,0 +1,105 @@
+<div class="order-detail">
+  <div class="order-header">
+    <h1>Order <%= @order.order_number %></h1>
+    <span class="order-status badge badge-<%= @order.status %>"><%= @order.status.humanize %></span>
+  </div>
+  
+  <div class="order-layout">
+    <div class="order-main">
+      <section class="order-section">
+        <h2>Order Information</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Order Date:</label>
+            <span><%= @order.created_at.strftime("%B %d, %Y at %I:%M %p") %></span>
+          </div>
+          <div class="info-item">
+            <label>Order Status:</label>
+            <span><%= @order.status.humanize %></span>
+          </div>
+          <div class="info-item">
+            <label>Payment Status:</label>
+            <span><%= @order.payment_status.humanize %></span>
+          </div>
+          <div class="info-item">
+            <label>Payment Method:</label>
+            <span><%= @order.payment_method&.humanize || 'N/A' %></span>
+          </div>
+          <% if @order.tracking_number.present? %>
+            <div class="info-item">
+              <label>Tracking Number:</label>
+              <span><%= @order.tracking_number %></span>
+            </div>
+          <% end %>
+        </div>
+      </section>
+      
+      <section class="order-section">
+        <h2>Order Items</h2>
+        <table class="order-items-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>SKU</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @order_items.each do |item| %>
+              <tr>
+                <td>
+                  <%= link_to item.product_name, product_path(item.product) %>
+                </td>
+                <td><%= item.product_sku %></td>
+                <td>$<%= number_with_precision(item.unit_price, precision: 2) %></td>
+                <td><%= item.quantity %></td>
+                <td>$<%= number_with_precision(item.total_price, precision: 2) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </section>
+    </div>
+    
+    <div class="order-sidebar">
+      <div class="order-summary">
+        <h2>Order Summary</h2>
+        
+        <div class="summary-line">
+          <span>Subtotal:</span>
+          <span>$<%= number_with_precision(@order.subtotal, precision: 2) %></span>
+        </div>
+        
+        <div class="summary-line">
+          <span>Tax:</span>
+          <span>$<%= number_with_precision(@order.tax_amount, precision: 2) %></span>
+        </div>
+        
+        <div class="summary-line">
+          <span>Shipping:</span>
+          <span>$<%= number_with_precision(@order.shipping_cost, precision: 2) %></span>
+        </div>
+        
+        <% if @order.discount_amount > 0 %>
+          <div class="summary-line">
+            <span>Discount:</span>
+            <span class="discount">-$<%= number_with_precision(@order.discount_amount, precision: 2) %></span>
+          </div>
+        <% end %>
+        
+        <div class="summary-line total">
+          <span>Total:</span>
+          <span>$<%= number_with_precision(@order.total_price, precision: 2) %></span>
+        </div>
+      </div>
+      
+      <% if @order.pending? || @order.processing? %>
+        <div class="order-actions">
+          <%= button_to "Cancel Order", cancel_order_path(@order), method: :patch, data: { confirm: "Are you sure you want to cancel this order?" }, class: "btn btn-danger btn-block" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
