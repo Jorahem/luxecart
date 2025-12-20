@@ -18,6 +18,7 @@ class Order < ApplicationRecord
   # Scopes
   scope :recent, -> { order(created_at: :desc) }
   scope :by_status, ->(status) { where(status: status) }
+  scope :paid, -> { where(payment_status: :paid) }
 
   # Instance methods
   def total_items

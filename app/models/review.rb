@@ -8,5 +8,6 @@ class Review < ApplicationRecord
   validates :user_id, uniqueness: { scope: :product_id }
 
   scope :approved, -> { where(status: :approved) }
+  scope :pending, -> { where(status: :pending) }
   scope :recent, -> { order(created_at: :desc) }
 end
