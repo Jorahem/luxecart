@@ -62,12 +62,12 @@
   }
 
   .card-product {
-    @apply card group cursor-pointer hover:transform hover:-translate-y-2;
+    @apply card cursor-pointer hover:transform hover:-translate-y-2;
   }
 
   /* Forms */
   .form-input {
-    @apply w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200;
+    @apply w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200;
   }
 
   .form-label {
@@ -233,7 +233,7 @@
 
 /* Accessibility */
 *:focus-visible {
-  @apply outline-none ring-4 ring-blue-500/50 ring-offset-2;
+  @apply outline-none ring-4 ring-blue-200 ring-offset-2;
 }
 
 @media (prefers-reduced-motion: reduce) {
