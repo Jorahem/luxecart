@@ -13,8 +13,8 @@ class Product < ApplicationRecord
   has_many :order_items, dependent: :destroy
   has_many :product_variants, dependent: :destroy
 
-  # Serialize tags (Rails 7.1+ syntax)
-  serialize :tags, coder: JSON
+  # Serialize tags (Rails 7.1+ syntax with type checking)
+  serialize :tags, type: Array, coder: JSON
 
   # Validations
   validates :name, presence: true, length: { maximum: 255 }
