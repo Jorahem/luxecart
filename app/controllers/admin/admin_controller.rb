@@ -1,6 +1,6 @@
 module Admin
   class AdminController < ApplicationController
-    before_action :authenticate_user!
+    before_action :require_login
     before_action :require_admin
 
     layout 'admin'
@@ -8,7 +8,7 @@ module Admin
     private
 
     def require_admin
-      unless current_user.role == 'admin'
+      unless current_user&.admin?
         redirect_to root_path, alert: 'Access denied. Admin privileges required.'
       end
     end

@@ -1,0 +1,52 @@
+<% content_for :page_title, 'Orders' %>
+
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>Order #</th>
+      <th>Customer</th>
+      <th>Date</th>
+      <th>Total</th>
+      <th>Payment Status</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @orders.each do |order| %>
+      <tr>
+        <td><strong><%= order.order_number %></strong></td>
+        <td><%= order.user.full_name %></td>
+        <td><%= order.created_at.strftime('%b %d, %Y') %></td>
+        <td><strong>$<%= number_with_precision(order.total_price, precision: 2) %></strong></td>
+        <td>
+          <% case order.payment_status.to_s %>
+          <% when 'paid' %>
+            <span class="badge badge-success">Paid</span>
+          <% when 'unpaid' %>
+            <span class="badge badge-warning">Unpaid</span>
+          <% when 'failed' %>
+            <span class="badge badge-danger">Failed</span>
+          <% end %>
+        </td>
+        <td>
+          <% case order.status.to_s %>
+          <% when 'pending' %>
+            <span class="badge badge-warning">Pending</span>
+          <% when 'processing' %>
+            <span class="badge badge-info">Processing</span>
+          <% when 'shipped' %>
+            <span class="badge badge-info">Shipped</span>
+          <% when 'delivered' %>
+            <span class="badge badge-success">Delivered</span>
+          <% when 'cancelled' %>
+            <span class="badge badge-danger">Cancelled</span>
+          <% end %>
+        </td>
+        <td>
+          <%= link_to 'View Details', admin_order_path(order), class: 'btn btn-outline', style: 'padding: 6px 12px; font-size: 12px;' %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -1,0 +1,66 @@
+<% content_for :page_title, 'Products' %>
+
+<div style="margin-bottom: 20px;">
+  <%= link_to '+ Add New Product', new_admin_product_path, class: 'btn btn-primary' %>
+</div>
+
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>Image</th>
+      <th>Name</th>
+      <th>SKU</th>
+      <th>Price</th>
+      <th>Stock</th>
+      <th>Status</th>
+      <th>Featured</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @products.each do |product| %>
+      <tr>
+        <td>
+          <% if product.images.attached? && product.images.first %>
+            <%= image_tag product.images.first, style: 'width: 50px; height: 50px; object-fit: cover; border-radius: 4px;' %>
+          <% else %>
+            <div style="width: 50px; height: 50px; background: #ecf0f1; border-radius: 4px; display: flex; align-items: center; justify-content: center;">📦</div>
+          <% end %>
+        </td>
+        <td><strong><%= product.name %></strong></td>
+        <td><%= product.sku %></td>
+        <td><strong>$<%= number_with_precision(product.price, precision: 2) %></strong></td>
+        <td>
+          <% if product.stock_quantity < 10 %>
+            <span class="badge badge-danger"><%= product.stock_quantity %></span>
+          <% else %>
+            <%= product.stock_quantity %>
+          <% end %>
+        </td>
+        <td>
+          <% case product.status.to_s %>
+          <% when 'draft' %>
+            <span class="badge badge-warning">Draft</span>
+          <% when 'active' %>
+            <span class="badge badge-success">Active</span>
+          <% when 'archived' %>
+            <span class="badge badge-danger">Archived</span>
+          <% end %>
+        </td>
+        <td>
+          <%= button_to product.featured ? '⭐ Yes' : '☆ No', toggle_featured_admin_product_path(product), 
+              method: :patch, class: 'badge ' + (product.featured ? 'badge-warning' : 'badge-info'), 
+              style: 'border: none; cursor: pointer;' %>
+        </td>
+        <td>
+          <div style="display: flex; gap: 5px;">
+            <%= link_to 'Edit', edit_admin_product_path(product), class: 'btn btn-outline', style: 'padding: 6px 12px; font-size: 12px;' %>
+            <%= button_to 'Delete', admin_product_path(product), method: :delete, 
+                class: 'btn btn-outline', style: 'padding: 6px 12px; font-size: 12px; background: #e74c3c; color: #fff; border-color: #e74c3c;',
+                data: { confirm: 'Are you sure?' } %>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

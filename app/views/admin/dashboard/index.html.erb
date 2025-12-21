@@ -1,0 +1,84 @@
+<% content_for :page_title, 'Dashboard' %>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <h3>Total Products</h3>
+    <div class="stat-value"><%= @total_products %></div>
+  </div>
+  
+  <div class="stat-card">
+    <h3>Total Orders</h3>
+    <div class="stat-value"><%= @total_orders %></div>
+  </div>
+  
+  <div class="stat-card">
+    <h3>Total Users</h3>
+    <div class="stat-value"><%= @total_users %></div>
+  </div>
+  
+  <div class="stat-card">
+    <h3>Pending Orders</h3>
+    <div class="stat-value" style="color: #f39c12;"><%= @pending_orders %></div>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+  <div>
+    <h2 style="margin-bottom: 20px; color: #2c3e50;">Recent Orders</h2>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Order #</th>
+          <th>Customer</th>
+          <th>Total</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @recent_orders.each do |order| %>
+          <tr>
+            <td><%= link_to order.order_number, admin_order_path(order), style: 'color: #3498db; text-decoration: none;' %></td>
+            <td><%= order.user.full_name %></td>
+            <td><strong>$<%= number_with_precision(order.total_price, precision: 2) %></strong></td>
+            <td>
+              <% case order.status.to_s %>
+              <% when 'pending' %>
+                <span class="badge badge-warning">Pending</span>
+              <% when 'processing' %>
+                <span class="badge badge-info">Processing</span>
+              <% when 'shipped' %>
+                <span class="badge badge-info">Shipped</span>
+              <% when 'delivered' %>
+                <span class="badge badge-success">Delivered</span>
+              <% when 'cancelled' %>
+                <span class="badge badge-danger">Cancelled</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  
+  <div>
+    <h2 style="margin-bottom: 20px; color: #2c3e50;">Low Stock Products</h2>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>SKU</th>
+          <th>Stock</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @low_stock_products.each do |product| %>
+          <tr>
+            <td><%= link_to product.name, edit_admin_product_path(product), style: 'color: #3498db; text-decoration: none;' %></td>
+            <td><%= product.sku %></td>
+            <td><span class="badge badge-danger"><%= product.stock_quantity %></span></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
