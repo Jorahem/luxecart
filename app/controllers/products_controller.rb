@@ -3,7 +3,12 @@ class ProductsController < ApplicationController
     @products = Product.where(status: 1).includes(:category, :brand)
     @products = @products.where(category_id: params[:category_id]) if params[:category_id].present?
     @products = @products.where(brand_id: params[:brand_id]) if params[:brand_id].present?
-    @products = @products.where("name LIKE ? OR description LIKE ?", "%#{params[:query]}%", "%#{params[:query]}%") if params[:query].present?
+    
+    # Safe search implementation
+    if params[:query].present?
+      search_term = "%#{ActiveRecord::Base.sanitize_sql_like(params[:query])}%"
+      @products = @products.where("name LIKE ? OR description LIKE ?", search_term, search_term)
+    end
     
     if params[:min_price].present? || params[:max_price].present?
       min = params[:min_price].to_f || 0

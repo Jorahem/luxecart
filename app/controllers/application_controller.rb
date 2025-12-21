@@ -8,7 +8,9 @@ class ApplicationController < ActionController::Base
       @current_cart ||= current_user.cart || current_user.create_cart
     else
       session[:cart_id] ||= Cart.create(session_id: session.id.to_s).id
-      @current_cart ||= Cart.find_by(id: session[:cart_id]) || Cart.create(session_id: session.id.to_s)
+      @current_cart ||= Cart.find_or_create_by(id: session[:cart_id]) do |cart|
+        cart.session_id = session.id.to_s
+      end
     end
   end
 

@@ -24,6 +24,7 @@ class CheckoutController < ApplicationController
 
     # Set payment method to cash on delivery by default
     @order.payment_method ||= 'cash_on_delivery'
+    # Mark COD orders as paid since payment will be collected on delivery
     @order.payment_status = :paid if @order.payment_method == 'cash_on_delivery'
 
     if @order.save

@@ -12,6 +12,10 @@ if Rails.env.development?
   User.destroy_all
 end
 
+# User roles
+ROLE_CUSTOMER = 0
+ROLE_ADMIN = 1
+
 puts "Creating admin user..."
 admin = User.create!(
   email: 'admin@luxecart.com',
@@ -20,7 +24,7 @@ admin = User.create!(
   first_name: 'Admin',
   last_name: 'User',
   phone: '+1 (555) 000-0000',
-  role: 1 # Admin role
+  role: ROLE_ADMIN
 )
 
 puts "Creating regular user..."
@@ -31,7 +35,7 @@ user = User.create!(
   first_name: 'John',
   last_name: 'Doe',
   phone: '+1 (555) 123-4567',
-  role: 0 # Regular user
+  role: ROLE_CUSTOMER
 )
 
 puts "Creating categories..."
