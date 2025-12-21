@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_19_000014) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_21_032040) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -124,6 +124,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_19_000014) do
     t.index ["code"], name: "index_coupons_on_code", unique: true
   end
 
+  create_table "friendly_id_slugs", force: :cascade do |t|
+    t.string "slug", null: false
+    t.integer "sluggable_id", null: false
+    t.string "sluggable_type", limit: 50
+    t.string "scope"
+    t.datetime "created_at"
+    t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
+    t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
+    t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
+  end
+
   create_table "order_items", force: :cascade do |t|
     t.integer "order_id", null: false
     t.integer "product_id", null: false
@@ -163,6 +174,39 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_19_000014) do
     t.index ["payment_status"], name: "index_orders_on_payment_status"
     t.index ["status"], name: "index_orders_on_status"
     t.index ["user_id"], name: "index_orders_on_user_id"
+  end
+
+  create_table "product_images", force: :cascade do |t|
+    t.integer "product_id", null: false
+    t.integer "position", default: 0
+    t.string "alt_text"
+    t.boolean "is_primary", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["is_primary"], name: "index_product_images_on_is_primary"
+    t.index ["product_id", "position"], name: "index_product_images_on_product_id_and_position"
+    t.index ["product_id"], name: "index_product_images_on_product_id"
+  end
+
+  create_table "product_variants", force: :cascade do |t|
+    t.integer "product_id", null: false
+    t.string "sku", null: false
+    t.string "name"
+    t.decimal "price", precision: 10, scale: 2
+    t.decimal "compare_price", precision: 10, scale: 2
+    t.integer "stock_quantity", default: 0
+    t.string "option1_name"
+    t.string "option1_value"
+    t.string "option2_name"
+    t.string "option2_value"
+    t.string "option3_name"
+    t.string "option3_value"
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_product_variants_on_active"
+    t.index ["product_id"], name: "index_product_variants_on_product_id"
+    t.index ["sku"], name: "index_product_variants_on_sku", unique: true
   end
 
   create_table "products", force: :cascade do |t|
@@ -263,6 +307,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_19_000014) do
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
   add_foreign_key "orders", "users"
+  add_foreign_key "product_images", "products"
+  add_foreign_key "product_variants", "products"
   add_foreign_key "products", "brands"
   add_foreign_key "products", "categories"
   add_foreign_key "reviews", "products"

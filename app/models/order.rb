@@ -12,7 +12,7 @@ class Order < ApplicationRecord
   before_save :calculate_totals
 
   # Enums
-  enum status: { pending: 0, processing: 1, shipped: 2, delivered: 3, cancelled: 4, refunded: 5 }
+  enum status: { pending: 0, processing: 1, shipped: 2, delivered: 3, cancelled: 4 }
   enum payment_status: { unpaid: 0, paid: 1, failed: 2, refunded: 3 }
 
   # Scopes
