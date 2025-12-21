@@ -335,9 +335,21 @@
         margin-top: 20px;
       }
       
-      .subcategory-card:hover {
-        background: #e74c3c !important;
-        color: #fff !important;
+      /* Hover effects for category and brand cards */
+      .subcategory-card:hover,
+      .category-hover-card:hover,
+      .brand-hover-card:hover {
+        background: #e74c3c;
+        color: #fff;
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+      
+      .subcategory-card:hover h3,
+      .category-hover-card:hover h3,
+      .brand-hover-card:hover h3,
+      .brand-hover-card:hover p {
+        color: #fff;
       }
     </style>
   </head>

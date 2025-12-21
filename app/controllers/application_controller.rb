@@ -7,10 +7,9 @@ class ApplicationController < ActionController::Base
     if user_signed_in?
       @current_cart ||= current_user.cart || current_user.create_cart
     else
-      session[:cart_id] ||= Cart.create(session_id: session.id.to_s).id
-      @current_cart ||= Cart.find_or_create_by(id: session[:cart_id]) do |cart|
-        cart.session_id = session.id.to_s
-      end
+      # Use find_or_create_by to avoid race conditions
+      @current_cart ||= Cart.find_or_create_by(session_id: session.id.to_s)
+      session[:cart_id] = @current_cart.id
     end
   end
 

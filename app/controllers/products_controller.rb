@@ -24,7 +24,9 @@ class ProductsController < ApplicationController
                 else @products.order(created_at: :desc)
                 end
     
-    @products = @products.limit(12).offset((params[:page].to_i - 1) * 12) if params[:page].present?
+    # Safe pagination with validation
+    page = [params[:page].to_i, 1].max
+    @products = @products.limit(12).offset((page - 1) * 12) if params[:page].present?
     @categories = Category.where(active: true)
     @brands = Brand.where(active: true)
   end

@@ -2,6 +2,10 @@ class User < ApplicationRecord
   # Secure password
   has_secure_password
 
+  # Role constants
+  ROLE_CUSTOMER = 0
+  ROLE_ADMIN = 1
+
   # Associations
   has_one :cart, dependent: :destroy
   has_one :wishlist, dependent: :destroy
@@ -24,7 +28,7 @@ class User < ApplicationRecord
   end
 
   def admin?
-    role.to_i == 1
+    role.to_i == ROLE_ADMIN
   end
 
   private
