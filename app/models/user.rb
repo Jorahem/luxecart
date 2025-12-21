@@ -1,19 +1,19 @@
 class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+  # Secure password
+  has_secure_password
 
   # Associations
+  has_one :cart, dependent: :destroy
+  has_one :wishlist, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :reviews, dependent: :destroy
-  has_many :cart_items, dependent: :destroy
   has_many :addresses, dependent: :destroy
 
   # Validations
-  validates :email, presence: true, uniqueness: true
+  validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :first_name, presence: true, length: { maximum: 50 }
   validates :last_name, presence: true, length: { maximum: 50 }
+  validates :password, length: { minimum: 6 }, if: -> { new_record? || password.present? }
 
   # Callbacks
   before_save :normalize_email
@@ -24,7 +24,7 @@ class User < ApplicationRecord
   end
 
   def admin?
-    role == 'admin'
+    role.to_i == 1
   end
 
   private

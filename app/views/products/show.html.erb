@@ -1,0 +1,128 @@
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; background: #fff; padding: 40px; border-radius: 8px; margin-bottom: 40px;">
+  <div>
+    <% if @product.images.attached? && @product.images.any? %>
+      <div style="margin-bottom: 20px;">
+        <%= image_tag @product.images.first, style: 'width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);', alt: @product.name %>
+      </div>
+      
+      <% if @product.images.count > 1 %>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+          <% @product.images.each do |image| %>
+            <%= image_tag image, style: 'width: 100%; height: 100px; object-fit: cover; border-radius: 4px; cursor: pointer;', alt: @product.name %>
+          <% end %>
+        </div>
+      <% end %>
+    <% else %>
+      <div style="width: 100%; height: 500px; background: #ecf0f1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 120px;">
+        📦
+      </div>
+    <% end %>
+  </div>
+  
+  <div>
+    <div style="margin-bottom: 10px;">
+      <span style="background: #ecf0f1; padding: 6px 12px; border-radius: 4px; color: #2c3e50; font-size: 14px;">
+        <%= @product.category&.name %>
+      </span>
+      <span style="background: #ecf0f1; padding: 6px 12px; border-radius: 4px; color: #2c3e50; font-size: 14px; margin-left: 10px;">
+        <%= @product.brand&.name %>
+      </span>
+    </div>
+    
+    <h1 style="font-size: 32px; margin-bottom: 15px; color: #2c3e50;"><%= @product.name %></h1>
+    
+    <% if @product.reviews.any? %>
+      <div style="margin-bottom: 20px; color: #f39c12; font-size: 18px;">
+        ⭐ <%= @product.average_rating %> / 5.0 (<%= @product.reviews.count %> reviews)
+      </div>
+    <% end %>
+    
+    <div style="font-size: 42px; font-weight: bold; color: #e74c3c; margin-bottom: 20px;">
+      $<%= number_with_precision(@product.price, precision: 2) %>
+    </div>
+    
+    <% if @product.compare_price && @product.compare_price > @product.price %>
+      <div style="margin-bottom: 20px;">
+        <span style="text-decoration: line-through; color: #95a5a6; font-size: 20px;">$<%= number_with_precision(@product.compare_price, precision: 2) %></span>
+        <span style="background: #27ae60; color: #fff; padding: 4px 8px; border-radius: 4px; margin-left: 10px; font-weight: bold;">
+          SAVE <%= number_to_percentage(((@product.compare_price - @product.price) / @product.compare_price * 100), precision: 0) %>
+        </span>
+      </div>
+    <% end %>
+    
+    <% if @product.stock_quantity > 0 %>
+      <div style="color: #27ae60; font-size: 16px; margin-bottom: 20px; font-weight: 500;">
+        ✓ In Stock - <%= @product.stock_quantity %> units available
+      </div>
+    <% else %>
+      <div style="color: #e74c3c; font-size: 16px; margin-bottom: 20px; font-weight: 500;">
+        ✗ Out of Stock
+      </div>
+    <% end %>
+    
+    <div style="border-top: 2px solid #ecf0f1; border-bottom: 2px solid #ecf0f1; padding: 20px 0; margin-bottom: 30px;">
+      <h3 style="margin-bottom: 10px; color: #2c3e50;">Product Description</h3>
+      <p style="line-height: 1.8; color: #555;"><%= simple_format(@product.description) %></p>
+    </div>
+    
+    <% if @product.stock_quantity > 0 %>
+      <%= form_with url: cart_add_item_path, method: :post do %>
+        <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+          <div class="form-group" style="flex: 0 0 120px; margin-bottom: 0;">
+            <label class="form-label">Quantity</label>
+            <%= number_field_tag :quantity, 1, min: 1, max: @product.stock_quantity, class: 'form-control', style: 'text-align: center; font-size: 18px;' %>
+          </div>
+          
+          <%= hidden_field_tag :product_id, @product.id %>
+          
+          <div style="flex: 1;">
+            <label class="form-label" style="visibility: hidden;">Action</label>
+            <%= submit_tag '🛒 Add to Cart', class: 'btn btn-primary', style: 'width: 100%; font-size: 18px; padding: 15px;' %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <button class="btn btn-primary" disabled style="width: 100%; font-size: 18px; padding: 15px; opacity: 0.5; cursor: not-allowed;">Out of Stock</button>
+    <% end %>
+    
+    <div style="margin-top: 20px; padding: 15px; background: #ecf0f1; border-radius: 4px;">
+      <div style="margin-bottom: 10px;"><strong>SKU:</strong> <%= @product.sku %></div>
+      <% if @product.barcode.present? %>
+        <div style="margin-bottom: 10px;"><strong>Barcode:</strong> <%= @product.barcode %></div>
+      <% end %>
+      <% if @product.weight.present? %>
+        <div><strong>Weight:</strong> <%= @product.weight %> <%= @product.weight_unit %></div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<% if @related_products.any? %>
+  <section style="margin-top: 60px;">
+    <h2 class="section-title">Related Products</h2>
+    <div class="products-grid">
+      <% @related_products.each do |product| %>
+        <div class="product-card">
+          <% if product.images.attached? && product.images.first %>
+            <%= link_to product_path(product) do %>
+              <%= image_tag product.images.first, class: 'product-image', alt: product.name %>
+            <% end %>
+          <% else %>
+            <%= link_to product_path(product) do %>
+              <div class="product-image" style="display: flex; align-items: center; justify-content: center; font-size: 48px;">
+                📦
+              </div>
+            <% end %>
+          <% end %>
+          
+          <div class="product-info">
+            <h3 class="product-title"><%= link_to product.name, product_path(product), style: 'color: inherit; text-decoration: none;' %></h3>
+            <div style="color: #7f8c8d; margin-bottom: 10px;"><%= product.category&.name %></div>
+            <div class="product-price">$<%= number_with_precision(product.price, precision: 2) %></div>
+            <a href="<%= product_path(product) %>" class="btn btn-outline" style="width: 100%; text-align: center; margin-top: 10px;">View Details</a>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </section>
+<% end %>

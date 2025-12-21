@@ -1,46 +1,42 @@
 class CheckoutController < ApplicationController
-  before_action :authenticate_user!
+  before_action :require_login
   before_action :set_cart
-  before_action :ensure_cart_not_empty
+  before_action :ensure_cart_not_empty, only: [:new, :create]
 
   def new
-    @order = current_user.orders.build
-    @addresses = current_user.addresses
-    @default_address = current_user.addresses.find_by(is_default: true)
+    @order = Order.new
   end
 
   def create
     @order = current_user.orders.build(order_params)
     
+    # Build order items from cart
     @cart.cart_items.each do |cart_item|
       @order.order_items.build(
         product: cart_item.product,
         quantity: cart_item.quantity,
-        unit_price: cart_item.product.price
+        unit_price: cart_item.product.price,
+        total_price: cart_item.product.price * cart_item.quantity,
+        product_name: cart_item.product.name,
+        product_sku: cart_item.product.sku
       )
     end
 
-    if params[:coupon_code].present?
-      coupon = Coupon.find_by(code: params[:coupon_code])
-      if coupon&.active?
-        @order.coupon_code = coupon.code
-        @order.discount_amount = coupon.calculate_discount(@order.subtotal)
-      end
-    end
+    # Set payment method to cash on delivery by default
+    @order.payment_method ||= 'cash_on_delivery'
+    @order.payment_status = :paid if @order.payment_method == 'cash_on_delivery'
 
     if @order.save
-      if process_payment(@order)
-        @order.update(payment_status: :paid, status: :processing)
-        @cart.clear
-        redirect_to order_path(@order), notice: 'Order placed successfully!'
-      else
-        @order.update(payment_status: :failed)
-        redirect_to new_checkout_path, alert: 'Payment failed. Please try again.'
-      end
+      @cart.clear
+      redirect_to checkout_confirmation_path(@order), notice: 'Order placed successfully!'
     else
-      @addresses = current_user.addresses
       render :new
     end
+  end
+
+  def confirmation
+    @order = current_user.orders.find(params[:id])
+    @order_items = @order.order_items.includes(:product)
   end
 
   private
@@ -50,28 +46,12 @@ class CheckoutController < ApplicationController
   end
 
   def ensure_cart_not_empty
-    redirect_to cart_path, alert: 'Your cart is empty.' if @cart.empty?
+    if @cart.empty?
+      redirect_to cart_path, alert: 'Your cart is empty.'
+    end
   end
 
   def order_params
     params.require(:order).permit(:payment_method, :notes)
-  end
-
-  def process_payment(order)
-    if order.payment_method == 'stripe'
-      begin
-        payment_intent = Stripe::PaymentIntent.create(
-          amount: (order.total_price * 100).to_i,
-          currency: 'usd',
-          metadata: { order_id: order.id }
-        )
-        order.update(stripe_payment_intent_id: payment_intent.id)
-        true
-      rescue Stripe::CardError
-        false
-      end
-    else
-      true
-    end
   end
 end

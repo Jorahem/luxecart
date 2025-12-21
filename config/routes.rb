@@ -1,9 +1,13 @@
 Rails.application.routes.draw do
-  # Devise for user authentication
-  devise_for :users
-  
   # Root path
   root 'home#index'
+  
+  # Authentication routes
+  get '/signup', to: 'users#new'
+  post '/signup', to: 'users#create'
+  get '/login', to: 'sessions#new'
+  post '/login', to: 'sessions#create'
+  delete '/logout', to: 'sessions#destroy'
   
   # Customer-facing routes
   resources :products, only: [:index, :show] do
@@ -45,13 +49,9 @@ Rails.application.routes.draw do
   end
   
   # Checkout flow
-  namespace :checkout do
-    get :shipping
-    post :update_shipping
-    get :payment
-    post :process_payment
-    get :confirmation
-  end
+  get '/checkout', to: 'checkout#new', as: 'checkout'
+  post '/checkout', to: 'checkout#create'
+  get '/checkout/confirmation/:id', to: 'checkout#confirmation', as: 'checkout_confirmation'
   
   # Search
   get :search, to: 'search#index'
