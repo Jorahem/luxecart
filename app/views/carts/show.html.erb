@@ -92,7 +92,7 @@
         </div>
         
         <% if user_signed_in? %>
-          <%= link_to 'Proceed to Checkout', checkout_shipping_path, class: 'btn btn-primary', style: 'width: 100%; text-align: center; font-size: 18px; padding: 15px;' %>
+          <%= link_to 'Proceed to Checkout', checkout_path, class: 'btn btn-primary', style: 'width: 100%; text-align: center; font-size: 18px; padding: 15px;' %>
         <% else %>
           <p style="text-align: center; margin-bottom: 15px; color: #7f8c8d;">Please log in to checkout</p>
           <%= link_to 'Login to Checkout', login_path, class: 'btn btn-primary', style: 'width: 100%; text-align: center; font-size: 18px; padding: 15px;' %>

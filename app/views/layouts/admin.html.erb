@@ -157,8 +157,6 @@
           <li><%= link_to '📊 Dashboard', admin_dashboard_path, class: request.path == admin_dashboard_path ? 'active' : '' %></li>
           <li><%= link_to '📦 Products', admin_products_path, class: request.path.start_with?('/admin/products') ? 'active' : '' %></li>
           <li><%= link_to '📋 Orders', admin_orders_path, class: request.path.start_with?('/admin/orders') ? 'active' : '' %></li>
-          <li><%= link_to '📁 Categories', admin_categories_path rescue '#' %></li>
-          <li><%= link_to '🏷️ Brands', admin_brands_path rescue '#' %></li>
           <li><hr style="border: none; border-top: 1px solid #34495e; margin: 20px 0;"></li>
           <li><%= link_to '← Back to Store', root_path %></li>
           <li><%= link_to 'Logout', logout_path, method: :delete, style: 'color: #e74c3c;' %></li>

@@ -26,7 +26,7 @@ class ProductsController < ApplicationController
 
   def show
     @product = Product.find(params[:id])
-    @related_products = Product.active.where(category_id: @product.category_id).where.not(id: @product.id).limit(4)
+    @related_products = Product.where(status: 1, category_id: @product.category_id).where.not(id: @product.id).limit(4)
     @reviews = @product.reviews.where(status: 1).order(created_at: :desc).limit(10)
     @product.increment!(:views_count)
   end
