@@ -1,0 +1,67 @@
+<h1 class="section-title">My Orders</h1>
+
+<% if @orders.any? %>
+  <div style="display: grid; gap: 20px;">
+    <% @orders.each do |order| %>
+      <div style="background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #ecf0f1;">
+          <div>
+            <h3 style="color: #2c3e50; margin-bottom: 10px;">Order #<%= order.order_number %></h3>
+            <p style="color: #7f8c8d; margin-bottom: 5px;">Placed on <%= order.created_at.strftime('%B %d, %Y at %I:%M %p') %></p>
+            <p style="color: #7f8c8d;">Total: <strong style="color: #e74c3c;">$<%= number_with_precision(order.total_price, precision: 2) %></strong></p>
+          </div>
+          
+          <div style="text-align: right;">
+            <% case order.status.to_s %>
+            <% when 'pending' %>
+              <span style="background: #f39c12; color: #fff; padding: 8px 16px; border-radius: 4px; font-weight: 500;">⏳ Pending</span>
+            <% when 'processing' %>
+              <span style="background: #3498db; color: #fff; padding: 8px 16px; border-radius: 4px; font-weight: 500;">⚙️ Processing</span>
+            <% when 'shipped' %>
+              <span style="background: #9b59b6; color: #fff; padding: 8px 16px; border-radius: 4px; font-weight: 500;">📦 Shipped</span>
+            <% when 'delivered' %>
+              <span style="background: #27ae60; color: #fff; padding: 8px 16px; border-radius: 4px; font-weight: 500;">✓ Delivered</span>
+            <% when 'cancelled' %>
+              <span style="background: #e74c3c; color: #fff; padding: 8px 16px; border-radius: 4px; font-weight: 500;">✗ Cancelled</span>
+            <% end %>
+            
+            <div style="margin-top: 10px;">
+              <% case order.payment_status.to_s %>
+              <% when 'paid' %>
+                <span style="color: #27ae60; font-weight: 500;">💳 Paid</span>
+              <% when 'unpaid' %>
+                <span style="color: #e74c3c; font-weight: 500;">💳 Unpaid</span>
+              <% when 'failed' %>
+                <span style="color: #e74c3c; font-weight: 500;">💳 Payment Failed</span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+          <p style="color: #2c3e50; margin-bottom: 10px;"><strong>Items:</strong> <%= order.total_items %> item(s)</p>
+          <% if order.tracking_number.present? %>
+            <p style="color: #2c3e50;"><strong>Tracking Number:</strong> <%= order.tracking_number %></p>
+          <% end %>
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+          <%= link_to 'View Details', order_path(order), class: 'btn btn-primary' %>
+          
+          <% if order.status.to_s == 'pending' || order.status.to_s == 'processing' %>
+            <%= button_to 'Cancel Order', cancel_order_path(order), method: :patch, class: 'btn btn-outline',
+                style: 'background: #e74c3c; color: #fff; border-color: #e74c3c;',
+                data: { confirm: 'Are you sure you want to cancel this order?' } %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div style="background: #fff; padding: 80px; text-align: center; border-radius: 8px;">
+    <div style="font-size: 80px; margin-bottom: 20px;">📦</div>
+    <h2 style="color: #2c3e50; margin-bottom: 10px;">No Orders Yet</h2>
+    <p style="color: #7f8c8d; margin-bottom: 30px;">Start shopping to place your first order!</p>
+    <%= link_to 'Browse Products', products_path, class: 'btn btn-primary', style: 'font-size: 18px; padding: 15px 30px;' %>
+  </div>
+<% end %>

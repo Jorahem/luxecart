@@ -1,0 +1,110 @@
+<% content_for :page_title, "Edit Product: #{@product.name}" %>
+
+<div style="max-width: 900px;">
+  <%= link_to '← Back to Products', admin_products_path, class: 'btn btn-outline', style: 'margin-bottom: 20px;' %>
+  
+  <div style="background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <%= form_with model: [:admin, @product], local: true do |f| %>
+      <% if @product.errors.any? %>
+        <div class="alert alert-error" style="margin-bottom: 20px;">
+          <h4>Please fix the following errors:</h4>
+          <ul style="margin-left: 20px;">
+            <% @product.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      
+      <% if @product.images.attached? %>
+        <div class="form-group">
+          <label class="form-label">Current Images</label>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;">
+            <% @product.images.each do |image| %>
+              <div style="position: relative;">
+                <%= image_tag image, style: 'width: 100%; height: 150px; object-fit: cover; border-radius: 4px;' %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="form-group">
+          <%= f.label :name, class: 'form-label' %>
+          <%= f.text_field :name, class: 'form-control', required: true %>
+        </div>
+        
+        <div class="form-group">
+          <%= f.label :sku, 'SKU', class: 'form-label' %>
+          <%= f.text_field :sku, class: 'form-control', required: true %>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <%= f.label :description, class: 'form-label' %>
+        <%= f.text_area :description, rows: 5, class: 'form-control', required: true %>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+        <div class="form-group">
+          <%= f.label :price, class: 'form-label' %>
+          <%= f.number_field :price, step: 0.01, class: 'form-control', required: true %>
+        </div>
+        
+        <div class="form-group">
+          <%= f.label :compare_price, 'Compare Price (MSRP)', class: 'form-label' %>
+          <%= f.number_field :compare_price, step: 0.01, class: 'form-control' %>
+        </div>
+        
+        <div class="form-group">
+          <%= f.label :cost_price, class: 'form-label' %>
+          <%= f.number_field :cost_price, step: 0.01, class: 'form-control' %>
+        </div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="form-group">
+          <%= f.label :category_id, class: 'form-label' %>
+          <%= f.collection_select :category_id, @categories, :id, :name, { prompt: 'Select Category' }, class: 'form-control', required: true %>
+        </div>
+        
+        <div class="form-group">
+          <%= f.label :brand_id, class: 'form-label' %>
+          <%= f.collection_select :brand_id, @brands, :id, :name, { prompt: 'Select Brand' }, class: 'form-control', required: true %>
+        </div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+        <div class="form-group">
+          <%= f.label :stock_quantity, class: 'form-label' %>
+          <%= f.number_field :stock_quantity, class: 'form-control' %>
+        </div>
+        
+        <div class="form-group">
+          <%= f.label :status, class: 'form-label' %>
+          <%= f.select :status, [['Draft', 0], ['Active', 1], ['Archived', 2]], {}, class: 'form-control' %>
+        </div>
+        
+        <div class="form-group">
+          <%= f.label :featured, class: 'form-label' %>
+          <div style="padding-top: 8px;">
+            <%= f.check_box :featured, style: 'width: 20px; height: 20px; cursor: pointer;' %>
+            <label style="margin-left: 8px; cursor: pointer;">Mark as Featured</label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <%= f.label :images, 'Add More Images', class: 'form-label' %>
+        <%= f.file_field :images, multiple: true, class: 'form-control', accept: 'image/*' %>
+        <small style="color: #7f8c8d; display: block; margin-top: 5px;">Add additional images (existing images will be kept)</small>
+      </div>
+      
+      <div style="margin-top: 30px; padding-top: 30px; border-top: 2px solid #ecf0f1;">
+        <%= f.submit 'Update Product', class: 'btn btn-primary', style: 'font-size: 16px; padding: 12px 30px;' %>
+        <%= link_to 'Cancel', admin_products_path, class: 'btn btn-outline', style: 'margin-left: 10px;' %>
+      </div>
+    <% end %>
+  </div>
+</div>

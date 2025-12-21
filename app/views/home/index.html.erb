@@ -1,0 +1,101 @@
+<div class="hero">
+  <div class="container">
+    <h1>Welcome to Luxecart</h1>
+    <p>Discover premium products at unbeatable prices</p>
+    <a href="<%= products_path %>" class="btn btn-primary" style="font-size: 18px; padding: 15px 30px;">Shop Now</a>
+  </div>
+</div>
+
+<section style="margin-bottom: 60px;">
+  <h2 class="section-title">Featured Products</h2>
+  
+  <% if @featured_products.any? %>
+    <div class="products-grid">
+      <% @featured_products.each do |product| %>
+        <div class="product-card">
+          <% if product.images.attached? && product.images.first %>
+            <%= image_tag product.images.first, class: 'product-image', alt: product.name %>
+          <% else %>
+            <div class="product-image" style="display: flex; align-items: center; justify-content: center; font-size: 48px;">
+              📦
+            </div>
+          <% end %>
+          
+          <div class="product-info">
+            <h3 class="product-title"><%= product.name %></h3>
+            <div style="color: #7f8c8d; margin-bottom: 10px;"><%= product.category&.name %></div>
+            <div class="product-price">$<%= number_with_precision(product.price, precision: 2) %></div>
+            
+            <div style="display: flex; gap: 10px;">
+              <a href="<%= product_path(product) %>" class="btn btn-outline" style="flex: 1; text-align: center;">View Details</a>
+              <%= form_with url: cart_add_item_path, method: :post, style: 'flex: 1;' do %>
+                <%= hidden_field_tag :product_id, product.id %>
+                <%= hidden_field_tag :quantity, 1 %>
+                <%= submit_tag '🛒 Add to Cart', class: 'btn btn-primary', style: 'width: 100%;' %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p style="text-align: center; color: #7f8c8d; padding: 40px;">No featured products available at the moment.</p>
+  <% end %>
+</section>
+
+<section style="background: #fff; padding: 40px; border-radius: 8px; margin-bottom: 60px;">
+  <h2 class="section-title">Shop by Category</h2>
+  
+  <% if @categories.any? %>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+      <% @categories.each do |category| %>
+        <a href="<%= category_path(category) %>" style="text-decoration: none;">
+          <div class="category-hover-card" style="background: #ecf0f1; padding: 30px; border-radius: 8px; text-align: center; transition: all 0.3s; color: #2c3e50;">
+            <div style="font-size: 36px; margin-bottom: 10px;">📁</div>
+            <h3 style="font-size: 18px; font-weight: 600;"><%= category.name %></h3>
+          </div>
+        </a>
+      <% end %>
+    </div>
+  <% else %>
+    <p style="text-align: center; color: #7f8c8d; padding: 20px;">Categories will appear here soon.</p>
+  <% end %>
+</section>
+
+<section>
+  <h2 class="section-title">New Arrivals</h2>
+  
+  <% if @new_arrivals.any? %>
+    <div class="products-grid">
+      <% @new_arrivals.each do |product| %>
+        <div class="product-card">
+          <% if product.images.attached? && product.images.first %>
+            <%= image_tag product.images.first, class: 'product-image', alt: product.name %>
+          <% else %>
+            <div class="product-image" style="display: flex; align-items: center; justify-content: center; font-size: 48px;">
+              📦
+            </div>
+          <% end %>
+          
+          <div class="product-info">
+            <div style="background: #27ae60; color: #fff; display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-bottom: 10px;">NEW</div>
+            <h3 class="product-title"><%= product.name %></h3>
+            <div style="color: #7f8c8d; margin-bottom: 10px;"><%= product.category&.name %></div>
+            <div class="product-price">$<%= number_with_precision(product.price, precision: 2) %></div>
+            
+            <div style="display: flex; gap: 10px;">
+              <a href="<%= product_path(product) %>" class="btn btn-outline" style="flex: 1; text-align: center;">View Details</a>
+              <%= form_with url: cart_add_item_path, method: :post, style: 'flex: 1;' do %>
+                <%= hidden_field_tag :product_id, product.id %>
+                <%= hidden_field_tag :quantity, 1 %>
+                <%= submit_tag '🛒 Add to Cart', class: 'btn btn-primary', style: 'width: 100%;' %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p style="text-align: center; color: #7f8c8d; padding: 40px;">Check back soon for new arrivals!</p>
+  <% end %>
+</section>

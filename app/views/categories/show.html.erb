@@ -1,0 +1,73 @@
+<div style="margin-bottom: 30px;">
+  <%= link_to '← All Categories', categories_path, class: 'btn btn-outline' %>
+</div>
+
+<div style="background: #fff; padding: 40px; border-radius: 8px; margin-bottom: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+  <h1 style="color: #2c3e50; margin-bottom: 15px;"><%= @category.name %></h1>
+  <% if @category.description.present? %>
+    <p style="color: #7f8c8d; font-size: 16px;"><%= @category.description %></p>
+  <% end %>
+</div>
+
+<% if @subcategories.any? %>
+  <section style="margin-bottom: 50px;">
+    <h2 style="margin-bottom: 20px; color: #2c3e50;">Subcategories</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+      <% @subcategories.each do |subcategory| %>
+        <a href="<%= category_path(subcategory) %>" style="text-decoration: none;">
+          <div class="subcategory-card" style="background: #ecf0f1; padding: 30px; border-radius: 8px; text-align: center; transition: all 0.3s; color: #2c3e50;">
+            <div style="font-size: 36px; margin-bottom: 10px;">📁</div>
+            <h3 style="font-size: 18px; font-weight: 600;"><%= subcategory.name %></h3>
+          </div>
+        </a>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+<h2 style="margin-bottom: 20px; color: #2c3e50;">Products in <%= @category.name %></h2>
+
+<% if @products.any? %>
+  <div class="products-grid">
+    <% @products.each do |product| %>
+      <div class="product-card">
+        <% if product.images.attached? && product.images.first %>
+          <%= link_to product_path(product) do %>
+            <%= image_tag product.images.first, class: 'product-image', alt: product.name %>
+          <% end %>
+        <% else %>
+          <%= link_to product_path(product) do %>
+            <div class="product-image" style="display: flex; align-items: center; justify-content: center; font-size: 48px;">
+              📦
+            </div>
+          <% end %>
+        <% end %>
+        
+        <div class="product-info">
+          <h3 class="product-title"><%= link_to product.name, product_path(product), style: 'color: inherit; text-decoration: none;' %></h3>
+          <div style="color: #7f8c8d; margin-bottom: 10px;"><%= product.brand&.name %></div>
+          <div class="product-price">$<%= number_with_precision(product.price, precision: 2) %></div>
+          
+          <div style="display: flex; gap: 10px;">
+            <a href="<%= product_path(product) %>" class="btn btn-outline" style="flex: 1; text-align: center;">View</a>
+            <% if product.stock_quantity > 0 %>
+              <%= form_with url: cart_add_item_path, method: :post, style: 'flex: 1;' do %>
+                <%= hidden_field_tag :product_id, product.id %>
+                <%= hidden_field_tag :quantity, 1 %>
+                <%= submit_tag '🛒 Add', class: 'btn btn-primary', style: 'width: 100%;' %>
+              <% end %>
+            <% else %>
+              <button class="btn btn-primary" disabled style="flex: 1; opacity: 0.5;">Sold Out</button>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div style="background: #fff; padding: 60px; text-align: center; border-radius: 8px;">
+    <div style="font-size: 48px; margin-bottom: 20px;">📦</div>
+    <h2 style="color: #2c3e50; margin-bottom: 10px;">No Products Available</h2>
+    <p style="color: #7f8c8d;">Check back soon for products in this category!</p>
+  </div>
+<% end %>

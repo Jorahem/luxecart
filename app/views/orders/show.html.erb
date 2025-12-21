@@ -1,0 +1,124 @@
+<div style="max-width: 900px; margin: 0 auto;">
+  <div style="margin-bottom: 20px;">
+    <%= link_to '← Back to Orders', orders_path, class: 'btn btn-outline' %>
+  </div>
+  
+  <div style="background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 30px; padding-bottom: 30px; border-bottom: 2px solid #ecf0f1;">
+      <div>
+        <h1 style="color: #2c3e50; margin-bottom: 10px;">Order #<%= @order.order_number %></h1>
+        <p style="color: #7f8c8d; margin-bottom: 5px;">Placed on <%= @order.created_at.strftime('%B %d, %Y at %I:%M %p') %></p>
+        <% if @order.delivered_at %>
+          <p style="color: #27ae60; font-weight: 500;">Delivered on <%= @order.delivered_at.strftime('%B %d, %Y') %></p>
+        <% elsif @order.shipped_at %>
+          <p style="color: #3498db; font-weight: 500;">Shipped on <%= @order.shipped_at.strftime('%B %d, %Y') %></p>
+        <% end %>
+      </div>
+      
+      <div style="text-align: right;">
+        <% case @order.status.to_s %>
+        <% when 'pending' %>
+          <span style="background: #f39c12; color: #fff; padding: 10px 20px; border-radius: 4px; font-weight: 500; font-size: 18px;">⏳ Pending</span>
+        <% when 'processing' %>
+          <span style="background: #3498db; color: #fff; padding: 10px 20px; border-radius: 4px; font-weight: 500; font-size: 18px;">⚙️ Processing</span>
+        <% when 'shipped' %>
+          <span style="background: #9b59b6; color: #fff; padding: 10px 20px; border-radius: 4px; font-weight: 500; font-size: 18px;">📦 Shipped</span>
+        <% when 'delivered' %>
+          <span style="background: #27ae60; color: #fff; padding: 10px 20px; border-radius: 4px; font-weight: 500; font-size: 18px;">✓ Delivered</span>
+        <% when 'cancelled' %>
+          <span style="background: #e74c3c; color: #fff; padding: 10px 20px; border-radius: 4px; font-weight: 500; font-size: 18px;">✗ Cancelled</span>
+        <% end %>
+      </div>
+    </div>
+    
+    <% if @order.tracking_number.present? %>
+      <div style="background: #ecf0f1; padding: 20px; border-radius: 4px; margin-bottom: 30px;">
+        <strong>Tracking Number:</strong> <%= @order.tracking_number %>
+      </div>
+    <% end %>
+    
+    <h2 style="margin-bottom: 20px; color: #2c3e50;">Order Items</h2>
+    
+    <table style="width: 100%; margin-bottom: 30px;">
+      <thead style="background: #2c3e50; color: #fff;">
+        <tr>
+          <th style="padding: 15px; text-align: left;">Product</th>
+          <th style="padding: 15px; text-align: center;">Quantity</th>
+          <th style="padding: 15px; text-align: right;">Unit Price</th>
+          <th style="padding: 15px; text-align: right;">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @order_items.each do |item| %>
+          <tr style="border-bottom: 1px solid #ecf0f1;">
+            <td style="padding: 15px;">
+              <div style="display: flex; gap: 15px; align-items: center;">
+                <% if item.product.images.attached? && item.product.images.first %>
+                  <%= image_tag item.product.images.first, style: 'width: 60px; height: 60px; object-fit: cover; border-radius: 4px;', alt: item.product.name %>
+                <% else %>
+                  <div style="width: 60px; height: 60px; background: #ecf0f1; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                    📦
+                  </div>
+                <% end %>
+                <div>
+                  <strong><%= item.product.name %></strong>
+                  <div style="color: #7f8c8d; font-size: 14px;">SKU: <%= item.product_sku %></div>
+                </div>
+              </div>
+            </td>
+            <td style="padding: 15px; text-align: center;"><%= item.quantity %></td>
+            <td style="padding: 15px; text-align: right;">$<%= number_with_precision(item.unit_price, precision: 2) %></td>
+            <td style="padding: 15px; text-align: right;"><strong>$<%= number_with_precision(item.total_price, precision: 2) %></strong></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    
+    <div style="max-width: 400px; margin-left: auto;">
+      <div style="border-top: 2px solid #ecf0f1; padding-top: 20px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <span>Subtotal:</span>
+          <strong>$<%= number_with_precision(@order.subtotal, precision: 2) %></strong>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <span>Tax:</span>
+          <strong>$<%= number_with_precision(@order.tax_amount, precision: 2) %></strong>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <span>Shipping:</span>
+          <strong>$<%= number_with_precision(@order.shipping_cost, precision: 2) %></strong>
+        </div>
+        
+        <% if @order.discount_amount && @order.discount_amount > 0 %>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: #27ae60;">
+            <span>Discount (<%= @order.coupon_code %>):</span>
+            <strong>-$<%= number_with_precision(@order.discount_amount, precision: 2) %></strong>
+          </div>
+        <% end %>
+        
+        <div style="display: flex; justify-content: space-between; margin-top: 20px; padding-top: 20px; border-top: 2px solid #2c3e50; font-size: 20px;">
+          <strong>Total:</strong>
+          <strong style="color: #e74c3c;">$<%= number_with_precision(@order.total_price, precision: 2) %></strong>
+        </div>
+      </div>
+    </div>
+    
+    <% if @order.notes.present? %>
+      <div style="margin-top: 30px; padding: 20px; background: #ecf0f1; border-radius: 4px;">
+        <strong style="display: block; margin-bottom: 10px;">Order Notes:</strong>
+        <%= simple_format(@order.notes) %>
+      </div>
+    <% end %>
+    
+    <% if @order.status.to_s == 'pending' || @order.status.to_s == 'processing' %>
+      <div style="margin-top: 30px; padding-top: 30px; border-top: 2px solid #ecf0f1;">
+        <%= button_to 'Cancel This Order', cancel_order_path(@order), method: :patch, 
+            class: 'btn btn-outline',
+            style: 'background: #e74c3c; color: #fff; border-color: #e74c3c; font-size: 16px; padding: 12px 24px;',
+            data: { confirm: 'Are you sure you want to cancel this order?' } %>
+      </div>
+    <% end %>
+  </div>
+</div>

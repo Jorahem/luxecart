@@ -1,17 +1,13 @@
 class Product < ApplicationRecord
-  extend FriendlyId
-
-  # FriendlyId
-  friendly_id :name, use: [:slugged, :finders]
+  # Active Storage for product images
+  has_many_attached :images
 
   # Associations
   belongs_to :category
   belongs_to :brand
-  has_many :product_images, dependent: :destroy
   has_many :reviews, dependent: :destroy
   has_many :cart_items, dependent: :destroy
   has_many :order_items, dependent: :destroy
-  has_many :product_variants, dependent: :destroy
 
   # Serialize tags (SQLite-safe)
   serialize :tags, Array
@@ -42,7 +38,11 @@ class Product < ApplicationRecord
     reviews.average(:rating).to_f.round(1)
   end
 
-  def should_generate_new_friendly_id?
-    name_changed? || super
+  def primary_image
+    images.first
+  end
+
+  def slug
+    name.parameterize
   end
 end

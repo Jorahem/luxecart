@@ -1,0 +1,98 @@
+<h1 class="section-title">Our Products</h1>
+
+<div style="background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+  <%= form_with url: products_path, method: :get, local: true do %>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label">Search</label>
+        <%= text_field_tag :query, params[:query], class: 'form-control', placeholder: 'Search products...' %>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label">Category</label>
+        <%= select_tag :category_id, options_from_collection_for_select(@categories, 'id', 'name', params[:category_id]), 
+            include_blank: 'All Categories', class: 'form-control' %>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label">Brand</label>
+        <%= select_tag :brand_id, options_from_collection_for_select(@brands, 'id', 'name', params[:brand_id]), 
+            include_blank: 'All Brands', class: 'form-control' %>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label">Sort By</label>
+        <%= select_tag :sort, options_for_select([
+          ['Newest First', 'newest'],
+          ['Price: Low to High', 'price_low'],
+          ['Price: High to Low', 'price_high'],
+          ['Most Popular', 'popular']
+        ], params[:sort]), class: 'form-control' %>
+      </div>
+      
+      <div>
+        <%= submit_tag 'Apply Filters', class: 'btn btn-primary', style: 'width: 100%;' %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<% if @products.any? %>
+  <div class="products-grid">
+    <% @products.each do |product| %>
+      <div class="product-card">
+        <% if product.images.attached? && product.images.first %>
+          <%= link_to product_path(product) do %>
+            <%= image_tag product.images.first, class: 'product-image', alt: product.name %>
+          <% end %>
+        <% else %>
+          <%= link_to product_path(product) do %>
+            <div class="product-image" style="display: flex; align-items: center; justify-content: center; font-size: 48px;">
+              📦
+            </div>
+          <% end %>
+        <% end %>
+        
+        <div class="product-info">
+          <% if product.featured %>
+            <div style="background: #f39c12; color: #fff; display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-bottom: 10px;">⭐ FEATURED</div>
+          <% end %>
+          
+          <h3 class="product-title"><%= link_to product.name, product_path(product), style: 'color: inherit; text-decoration: none;' %></h3>
+          
+          <div style="color: #7f8c8d; margin-bottom: 5px; font-size: 14px;">
+            <%= product.category&.name %> • <%= product.brand&.name %>
+          </div>
+          
+          <% if product.stock_quantity > 0 %>
+            <div style="color: #27ae60; font-size: 14px; margin-bottom: 10px;">✓ In Stock (<%= product.stock_quantity %> available)</div>
+          <% else %>
+            <div style="color: #e74c3c; font-size: 14px; margin-bottom: 10px;">✗ Out of Stock</div>
+          <% end %>
+          
+          <div class="product-price">$<%= number_with_precision(product.price, precision: 2) %></div>
+          
+          <div style="display: flex; gap: 10px;">
+            <a href="<%= product_path(product) %>" class="btn btn-outline" style="flex: 1; text-align: center;">View</a>
+            <% if product.stock_quantity > 0 %>
+              <%= form_with url: cart_add_item_path, method: :post, style: 'flex: 1;' do %>
+                <%= hidden_field_tag :product_id, product.id %>
+                <%= hidden_field_tag :quantity, 1 %>
+                <%= submit_tag '🛒 Add', class: 'btn btn-primary', style: 'width: 100%;' %>
+              <% end %>
+            <% else %>
+              <button class="btn btn-primary" disabled style="flex: 1; opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div style="background: #fff; padding: 60px; text-align: center; border-radius: 8px;">
+    <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
+    <h2 style="color: #2c3e50; margin-bottom: 10px;">No Products Found</h2>
+    <p style="color: #7f8c8d;">Try adjusting your filters or search criteria.</p>
+    <a href="<%= products_path %>" class="btn btn-primary" style="margin-top: 20px;">View All Products</a>
+  </div>
+<% end %>

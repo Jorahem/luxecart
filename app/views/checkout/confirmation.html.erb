@@ -1,0 +1,58 @@
+<div style="max-width: 800px; margin: 0 auto; text-align: center;">
+  <div style="background: #fff; padding: 60px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <div style="width: 100px; height: 100px; background: #27ae60; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px; font-size: 48px;">
+      ✓
+    </div>
+    
+    <h1 style="color: #2c3e50; margin-bottom: 15px;">Order Confirmed!</h1>
+    <p style="font-size: 18px; color: #7f8c8d; margin-bottom: 30px;">
+      Thank you for your order. Your order number is <strong style="color: #e74c3c;"><%= @order.order_number %></strong>
+    </p>
+    
+    <div style="background: #ecf0f1; padding: 30px; border-radius: 8px; margin-bottom: 30px; text-align: left;">
+      <h2 style="margin-bottom: 20px; color: #2c3e50;">Order Summary</h2>
+      
+      <div style="margin-bottom: 20px;">
+        <% @order_items.each do |item| %>
+          <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #bdc3c7;">
+            <div>
+              <strong><%= item.product.name %></strong>
+              <span style="color: #7f8c8d; font-size: 14px; display: block;">Quantity: <%= item.quantity %></span>
+            </div>
+            <strong style="color: #e74c3c;">$<%= number_with_precision(item.total_price, precision: 2) %></strong>
+          </div>
+        <% end %>
+      </div>
+      
+      <div style="border-top: 2px solid #2c3e50; padding-top: 15px; margin-top: 15px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <span>Subtotal:</span>
+          <strong>$<%= number_with_precision(@order.subtotal, precision: 2) %></strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <span>Tax:</span>
+          <strong>$<%= number_with_precision(@order.tax_amount, precision: 2) %></strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+          <span>Shipping:</span>
+          <strong>$<%= number_with_precision(@order.shipping_cost, precision: 2) %></strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 20px; padding-top: 15px; border-top: 2px solid #2c3e50;">
+          <strong>Total:</strong>
+          <strong style="color: #e74c3c;">$<%= number_with_precision(@order.total_price, precision: 2) %></strong>
+        </div>
+      </div>
+    </div>
+    
+    <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 20px; border-radius: 4px; margin-bottom: 30px;">
+      <p style="color: #856404; margin: 0;">
+        📧 A confirmation email has been sent to <strong><%= current_user.email %></strong>
+      </p>
+    </div>
+    
+    <div style="display: flex; gap: 15px; justify-content: center;">
+      <%= link_to '← Continue Shopping', root_path, class: 'btn btn-outline' %>
+      <%= link_to 'View Order Details', order_path(@order), class: 'btn btn-primary' %>
+    </div>
+  </div>
+</div>

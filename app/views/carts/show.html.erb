@@ -1,0 +1,115 @@
+<h1 class="section-title">Shopping Cart</h1>
+
+<% if @cart_items.any? %>
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+    <div>
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @cart_items.each do |item| %>
+            <tr style="border-bottom: 1px solid #ecf0f1;">
+              <td>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                  <% if item.product.images.attached? && item.product.images.first %>
+                    <%= image_tag item.product.images.first, style: 'width: 80px; height: 80px; object-fit: cover; border-radius: 4px;', alt: item.product.name %>
+                  <% else %>
+                    <div style="width: 80px; height: 80px; background: #ecf0f1; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                      📦
+                    </div>
+                  <% end %>
+                  <div>
+                    <strong style="display: block; margin-bottom: 5px;"><%= link_to item.product.name, product_path(item.product), style: 'color: #2c3e50; text-decoration: none;' %></strong>
+                    <span style="color: #7f8c8d; font-size: 14px;"><%= item.product.category&.name %></span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <strong style="color: #e74c3c;">$<%= number_with_precision(item.product.price, precision: 2) %></strong>
+              </td>
+              <td>
+                <%= form_with url: cart_update_item_path, method: :patch, local: true, style: 'display: inline-block;' do %>
+                  <%= hidden_field_tag :product_id, item.product.id %>
+                  <%= number_field_tag :quantity, item.quantity, min: 1, max: item.product.stock_quantity, 
+                      style: 'width: 70px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; text-align: center;',
+                      onchange: 'this.form.submit()' %>
+                <% end %>
+              </td>
+              <td>
+                <strong style="color: #2c3e50; font-size: 18px;">$<%= number_with_precision(item.product.price * item.quantity, precision: 2) %></strong>
+              </td>
+              <td>
+                <%= button_to '🗑️ Remove', cart_remove_item_path(product_id: item.product.id), 
+                    method: :delete, 
+                    class: 'btn btn-outline', 
+                    style: 'background: #e74c3c; color: #fff; border-color: #e74c3c;',
+                    data: { confirm: 'Are you sure you want to remove this item?' } %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      
+      <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+        <%= link_to '← Continue Shopping', products_path, class: 'btn btn-outline' %>
+        <%= button_to 'Clear Cart', cart_clear_path, method: :delete, class: 'btn btn-outline', 
+            style: 'background: #e74c3c; color: #fff; border-color: #e74c3c;',
+            data: { confirm: 'Are you sure you want to clear your cart?' } %>
+      </div>
+    </div>
+    
+    <div>
+      <div class="cart-total">
+        <h2 style="margin-bottom: 20px; color: #2c3e50;">Order Summary</h2>
+        
+        <div style="border-bottom: 1px solid #ecf0f1; padding-bottom: 15px; margin-bottom: 15px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <span>Subtotal (<%= @cart.total_items %> items):</span>
+            <strong>$<%= number_with_precision(@cart.subtotal, precision: 2) %></strong>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <span>Estimated Tax (10%):</span>
+            <strong>$<%= number_with_precision(@cart.subtotal * 0.10, precision: 2) %></strong>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <span>Shipping:</span>
+            <strong>$9.99</strong>
+          </div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; margin-bottom: 25px; font-size: 20px;">
+          <strong>Total:</strong>
+          <strong style="color: #e74c3c;">$<%= number_with_precision(@cart.subtotal + (@cart.subtotal * 0.10) + 9.99, precision: 2) %></strong>
+        </div>
+        
+        <% if user_signed_in? %>
+          <%= link_to 'Proceed to Checkout', checkout_path, class: 'btn btn-primary', style: 'width: 100%; text-align: center; font-size: 18px; padding: 15px;' %>
+        <% else %>
+          <p style="text-align: center; margin-bottom: 15px; color: #7f8c8d;">Please log in to checkout</p>
+          <%= link_to 'Login to Checkout', login_path, class: 'btn btn-primary', style: 'width: 100%; text-align: center; font-size: 18px; padding: 15px;' %>
+        <% end %>
+        
+        <div style="margin-top: 20px; padding: 15px; background: #ecf0f1; border-radius: 4px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 10px;">🔒</div>
+          <small style="color: #7f8c8d;">Secure Checkout</small>
+        </div>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <div style="background: #fff; padding: 80px; text-align: center; border-radius: 8px;">
+    <div style="font-size: 80px; margin-bottom: 20px;">🛒</div>
+    <h2 style="color: #2c3e50; margin-bottom: 10px;">Your Cart is Empty</h2>
+    <p style="color: #7f8c8d; margin-bottom: 30px;">Start shopping to add items to your cart!</p>
+    <%= link_to 'Browse Products', products_path, class: 'btn btn-primary', style: 'font-size: 18px; padding: 15px 30px;' %>
+  </div>
+<% end %>

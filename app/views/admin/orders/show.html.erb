@@ -1,0 +1,136 @@
+<% content_for :page_title, "Order ##{@order.order_number}" %>
+
+<div style="max-width: 1000px;">
+  <%= link_to '← Back to Orders', admin_orders_path, class: 'btn btn-outline', style: 'margin-bottom: 20px;' %>
+  
+  <div style="background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 30px;">
+      <div>
+        <h2 style="color: #2c3e50; margin-bottom: 10px;">Order #<%= @order.order_number %></h2>
+        <p style="color: #7f8c8d;">Placed on <%= @order.created_at.strftime('%B %d, %Y at %I:%M %p') %></p>
+      </div>
+      
+      <div>
+        <% case @order.status.to_s %>
+        <% when 'pending' %>
+          <span class="badge badge-warning" style="font-size: 16px; padding: 10px 20px;">Pending</span>
+        <% when 'processing' %>
+          <span class="badge badge-info" style="font-size: 16px; padding: 10px 20px;">Processing</span>
+        <% when 'shipped' %>
+          <span class="badge badge-info" style="font-size: 16px; padding: 10px 20px;">Shipped</span>
+        <% when 'delivered' %>
+          <span class="badge badge-success" style="font-size: 16px; padding: 10px 20px;">Delivered</span>
+        <% when 'cancelled' %>
+          <span class="badge badge-danger" style="font-size: 16px; padding: 10px 20px;">Cancelled</span>
+        <% end %>
+      </div>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; padding-bottom: 30px; border-bottom: 2px solid #ecf0f1;">
+      <div>
+        <h3 style="color: #2c3e50; margin-bottom: 15px;">Customer Information</h3>
+        <p><strong>Name:</strong> <%= @order.user.full_name %></p>
+        <p><strong>Email:</strong> <%= @order.user.email %></p>
+        <% if @order.user.phone.present? %>
+          <p><strong>Phone:</strong> <%= @order.user.phone %></p>
+        <% end %>
+      </div>
+      
+      <div>
+        <h3 style="color: #2c3e50; margin-bottom: 15px;">Payment Information</h3>
+        <p><strong>Payment Method:</strong> <%= @order.payment_method&.titleize || 'N/A' %></p>
+        <p>
+          <strong>Payment Status:</strong>
+          <% case @order.payment_status.to_s %>
+          <% when 'paid' %>
+            <span class="badge badge-success">Paid</span>
+          <% when 'unpaid' %>
+            <span class="badge badge-warning">Unpaid</span>
+          <% when 'failed' %>
+            <span class="badge badge-danger">Failed</span>
+          <% end %>
+        </p>
+      </div>
+    </div>
+    
+    <h3 style="color: #2c3e50; margin-bottom: 20px;">Order Items</h3>
+    <table class="admin-table" style="margin-bottom: 30px;">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>SKU</th>
+          <th>Quantity</th>
+          <th>Unit Price</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @order_items.each do |item| %>
+          <tr>
+            <td><strong><%= item.product_name %></strong></td>
+            <td><%= item.product_sku %></td>
+            <td><%= item.quantity %></td>
+            <td>$<%= number_with_precision(item.unit_price, precision: 2) %></td>
+            <td><strong>$<%= number_with_precision(item.total_price, precision: 2) %></strong></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    
+    <div style="max-width: 400px; margin-left: auto;">
+      <div style="padding: 20px; background: #ecf0f1; border-radius: 4px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <span>Subtotal:</span>
+          <strong>$<%= number_with_precision(@order.subtotal, precision: 2) %></strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <span>Tax:</span>
+          <strong>$<%= number_with_precision(@order.tax_amount, precision: 2) %></strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+          <span>Shipping:</span>
+          <strong>$<%= number_with_precision(@order.shipping_cost, precision: 2) %></strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding-top: 20px; border-top: 2px solid #2c3e50; font-size: 20px;">
+          <strong>Total:</strong>
+          <strong style="color: #e74c3c;">$<%= number_with_precision(@order.total_price, precision: 2) %></strong>
+        </div>
+      </div>
+    </div>
+    
+    <% if @order.notes.present? %>
+      <div style="margin-top: 30px; padding: 20px; background: #fff3cd; border-radius: 4px;">
+        <strong style="display: block; margin-bottom: 10px;">Order Notes:</strong>
+        <%= simple_format(@order.notes) %>
+      </div>
+    <% end %>
+  </div>
+  
+  <div style="background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <h3 style="color: #2c3e50; margin-bottom: 20px;">Order Actions</h3>
+    
+    <% unless @order.status.to_s == 'cancelled' || @order.status.to_s == 'delivered' %>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <% if @order.status.to_s == 'pending' %>
+          <%= button_to 'Mark as Processing', update_status_admin_order_path(@order, status: 1), method: :patch, class: 'btn btn-info' %>
+        <% end %>
+        
+        <% if @order.status.to_s == 'processing' %>
+          <%= form_with url: mark_as_shipped_admin_order_path(@order), method: :patch, local: true, style: 'display: inline-flex; gap: 10px; align-items: end;' do %>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Tracking Number</label>
+              <%= text_field_tag :tracking_number, nil, class: 'form-control', placeholder: 'Enter tracking number' %>
+            </div>
+            <%= submit_tag 'Mark as Shipped', class: 'btn btn-primary' %>
+          <% end %>
+        <% end %>
+        
+        <% if @order.status.to_s == 'shipped' %>
+          <%= button_to 'Mark as Delivered', mark_as_delivered_admin_order_path(@order), method: :patch, class: 'btn btn-success' %>
+        <% end %>
+      </div>
+    <% else %>
+      <p style="color: #7f8c8d;">This order is <%= @order.status %>. No further actions available.</p>
+    <% end %>
+  </div>
+</div>

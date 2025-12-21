@@ -1,9 +1,14 @@
 class ProductsController < ApplicationController
   def index
-    @products = Product.active.includes(:category, :brand)
+    @products = Product.where(status: 1).includes(:category, :brand)
     @products = @products.where(category_id: params[:category_id]) if params[:category_id].present?
     @products = @products.where(brand_id: params[:brand_id]) if params[:brand_id].present?
-    @products = @products.search_by_full_text(params[:query]) if params[:query].present?
+    
+    # Safe search implementation
+    if params[:query].present?
+      search_term = "%#{ActiveRecord::Base.sanitize_sql_like(params[:query])}%"
+      @products = @products.where("name LIKE ? OR description LIKE ?", search_term, search_term)
+    end
     
     if params[:min_price].present? || params[:max_price].present?
       min = params[:min_price].to_f || 0
@@ -19,15 +24,17 @@ class ProductsController < ApplicationController
                 else @products.order(created_at: :desc)
                 end
     
-    @products = @products.page(params[:page]).per(12)
-    @categories = Category.active
-    @brands = Brand.active
+    # Safe pagination with validation
+    page = [params[:page].to_i, 1].max
+    @products = @products.limit(12).offset((page - 1) * 12) if params[:page].present?
+    @categories = Category.where(active: true)
+    @brands = Brand.where(active: true)
   end
 
   def show
-    @product = Product.friendly.find(params[:id])
-    @related_products = Product.active.where(category_id: @product.category_id).where.not(id: @product.id).limit(4)
-    @reviews = @product.reviews.approved.recent.page(params[:page]).per(10)
+    @product = Product.find(params[:id])
+    @related_products = Product.where(status: 1, category_id: @product.category_id).where.not(id: @product.id).limit(4)
+    @reviews = @product.reviews.where(status: 1).order(created_at: :desc).limit(10)
     @product.increment!(:views_count)
   end
 end

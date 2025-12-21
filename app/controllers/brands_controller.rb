@@ -1,10 +1,10 @@
 class BrandsController < ApplicationController
   def index
-    @brands = Brand.active.order(:name)
+    @brands = Brand.where(active: true).order(:name)
   end
 
   def show
-    @brand = Brand.friendly.find(params[:id])
-    @products = @brand.products.active.page(params[:page]).per(12)
+    @brand = Brand.find(params[:id])
+    @products = Product.where(status: 1, brand_id: @brand.id).limit(12)
   end
 end
