@@ -33,10 +33,10 @@ gem "devise", "~> 4.9"
 gem "stripe", "~> 10.0"
 
 # Pagination [https://github.com/kaminari/kaminari]
-gem "kaminari"
+gem "kaminari", "~> 1.2"
 
 # Search functionality [https://github.com/activerecord-hackery/ransack]
-gem "ransack"
+gem "ransack", "~> 4.0"
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
