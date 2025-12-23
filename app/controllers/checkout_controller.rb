@@ -10,11 +10,13 @@ class CheckoutController < ApplicationController
   end
 
   def create
+    @order = nil
+    
     ActiveRecord::Base.transaction do
       # Validate stock before creating order
       @cart.cart_items.each do |cart_item|
         if cart_item.product.stock_quantity < cart_item.quantity
-          raise "Insufficient stock for #{cart_item.product.name}"
+          raise ActiveRecord::Rollback, "Insufficient stock for #{cart_item.product.name}"
         end
       end
       
@@ -36,26 +38,32 @@ class CheckoutController < ApplicationController
         end
       end
 
-      if @order.save
-        # Deduct stock
-        @cart.cart_items.each do |cart_item|
-          cart_item.product.decrement!(:stock_quantity, cart_item.quantity)
-        end
-        
-        if process_payment(@order)
-          @order.update!(payment_status: :paid, status: :processing)
-          @cart.clear
-          redirect_to order_path(@order), notice: 'Order placed successfully!'
-        else
-          raise "Payment processing failed"
-        end
-      else
+      unless @order.save
         @addresses = current_user.addresses
         render :new
+        raise ActiveRecord::Rollback
       end
+      
+      # Deduct stock
+      @cart.cart_items.each do |cart_item|
+        cart_item.product.decrement!(:stock_quantity, cart_item.quantity)
+      end
+      
+      unless process_payment(@order)
+        raise ActiveRecord::Rollback, "Payment processing failed"
+      end
+      
+      @order.update!(payment_status: :paid, status: :processing)
+      @cart.clear
+    end
+    
+    if @order&.persisted? && @order.payment_status == 'paid'
+      redirect_to order_path(@order), notice: 'Order placed successfully!'
+    else
+      error_message = @order&.errors&.full_messages&.join(', ') || 'Order could not be processed'
+      redirect_to new_checkout_path, alert: "Order failed: #{error_message}"
     end
   rescue => e
-    @order&.destroy
     redirect_to new_checkout_path, alert: "Order failed: #{e.message}"
   end
 
