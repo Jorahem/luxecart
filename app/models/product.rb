@@ -29,6 +29,9 @@ class Product < ApplicationRecord
   scope :by_category, ->(category_id) { where(category_id: category_id) }
   scope :by_brand, ->(brand_id) { where(brand_id: brand_id) }
   scope :price_range, ->(min, max) { where(price: min..max) }
+  scope :with_associations, -> { includes(:category, :brand) }
+  scope :low_stock, -> { where('stock_quantity < ?', 10) }
+  scope :out_of_stock, -> { where(stock_quantity: 0) }
 
   # Status enum (recommended)
   enum status: { draft: 0, active: 1, archived: 2 }

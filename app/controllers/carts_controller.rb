@@ -9,12 +9,16 @@ class CartsController < ApplicationController
     product = Product.find(params[:product_id])
     quantity = params[:quantity].to_i > 0 ? params[:quantity].to_i : 1
     
-    if product.stock_quantity >= quantity
-      @cart.add_product(product, quantity)
-      redirect_to cart_path, notice: 'Product added to cart successfully.'
-    else
-      redirect_to product_path(product), alert: 'Not enough stock available.'
+    # Check stock availability
+    if product.stock_quantity < quantity
+      redirect_to product_path(product), alert: "Only #{product.stock_quantity} items available in stock."
+      return
     end
+    
+    @cart.add_product(product, quantity)
+    redirect_to cart_path, notice: 'Product added to cart successfully.'
+  rescue ActiveRecord::RecordNotFound
+    redirect_to products_path, alert: 'Product not found.'
   end
 
   def update_item

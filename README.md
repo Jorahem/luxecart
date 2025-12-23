@@ -1,24 +1,67 @@
-# README
+# LuxeCart - E-commerce Platform
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A full-featured e-commerce platform built with Ruby on Rails.
 
-Things you may want to cover:
+## Setup
 
-* Ruby version
+1. Install dependencies:
+   ```bash
+   bundle install
+   ```
 
-* System dependencies
+2. Setup database:
+   ```bash
+   rails db:create db:migrate db:seed
+   ```
 
-* Configuration
+3. Configure environment variables:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your actual keys
+   ```
 
-* Database creation
+4. Start the server:
+   ```bash
+   rails server
+   ```
 
-* Database initialization
+5. Visit http://localhost:3000
 
-* How to run the test suite
+## Environment Variables
 
-* Services (job queues, cache servers, search engines, etc.)
+- `STRIPE_SECRET_KEY` - Your Stripe secret key
+- `STRIPE_PUBLISHABLE_KEY` - Your Stripe publishable key
+- `MAILER_SENDER` - Email sender address (default: noreply@luxecart.com)
+- `CORS_ORIGINS` - Comma-separated list of allowed CORS origins
+- `DATABASE_URL` - Database connection string (optional, defaults to SQLite)
+- `REDIS_URL` - Redis connection URL for production caching
 
-* Deployment instructions
+## Features
 
-* ...
+- User authentication with Devise
+- Product catalog with categories and brands
+- Shopping cart and checkout
+- Stripe payment integration
+- Product reviews and ratings
+- Admin dashboard
+- SEO-friendly URLs with FriendlyId
+- Pagination with Kaminari
+
+## Development
+
+- Ruby version: 3.2.3
+- Rails version: 7.1.6
+- Database: SQLite (development), PostgreSQL (production recommended)
+
+## Testing
+
+Run the test suite:
+```bash
+rails test
+```
+
+Run system tests:
+```bash
+rails test:system
+```
+
