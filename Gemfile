@@ -26,6 +26,18 @@ gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
+# Authentication with Devise [https://github.com/heartcombo/devise]
+gem "devise", "~> 4.9"
+
+# Stripe payment integration [https://stripe.com/docs/api]
+gem "stripe", "~> 10.0"
+
+# Pagination [https://github.com/kaminari/kaminari]
+gem "kaminari", "~> 1.2"
+
+# Search functionality [https://github.com/activerecord-hackery/ransack]
+gem "ransack", "~> 4.0"
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 
