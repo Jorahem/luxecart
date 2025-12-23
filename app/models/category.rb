@@ -14,7 +14,8 @@ class Category < ApplicationRecord
 
   # Scopes
   scope :active, -> { where(active: true) }
-  scope :root_categories, -> { where(parent_category_id: nil) }
+  scope :root_categories, -> { where(parent_id: nil) }
+  scope :root, -> { where(parent_id: nil) }  # Alias for root_categories
   scope :ordered_by_name, -> { order(:name) }
 
   # Instance methods
