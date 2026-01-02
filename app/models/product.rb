@@ -13,8 +13,8 @@ class Product < ApplicationRecord
   has_many :order_items, dependent: :destroy
   has_many :product_variants, dependent: :destroy
 
-  # Serialize tags (SQLite-safe)
-  serialize :tags, Array
+  # Serialize tags (SQLite-safe) - Updated for Rails 7.1+
+  serialize :tags, type: Array, coder: YAML
 
   # Validations
   validates :name, presence: true, length: { maximum: 255 }
@@ -30,7 +30,7 @@ class Product < ApplicationRecord
   scope :by_brand, ->(brand_id) { where(brand_id: brand_id) }
   scope :price_range, ->(min, max) { where(price: min..max) }
 
-  # Status enum (recommended)
+  # Status enum (generates scopes like .active, .draft)
   enum status: { draft: 0, active: 1, archived: 2 }
 
   # Instance methods
@@ -39,7 +39,7 @@ class Product < ApplicationRecord
   end
 
   def average_rating
-    reviews.average(:rating).to_f.round(1)
+    reviews.any? ? reviews.average(:rating).to_f.round(1) : 0.0
   end
 
   def should_generate_new_friendly_id?
