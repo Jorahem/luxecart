@@ -1,0 +1,51 @@
+<div class="bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex items-baseline justify-between border-b border-gray-200 pb-6">
+      <h1 class="text-4xl font-extrabold tracking-tight text-gray-900">All Products</h1>
+    </div>
+
+    <section class="pt-6 pb-24">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-x-8 gap-y-10">
+        <!-- Sidebar -->
+        <aside class="hidden lg:block">
+          <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 border-b pb-2">Categories</h3>
+          <ul class="space-y-3">
+            <% Category.active.root.each do |category| %>
+              <li>
+                <%= link_to category.name, category_path(category), class: "text-sm text-gray-600 hover:text-indigo-600 transition" %>
+              </li>
+            <% end %>
+          </ul>
+        </aside>
+
+        <!-- Product grid -->
+        <div class="lg:col-span-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+            <% @products.each do |product| %>
+              <div class="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl transition duration-300">
+                <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden bg-gray-200 h-64">
+                   <% if product.product_images.any? %>
+                    <%= image_tag product.product_images.first.image, class: "h-full w-full object-cover object-center group-hover:scale-105 transition duration-500" %>
+                  <% end %>
+                </div>
+                <div class="p-6">
+                  <h3 class="text-sm font-bold text-gray-900">
+                    <%= link_to product_path(product) do %>
+                      <span aria-hidden="true" class="absolute inset-0"></span>
+                      <%= product.name %>
+                    <% end %>
+                  </h3>
+                  <p class="mt-1 text-xs text-indigo-600 font-semibold"><%= product.category&.name %></p>
+                  <div class="mt-4 flex items-center justify-between">
+                    <p class="text-lg font-black text-gray-900"><%= number_to_currency(product.price) %></p>
+                    <span class="text-indigo-600 font-bold text-xs group-hover:translate-x-1 transition transform">VIEW <i class="fa-solid fa-arrow-right"></i></span>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
