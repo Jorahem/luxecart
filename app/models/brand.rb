@@ -8,14 +8,14 @@ class Brand < ApplicationRecord
   # Validations
   validates :name, presence: true, uniqueness: true, length: { maximum: 100 }
   validates :description, length: { maximum: 1000 }, allow_blank: true
-  validates :website_url, format: { with: URI::DEFAULT_PARSER.make_regexp(['http', 'https']), message: 'must be a valid URL' }, allow_blank: true
+  # Fixed column name from website_url to website to match schema
+  validates :website, format: { with: URI::DEFAULT_PARSER.make_regexp(['http', 'https']), message: 'must be a valid URL' }, allow_blank: true
 
   # Scopes
   scope :active, -> { where(active: true) }
   scope :featured, -> { where(featured: true) }
   scope :ordered_by_name, -> { order(:name) }
 
-  # Instance methods
   def products_count
     products.count
   end

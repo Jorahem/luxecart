@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   
   # Root path
   root 'home#index'
+    
   
   # Customer-facing routes
   resources :products, only: [:index, :show] do

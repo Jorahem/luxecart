@@ -26,6 +26,25 @@ gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
+# Add these to your Gemfile after the existing gems: 
+
+# Friendly URLs for products/categories
+gem "friendly_id", "~> 5.5"
+
+# CORS support for API
+gem "rack-cors"
+
+# Optional but recommended
+gem "dotenv-rails", groups: [:development, :test]  # For environment variables
+
+gem 'devise'
+
+
+
+
+
+
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 
