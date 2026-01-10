@@ -1,0 +1,65 @@
+<div class="bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
+      <!-- Image gallery -->
+      <div class="flex flex-col-reverse">
+        <div class="aspect-h-1 aspect-w-1 w-full rounded-3xl bg-gray-100 overflow-hidden shadow-sm">
+          <% if @product.product_images.any? %>
+            <%= image_tag @product.product_images.first.image, class: "h-full w-full object-cover object-center" %>
+          <% else %>
+            <div class="flex items-center justify-center h-full text-gray-300">
+               <i class="fa-regular fa-image text-9xl"></i>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Product info -->
+      <div class="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
+        <div class="flex justify-between">
+           <p class="text-indigo-600 font-bold uppercase tracking-widest text-sm mb-2"><%= @product.category&.name %></p>
+           <% if @product.featured? %>
+             <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full h-fit">FEATURED</span>
+           <% end %>
+        </div>
+        <h1 class="text-4xl font-black tracking-tight text-gray-900 mb-4"><%= @product.name %></h1>
+
+        <div class="mt-3">
+          <h2 class="sr-only">Product information</h2>
+          <p class="text-3xl font-black text-gray-900"><%= number_to_currency(@product.price) %></p>
+        </div>
+
+        <div class="mt-6">
+          <h3 class="sr-only">Description</h3>
+          <div class="text-base text-gray-700 space-y-4">
+            <%= simple_format @product.description %>
+          </div>
+        </div>
+
+        <div class="mt-10 flex flex-col sm:flex-row gap-4 border-t border-gray-100 pt-10">
+          <%= button_to add_item_cart_path(product_id: @product.id), class: "flex-1 bg-indigo-600 border border-transparent rounded-full py-4 px-8 flex items-center justify-center text-lg font-bold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition shadow-lg shadow-indigo-200" do %>
+            <i class="fa-solid fa-cart-plus mr-2"></i> Add to Cart
+          <% end %>
+          
+          <%= button_to add_item_wishlist_path(product_id: @product.id), class: "flex-1 bg-white border-2 border-gray-200 rounded-full py-4 px-8 flex items-center justify-center text-lg font-bold text-gray-900 hover:bg-gray-50 transition" do %>
+            <i class="fa-regular fa-heart mr-2 text-red-500"></i> Save to Wishlist
+          <% end %>
+        </div>
+
+        <section class="mt-12 border-t border-gray-100 pt-12">
+          <h3 class="text-sm font-bold text-gray-900 uppercase tracking-widest mb-6">Product Details</h3>
+          <div class="grid grid-cols-2 gap-y-4 text-sm">
+            <div class="text-gray-500">Availability</div>
+            <div class="<%= @product.stock_quantity > 0 ? 'text-green-600' : 'text-red-600' %> font-bold">
+              <%= @product.stock_quantity > 0 ? "In Stock (#{@product.stock_quantity})" : 'Out of Stock' %>
+            </div>
+            <div class="text-gray-500">SKU</div>
+            <div class="text-gray-900 font-mono"><%= @product.sku %></div>
+            <div class="text-gray-500">Brand</div>
+            <div class="text-gray-900 font-bold"><%= @product.brand&.name || 'LuxeCart' %></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
