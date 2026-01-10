@@ -5,7 +5,6 @@ Rails.application.routes.draw do
   # Root path
   root 'home#index'
     
-  
   # Customer-facing routes
   resources :products, only: [:index, :show] do
     resources :reviews, only: [:create, :destroy]
@@ -56,6 +55,14 @@ Rails.application.routes.draw do
   
   # Search
   get :search, to: 'search#index'
+
+  # Static / simple pages
+  # About, contact, privacy and terms (named routes used by footer and layouts)
+  get '/about',   to: 'pages#about',   as: :about
+  get '/contact', to: 'pages#contact', as: :contact
+  post '/contact_submit', to: 'pages#contact_submit', as: :contact_submit
+  get '/privacy', to: 'pages#privacy', as: :privacy
+  get '/terms',   to: 'pages#terms',   as: :terms
   
   # Admin namespace
   namespace :admin do

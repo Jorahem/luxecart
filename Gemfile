@@ -39,9 +39,11 @@ gem "dotenv-rails", groups: [:development, :test]  # For environment variables
 
 gem 'devise'
 
+# Add this line to your Gemfile (near other asset gems)
+gem 'sassc-rails'
 
 
-
+gem 'kaminari'
 
 
 

@@ -1,0 +1,47 @@
+<footer class="bg-white border-t">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="py-8 md:flex md:items-center md:justify-between">
+      <!-- Branding & copyright -->
+      <div class="flex items-center justify-center md:justify-start space-x-3">
+        <div class="text-sm font-semibold text-indigo-600">LUXE<span class="text-gray-900">CART</span></div>
+        <div class="text-sm text-gray-500">&copy; <%= Time.current.year %> LuxeCart</div>
+      </div>
+
+      <!-- Links: use helper if defined, otherwise fallback to plain path -->
+      <div class="mt-4 md:mt-0 flex flex-col sm:flex-row items-center justify-center md:justify-end gap-3">
+        <% if respond_to?(:privacy_path) %>
+          <%= link_to "Privacy", privacy_path, class: "text-sm text-gray-500 hover:text-indigo-600" %>
+        <% else %>
+          <%= link_to "Privacy", "/privacy", class: "text-sm text-gray-500 hover:text-indigo-600" %>
+        <% end %>
+
+        <% if respond_to?(:terms_path) %>
+          <%= link_to "Terms", terms_path, class: "text-sm text-gray-500 hover:text-indigo-600" %>
+        <% else %>
+          <%= link_to "Terms", "/terms", class: "text-sm text-gray-500 hover:text-indigo-600" %>
+        <% end %>
+
+        <% if respond_to?(:contact_path) %>
+          <%= link_to "Contact", contact_path, class: "text-sm text-gray-500 hover:text-indigo-600" %>
+        <% else %>
+          <%= link_to "Contact", "/contact", class: "text-sm text-gray-500 hover:text-indigo-600" %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Optional extra row: social icons and small print -->
+    <div class="border-t pt-4 pb-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="text-xs text-gray-400 text-center md:text-left">
+          Handcrafted with quality — secure payments with Stripe.
+        </div>
+
+        <div class="flex items-center justify-center gap-4">
+          <a href="#" class="text-gray-400 hover:text-indigo-600"><i class="fab fa-facebook-f" aria-hidden="true"></i><span class="sr-only">Facebook</span></a>
+          <a href="#" class="text-gray-400 hover:text-indigo-600"><i class="fab fa-instagram" aria-hidden="true"></i><span class="sr-only">Instagram</span></a>
+          <a href="#" class="text-gray-400 hover:text-indigo-600"><i class="fab fa-twitter" aria-hidden="true"></i><span class="sr-only">Twitter</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

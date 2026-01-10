@@ -1,0 +1,212 @@
+<!-- About page for LuxeCart -->
+<section class="bg-gradient-to-r from-white to-gray-50">
+  <!-- Hero -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+      <div>
+        <p class="text-sm text-indigo-600 font-semibold">New at LuxeCart</p>
+        <h1 class="mt-4 text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
+          Elevating online shopping with premium design &amp; thoughtful service
+        </h1>
+        <p class="mt-6 text-lg text-gray-600 max-w-2xl">
+          LuxeCart is a modern e-commerce experience built for beautiful products and seamless checkout.
+          We combine curated collections, fast delivery and secure payments to help customers discover and love your brand.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-4">
+          <%= link_to "Shop Now", products_path, class: "inline-flex items-center px-5 py-3 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition" %>
+          <%= link_to "Browse Categories", categories_path, class: "inline-flex items-center px-5 py-3 bg-white border rounded-lg text-gray-700 hover:bg-gray-50 transition" %>
+        </div>
+      </div>
+
+      <div class="flex justify-center lg:justify-end">
+        <div class="w-full max-w-md rounded-xl overflow-hidden shadow-lg ring-1 ring-gray-100">
+          <img src="https://images.unsplash.com/photo-1567016432779-7a8c8ef4b9d7?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=9f0a3b6dbb9ae2f3f5c7f2e0baf8a1bf" alt="Sofa" class="w-full h-64 object-cover">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mission -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="bg-white rounded-lg shadow-sm p-8">
+      <h2 class="text-2xl font-bold text-gray-900">Our mission</h2>
+      <p class="mt-4 text-gray-600">
+        We exist to connect people with beautifully designed products while making the shopping experience delightful, secure and simple.
+        From curated collections to a fast checkout, every step is designed to increase conversion while preserving brand aesthetics.
+      </p>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <h3 class="text-xl font-bold text-gray-900 mb-6">What makes LuxeCart different</h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="bg-white p-6 rounded-lg shadow text-center">
+        <div class="text-indigo-600 text-3xl"><i class="fas fa-shipping-fast" aria-hidden="true"></i></div>
+        <h4 class="mt-4 font-semibold text-gray-900">Fast Shipping</h4>
+        <p class="mt-2 text-gray-500 text-sm">Speedy fulfillment and reliable tracking to delight your customers.</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow text-center">
+        <div class="text-indigo-600 text-3xl"><i class="fas fa-shield-alt" aria-hidden="true"></i></div>
+        <h4 class="mt-4 font-semibold text-gray-900">Secure Checkout</h4>
+        <p class="mt-2 text-gray-500 text-sm">Stripe integration and industry-standard encryption for peace of mind.</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow text-center">
+        <div class="text-indigo-600 text-3xl"><i class="fas fa-sync-alt" aria-hidden="true"></i></div>
+        <h4 class="mt-4 font-semibold text-gray-900">Easy Returns</h4>
+        <p class="mt-2 text-gray-500 text-sm">Hassle-free returns and clear policy support for your customers.</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow text-center">
+        <div class="text-indigo-600 text-3xl"><i class="fas fa-headset" aria-hidden="true"></i></div>
+        <h4 class="mt-4 font-semibold text-gray-900">24/7 Support</h4>
+        <p class="mt-2 text-gray-500 text-sm">Help when customers need it — live chat and email support.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team & Gallery -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="space-y-6">
+      <h3 class="text-2xl font-bold text-gray-900">Meet the team</h3>
+      <p class="text-gray-600">Small, focused team of product, design, and engineering experts dedicated to creating beautiful shopping experiences.</p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="flex items-center gap-4 bg-white rounded-lg p-4 shadow">
+          <img class="w-16 h-16 rounded-full object-cover" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop&ixlib=rb-4.0.3&s=3b3c5b1a2b" alt="Team member">
+          <div>
+            <div class="font-semibold text-gray-900">Ava Smith</div>
+            <div class="text-xs text-gray-500">Founder &amp; CEO</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4 bg-white rounded-lg p-4 shadow">
+          <img class="w-16 h-16 rounded-full object-cover" src="https://images.unsplash.com/photo-1545996124-1a83a8b5f6c0?q=80&w=400&auto=format&fit=crop&ixlib=rb-4.0.3&s=2a8f6a1f1a" alt="Team member">
+          <div>
+            <div class="font-semibold text-gray-900">Liam Johnson</div>
+            <div class="text-xs text-gray-500">Head of Product</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="text-2xl font-bold text-gray-900 mb-4">Gallery</h3>
+      <div class="grid grid-cols-2 gap-3">
+        <img class="w-full h-36 object-cover rounded-lg" src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=5b8c3f74f1" alt="">
+        <img class="w-full h-36 object-cover rounded-lg" src="https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=1b6d6c9e" alt="">
+        <img class="w-full h-36 object-cover rounded-lg" src="https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=7d8a3b2c" alt="">
+        <img class="w-full h-36 object-cover rounded-lg" src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=b4c3c6f0" alt="">
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ + Contact form -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- FAQ -->
+      <div>
+        <h3 class="text-2xl font-bold text-gray-900">Frequently asked questions</h3>
+        <div class="mt-6 space-y-4">
+          <div class="border rounded-lg">
+            <button type="button" class="w-full text-left faq-question px-4 py-3 flex justify-between items-center">
+              <span class="font-medium text-gray-800">How does returns work?</span>
+              <span class="text-gray-400 faq-toggle"><i class="fas fa-chevron-down"></i></span>
+            </button>
+            <div class="faq-answer px-4 pb-4 hidden text-gray-600">
+              We offer a 30-day return policy on most items. See our Returns page for details.
+            </div>
+          </div>
+
+          <div class="border rounded-lg">
+            <button type="button" class="w-full text-left faq-question px-4 py-3 flex justify-between items-center">
+              <span class="font-medium text-gray-800">Is checkout secure?</span>
+              <span class="text-gray-400 faq-toggle"><i class="fas fa-chevron-down"></i></span>
+            </button>
+            <div class="faq-answer px-4 pb-4 hidden text-gray-600">
+              Yes — payments are handled via Stripe with modern encryption and tokenization.
+            </div>
+          </div>
+
+          <div class="border rounded-lg">
+            <button type="button" class="w-full text-left faq-question px-4 py-3 flex justify-between items-center">
+              <span class="font-medium text-gray-800">Do you ship internationally?</span>
+              <span class="text-gray-400 faq-toggle"><i class="fas fa-chevron-down"></i></span>
+            </button>
+            <div class="faq-answer px-4 pb-4 hidden text-gray-600">
+              We ship to many countries — check the shipping options at checkout. Rates may vary.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact form -->
+      <div>
+        <h3 class="text-2xl font-bold text-gray-900">Contact us</h3>
+        <p class="mt-2 text-gray-600">Have a question about orders, partnerships, or product sourcing? Use the form below.</p>
+
+        <% if flash[:notice] %>
+          <div class="mt-4 rounded-md bg-green-50 border border-green-100 p-3 text-green-700"><%= flash[:notice] %></div>
+        <% elsif flash[:alert] %>
+          <div class="mt-4 rounded-md bg-red-50 border border-red-100 p-3 text-red-700"><%= flash[:alert] %></div>
+        <% end %>
+
+        <div class="mt-6 bg-white p-6 rounded-lg shadow">
+          <%= form_with url: contact_submit_path, method: :post, local: true do |f| %>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <%= f.label :name, "Your name", class: "block text-sm font-medium text-gray-700" %>
+                <%= f.text_field :name, name: "contact[name]", class: "mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", required: true %>
+              </div>
+
+              <div>
+                <%= f.label :email, "Email address", class: "block text-sm font-medium text-gray-700" %>
+                <%= f.email_field :email, name: "contact[email]", class: "mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", required: true %>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <%= f.label :message, "Message", class: "block text-sm font-medium text-gray-700" %>
+              <%= f.text_area :message, name: "contact[message]", rows: 5, class: "mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", required: true %>
+            </div>
+
+            <div class="mt-4">
+              <%= f.submit "Send message", class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Small JavaScript for FAQ accordion -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.faq-question').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var container = this.closest('.border');
+        var answer = container.querySelector('.faq-answer');
+        var toggleIcon = container.querySelector('.faq-toggle i');
+
+        if (answer.classList.contains('hidden')) {
+          // close any open answers (optional)
+          document.querySelectorAll('.faq-answer').forEach(function(a) { a.classList.add('hidden'); });
+          document.querySelectorAll('.faq-toggle i').forEach(function(i) { i.classList.remove('fa-chevron-up'); i.classList.add('fa-chevron-down'); });
+
+          answer.classList.remove('hidden');
+          toggleIcon.classList.remove('fa-chevron-down');
+          toggleIcon.classList.add('fa-chevron-up');
+        } else {
+          answer.classList.add('hidden');
+          toggleIcon.classList.remove('fa-chevron-up');
+          toggleIcon.classList.add('fa-chevron-down');
+        }
+      });
+    });
+  });
+</script>

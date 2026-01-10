@@ -1,0 +1,6 @@
+/* public/assets/other-partial
+   Temporary fallback file served at /assets/other-partial.
+   Add minimal CSS needed right away; remove once the real reference is fixed.
+*/
+.site-brand { font-weight: 700; color: #4f46e5; }
+.footer { background: #111827; color: #fff; padding: 1rem 0; }

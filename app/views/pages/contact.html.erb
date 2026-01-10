@@ -1,0 +1,31 @@
+<h1>Contact Us</h1>
+
+<p>
+  Use the form below to send us a message. We'll respond within 1-2 business days.
+</p>
+
+<%= form_with url: contact_submit_path, method: :post, local: true do |f| %>
+  <div class="form-row">
+    <%= label_tag 'contact_name', 'Your name' %><br>
+    <%= text_field_tag 'contact[name]', nil, id: 'contact_name', required: true %>
+  </div>
+
+  <div class="form-row">
+    <%= label_tag 'contact_email', 'Email address' %><br>
+    <%= email_field_tag 'contact[email]', nil, id: 'contact_email', required: true %>
+  </div>
+
+  <div class="form-row">
+    <%= label_tag 'contact_subject', 'Subject' %><br>
+    <%= text_field_tag 'contact[subject]', nil, id: 'contact_subject' %>
+  </div>
+
+  <div class="form-row">
+    <%= label_tag 'contact_message', 'Message' %><br>
+    <%= text_area_tag 'contact[message]', nil, id: 'contact_message', rows: 6, required: true %>
+  </div>
+
+  <div class="form-row">
+    <%= submit_tag 'Send message', class: 'btn btn-primary' %>
+  </div>
+<% end %>

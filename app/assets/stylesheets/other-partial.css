@@ -1,0 +1,12 @@
+/* other-partial.css
+   Fallback / small stylesheet to satisfy requests to the "other-partial" asset.
+   Add site-specific rules here if required; replace or expand as needed.
+*/
+
+@charset "utf-8";
+
+/* Example placeholder rules — keep or change to your project's styles */
+.site-brand { font-weight: 700; color: #4f46e5; } /* indigo-600 */
+.footer { background: #111827; color: #fff; padding: 1rem 0; }
+
+/* Add any missing overrides the site expects */

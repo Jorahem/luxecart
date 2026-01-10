@@ -1,0 +1,30 @@
+<article class="product-card" data-product-id="<%= product.id %>">
+  <div class="media">
+    <% if product.image.present? %>
+      <%= link_to product_path(product) do %>
+        <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy" class="product-image" />
+      <% end %>
+    <% else %>
+      <div class="placeholder-image">No image</div>
+    <% end %>
+  </div>
+
+  <div class="card-body">
+    <h3 class="product-title"><%= link_to truncate(product.name, length: 48), product_path(product) %></h3>
+
+    <div class="meta">
+      <span class="price"><%= number_to_currency(product.price) %></span>
+      <%# Optionally show brand/category if present %>
+      <% if product.respond_to?(:brand) && product.brand %>
+        <span class="brand"><%= product.brand.name %></span>
+      <% end %>
+    </div>
+
+    <p class="description"><%= truncate(product.description, length: 120) %></p>
+
+    <div class="card-actions">
+      <button class="btn btn-primary add-to-cart" data-product-id="<%= product.id %>">Add to cart</button>
+      <%= link_to 'View', product_path(product), class: 'btn btn-secondary' %>
+    </div>
+  </div>
+</article>
