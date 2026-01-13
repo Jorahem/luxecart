@@ -74,6 +74,49 @@ Rails.application.routes.draw do
       end
     end
     
+
+
+
+
+# ... earlier routes remain unchanged ...
+
+resources :products, only: [:index, :show] do
+  resources :reviews, only: [:create, :destroy]
+  collection do
+    get :featured
+  end
+
+  # member routes for server-backed likes (POST to like, DELETE to unlike)
+  member do
+    post :like, to: 'likes#create'
+    delete :like, to: 'likes#destroy'
+  end
+end
+
+# ... rest of routes remain unchanged ...
+
+
+
+
+
+
+
+
+  resource :cart, only: [:show] do
+    post 'add_item', to: 'carts#add_item'
+    delete 'remove_item/:id', to: 'carts#remove_item', as: 'remove_item'
+  end
+
+
+
+
+
+
+
+
+
+
+
     resources :categories do
       collection do
         post :sort

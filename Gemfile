@@ -43,7 +43,9 @@ gem 'devise'
 gem 'sassc-rails'
 
 
-gem 'kaminari'
+# Gemfile
+# Gemfile
+gem 'kaminari', '1.2.2'
 
 
 

@@ -1,17 +1,43 @@
-<%= paginator.render do %>
-  <nav>
-    <ul class="pagination">
-      <%= first_page_tag unless current_page.first? %>
-      <%= prev_page_tag unless current_page.first? %>
-      <% each_page do |page| %>
-        <% if page.left_outer? || page.right_outer? || page.inside_window? %>
-          <%= page_tag page %>
-        <% elsif !page.was_truncated? -%>
-          <%= gap_tag %>
+<%# app/views/kaminari/tailwind/_paginator.html.erb %>
+<%# Renders a Tailwind-styled paginator. Expects `paginator` local from Kaminari. %>
+<% return if paginator.total_pages <= 1 %>
+
+<nav class="flex items-center justify-center mt-6" role="navigation" aria-label="Pagination Navigation">
+  <ul class="inline-flex rounded-md shadow-sm -space-x-px">
+    <%# Previous %>
+    <% if paginator.prev_page %>
+      <li>
+        <%= link_to 'Prev', url_for(request.query_parameters.merge(page: paginator.prev_page)), class: 'px-3 py-1 rounded-l-md border border-gray-200 bg-white text-sm text-gray-700 hover:bg-gray-50' %>
+      </li>
+    <% else %>
+      <li class="px-3 py-1 rounded-l-md border border-gray-200 bg-gray-100 text-sm text-gray-400">Prev</li>
+    <% end %>
+
+    <%# Pages %>
+    <% current = paginator.current_page %>
+    <% paginator.each_page do |page| %>
+      <% if page %>
+        <% if page == current %>
+          <li>
+            <span class="px-3 py-1 border-t border-b border-gray-200 bg-indigo-600 text-white text-sm"><%= page %></span>
+          </li>
+        <% else %>
+          <li>
+            <%= link_to page, url_for(request.query_parameters.merge(page: page)), class: 'px-3 py-1 border border-gray-200 bg-white text-sm text-gray-700 hover:bg-gray-50' %>
+          </li>
         <% end %>
+      <% else %>
+        <li><span class="px-3 py-1 border border-gray-200 bg-white text-sm text-gray-500">…</span></li>
       <% end %>
-      <%= next_page_tag unless current_page.last? %>
-      <%= last_page_tag unless current_page.last? %>
-    </ul>
-  </nav>
-<% end %>
+    <% end %>
+
+    <%# Next %>
+    <% if paginator.next_page %>
+      <li>
+        <%= link_to 'Next', url_for(request.query_parameters.merge(page: paginator.next_page)), class: 'px-3 py-1 rounded-r-md border border-gray-200 bg-white text-sm text-gray-700 hover:bg-gray-50' %>
+      </li>
+    <% else %>
+      <li class="px-3 py-1 rounded-r-md border border-gray-200 bg-gray-100 text-sm text-gray-400">Next</li>
+    <% end %>
+  </ul>
+</nav>

@@ -13,6 +13,10 @@ class Product < ApplicationRecord
   has_many :order_items, dependent: :destroy
   has_many :product_variants, dependent: :destroy
 
+  # Likes association
+  has_many :likes, dependent: :destroy
+  has_many :likers, through: :likes, source: :user
+
   # Serialize tags (SQLite-safe) - Updated for Rails 7.1+
   serialize :tags, type: Array, coder: YAML
 

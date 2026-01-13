@@ -1,6 +1,5 @@
 class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  # Devise modules
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
@@ -9,6 +8,10 @@ class User < ApplicationRecord
   has_many :reviews, dependent: :destroy
   has_many :cart_items, dependent: :destroy
   has_many :addresses, dependent: :destroy
+
+  # Likes (favorites)
+  has_many :likes, dependent: :destroy
+  has_many :liked_products, through: :likes, source: :product
 
   # Validations
   validates :email, presence: true, uniqueness: true
@@ -32,4 +35,6 @@ class User < ApplicationRecord
   def normalize_email
     self.email = email.downcase.strip if email.present?
   end
+
+    has_one :cart, dependent: :destroy
 end

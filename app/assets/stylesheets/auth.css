@@ -1,0 +1,20 @@
+/* Small adjustments for the auth pages */
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.rounded-2xl img {
+  transition: transform .36s cubic-bezier(.2,.8,.2,1);
+}
+
+.rounded-2xl img:hover {
+  transform: scale(1.02);
+}
+
+/* focus ring */
+input:focus, button:focus, a:focus {
+  outline: 3px solid rgba(99,102,241,0.12);
+  outline-offset: 2px;
+}

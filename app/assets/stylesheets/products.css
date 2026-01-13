@@ -1,0 +1,24 @@
+/* Small stylistic polish for product cards and grid. */
+
+.product-card {
+  transition: transform 220ms cubic-bezier(.2,.8,.2,1), box-shadow 220ms;
+}
+.product-card:hover {
+  transform: translateY(-6px);
+}
+
+/* Ensure image smoothing when scaling */
+img {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* focus ring */
+a:focus, button:focus, input:focus {
+  outline: 3px solid rgba(99,102,241,0.14);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .product-card { min-height: 420px; }
+}

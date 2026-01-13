@@ -1,0 +1,77 @@
+<%# app/views/kaminari/tailwind/_paginator.html.erb %>
+<%# Tailwind-styled paginator compatible with multiple Kaminari versions %>
+
+<%
+  total_pages = nil
+  if defined?(paginator) && paginator
+    if paginator.respond_to?(:total_pages)
+      total_pages = paginator.total_pages.to_i
+    elsif paginator.respond_to?(:options) && paginator.options && paginator.options[:total_pages]
+      total_pages = paginator.options[:total_pages].to_i
+    else
+      begin
+        win = paginator.instance_variable_get(:@window_options) || {}
+        total_pages = win[:total_pages].to_i if win && win[:total_pages]
+      rescue
+        total_pages ||= 0
+      end
+    end
+  end
+  total_pages ||= 0
+
+  current_page = (params[:page].presence || 1).to_i
+%>
+
+<% if total_pages <= 1 %>
+  <%# nothing to render %>
+<% else %>
+  <nav class="flex items-center justify-center mt-6" role="navigation" aria-label="Pagination Navigation">
+    <ul class="inline-flex rounded-md shadow-sm -space-x-px">
+      <% if current_page > 1 %>
+        <li>
+          <%= link_to 'Prev', url_for(request.query_parameters.merge(page: current_page - 1)), class: 'px-3 py-1 rounded-l-md border border-gray-200 bg-white text-sm text-gray-700 hover:bg-gray-50' %>
+        </li>
+      <% else %>
+        <li class="px-3 py-1 rounded-l-md border border-gray-200 bg-gray-100 text-sm text-gray-400">Prev</li>
+      <% end %>
+
+      <%
+        window = 4
+        first_page = 1
+        last_page = total_pages
+        left = [current_page - window, first_page].max
+        right = [current_page + window, last_page].min
+
+        pages = []
+        pages << first_page if left > first_page
+        pages += (left..right).to_a
+        pages << last_page if right < last_page
+        pages = pages.uniq.select { |p| p >= 1 && p <= total_pages }
+      %>
+
+      <% pages.each_with_index do |page, idx| %>
+        <% if idx > 0 && page - pages[idx - 1] > 1 %>
+          <li><span class="px-3 py-1 border border-gray-200 bg-white text-sm text-gray-500">…</span></li>
+        <% end %>
+
+        <% if page == current_page %>
+          <li>
+            <span class="px-3 py-1 border-t border-b border-gray-200 bg-indigo-600 text-white text-sm"><%= page %></span>
+          </li>
+        <% else %>
+          <li>
+            <%= link_to page, url_for(request.query_parameters.merge(page: page)), class: 'px-3 py-1 border border-gray-200 bg-white text-sm text-gray-700 hover:bg-gray-50' %>
+          </li>
+        <% end %>
+      <% end %>
+
+      <% if current_page < total_pages %>
+        <li>
+          <%= link_to 'Next', url_for(request.query_parameters.merge(page: current_page + 1)), class: 'px-3 py-1 rounded-r-md border border-gray-200 bg-white text-sm text-gray-700 hover:bg-gray-50' %>
+        </li>
+      <% else %>
+        <li class="px-3 py-1 rounded-r-md border border-gray-200 bg-gray-100 text-sm text-gray-400">Next</li>
+      <% end %>
+    </ul>
+  </nav>
+<% end %>

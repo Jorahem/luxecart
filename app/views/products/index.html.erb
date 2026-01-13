@@ -1,14 +1,259 @@
-<h1 class="page-title">Products</h1>
+<div class="bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header / hero -->
+    <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8">
+      <div>
+        <h1 class="text-4xl font-extrabold tracking-tight text-gray-900">All Products</h1>
+        <p class="mt-2 text-gray-600 max-w-xl">Explore our curated selection — filter, sort, and discover pieces you'll love.</p>
+      </div>
 
-<% if @products.empty? %>
-  <p class="empty">No products available yet.</p>
-<% else %>
-  <div class="products-grid">
-    <%= render partial: 'product_card', collection: @products, as: :product %>
+      <!-- Search & sort -->
+      <div class="w-full lg:w-1/3 flex gap-3">
+        <form method="get" action="<%= products_path %>" class="flex w-full gap-3">
+          <input type="search" name="q" value="<%= params[:q] %>" placeholder="Search products, SKUs and brands..." class="flex-1 rounded-full border border-gray-200 px-4 py-2 focus:ring-2 focus:ring-indigo-500">
+          <select name="sort" onchange="this.form.submit()" class="rounded-md border border-gray-200 px-3">
+            <option value="">Sort</option>
+            <option value="price_asc" <%= 'selected' if params[:sort]=='price_asc' %>>Price: low → high</option>
+            <option value="price_desc" <%= 'selected' if params[:sort]=='price_desc' %>>Price: high → low</option>
+            <option value="newest" <%= 'selected' if params[:sort]=='newest' %>>Newest</option>
+          </select>
+        </form>
+      </div>
+    </div>
+
+    <section class="pt-6 pb-24">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-x-8 gap-y-10">
+        <!-- Sidebar -->
+        <aside class="hidden lg:block">
+          <div class="sticky top-20 space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+              <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Categories</h3>
+              <ul class="space-y-3">
+                <% Category.active.root.order(:name).each do |category| %>
+                  <li>
+                    <%= link_to category.name, category_path(category), class: "text-sm text-gray-600 hover:text-indigo-600 transition" %>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+              <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Filter by brand</h3>
+              <form id="brand-filter-form" method="get" action="<%= products_path %>">
+                <div class="space-y-2 max-h-48 overflow-auto pr-2">
+                  <% Brand.order(:name).each do |b| %>
+                    <label class="inline-flex items-center w-full text-sm">
+                      <input type="checkbox" name="brand[]" value="<%= b.id %>" <%= 'checked' if Array(params[:brand]).map(&:to_s).include?(b.id.to_s) %> class="h-4 w-4 text-indigo-600">
+                      <span class="ml-2 text-gray-700"><%= b.name %></span>
+                    </label>
+                  <% end %>
+                </div>
+
+                <div class="mt-4 flex gap-2">
+                  <button type="submit" class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-indigo-600 text-white rounded-md text-sm">Apply</button>
+                  <a href="<%= products_path %>" class="inline-flex items-center px-3 py-2 border rounded-md text-sm">Reset</a>
+                </div>
+              </form>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-sm">
+              <h4 class="font-semibold text-gray-900 mb-2">Why shop with us</h4>
+              <ul class="space-y-2 text-gray-600">
+                <li class="flex items-start gap-3"><i class="fa-solid fa-truck text-indigo-600 mt-1"></i> Fast shipping</li>
+                <li class="flex items-start gap-3"><i class="fa-solid fa-shield-halved text-indigo-600 mt-1"></i> Secure payments</li>
+                <li class="flex items-start gap-3"><i class="fa-solid fa-rotate text-indigo-600 mt-1"></i> Easy returns</li>
+              </ul>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Product grid -->
+        <div class="lg:col-span-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+            <% @products.each do |product| %>
+              <div class="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl transition duration-300">
+                <div class="relative h-64 bg-gray-50 overflow-hidden">
+                  <% if product.product_images.any? %>
+                    <%= image_tag product.product_images.first.image, alt: product.name, class: "w-full h-full object-cover object-center transition-transform transform group-hover:scale-105", loading: "lazy" %>
+                  <% else %>
+                    <img src="https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=1b6d6c9e" alt="<%= product.name %>" class="w-full h-full object-cover object-center" loading="lazy">
+                  <% end %>
+
+                  <!-- overlay actions -->
+                  <div class="absolute top-3 right-3 flex items-center gap-2">
+                    <% liked = user_signed_in? && current_user.likes.exists?(product: product) rescue false %>
+                    <button
+                      class="js-like inline-flex items-center justify-center p-2 rounded-full bg-white shadow-sm"
+                      data-url="<%= like_product_path(product) rescue '#' %>"
+                      data-product-id="<%= product.id %>"
+                      data-liked="<%= liked %>"
+                      aria-pressed="<%= liked %>"
+                      title="<%= liked ? 'Remove favorite' : 'Add favorite' %>"
+                    >
+                      <i class="fa-heart <%= liked ? 'fa-solid text-red-500' : 'fa-regular text-gray-600' %>"></i>
+                    </button>
+
+                    <button class="js-quickview inline-flex items-center justify-center p-2 rounded-full bg-white shadow-sm" data-product-url="<%= product_path(product) %>" title="Quick view">
+                      <i class="fa-solid fa-eye text-gray-600"></i>
+                    </button>
+                  </div>
+
+                  <% if product.featured? %>
+                    <div class="absolute left-3 top-3">
+                      <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full">FEATURED</span>
+                    </div>
+                  <% end %>
+                </div>
+
+                <div class="p-6">
+                  <p class="text-xs text-indigo-600 font-semibold uppercase"><%= product.category&.name %></p>
+                  <h3 class="text-lg font-bold text-gray-900 mt-1 mb-2 truncate"><%= link_to product.name, product_path(product) %></h3>
+
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="text-2xl font-black text-gray-900"><%= number_to_currency(product.price) %></div>
+                      <% if product.in_stock? %>
+                        <div class="text-xs text-green-600 font-semibold mt-1">In stock</div>
+                      <% else %>
+                        <div class="text-xs text-red-500 font-semibold mt-1">Out of stock</div>
+                      <% end %>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                      <%= button_to add_item_cart_path(product_id: product.id), method: :post, form_class: 'inline-block', class: 'inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700' do %>
+                        <i class="fa-solid fa-cart-plus mr-2"></i> Add
+                      <% end %>
+                    </div>
+                  </div>
+
+                  <div class="mt-3 text-sm text-gray-500 flex items-center justify-between">
+                    <div>
+                      <% avg = product.average_rating rescue 0.0 %>
+                      <span class="font-semibold text-gray-700"><%= avg %></span>
+                      <span class="text-xs text-gray-400">/ 5</span>
+                    </div>
+                    <div class="text-xs text-gray-400"><%= pluralize(product.reviews.count, "review") %></div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Pagination -->
+          <div class="mt-8 flex items-center justify-center">
+            <%= paginate @products, theme: 'tailwind' if defined?(paginate) %>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <div class="pagination">
-    <%# If you use Kaminari or will_paginate, pagination helpers go here %>
-    <%= paginate(@products) if respond_to?(:paginate) && defined?(paginate) %>
+  <!-- Quickview modal -->
+  <div id="product-quickview" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 px-4">
+    <div class="bg-white rounded-xl max-w-4xl w-full overflow-hidden">
+      <div class="flex items-start justify-between p-4 border-b">
+        <h3 id="quickview-title" class="text-lg font-bold"></h3>
+        <button id="quickview-close" class="text-gray-500 hover:text-gray-900"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="quickview-body" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- injected -->
+      </div>
+    </div>
   </div>
-<% end %>
+</div>
+
+<!-- JS: like toggle + quickview (uses fetch + CSRF) -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+  // Like button handler (server-backed + UI)
+  document.querySelectorAll('.js-like').forEach(btn => {
+    btn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      const url = btn.dataset.url;
+      if (!url || url === '#') {
+        window.location.href = '<%= new_user_session_path %>';
+        return;
+      }
+      let liked = btn.dataset.liked === 'true' || btn.getAttribute('aria-pressed') === 'true';
+      const method = liked ? 'DELETE' : 'POST';
+
+      try {
+        const res = await fetch(url, {
+          method: method,
+          headers: {
+            'X-CSRF-Token': csrf,
+            'Accept': 'application/json'
+          },
+          credentials: 'same-origin'
+        });
+
+        if (res.redirected) {
+          window.location.href = res.url;
+          return;
+        }
+
+        if (res.ok) {
+          liked = !liked;
+          btn.dataset.liked = liked;
+          btn.setAttribute('aria-pressed', liked);
+          const icon = btn.querySelector('i.fa-heart');
+          if (liked) {
+            icon.classList.remove('fa-regular'); icon.classList.add('fa-solid','text-red-500');
+          } else {
+            icon.classList.remove('fa-solid','text-red-500'); icon.classList.add('fa-regular','text-gray-600');
+          }
+        } else {
+          console.error('Like failed', res.status);
+        }
+      } catch (err) {
+        console.error('Like error', err);
+      }
+    });
+  });
+
+  // Quickview open & content load
+  document.querySelectorAll('.js-quickview').forEach(btn => {
+    btn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      const url = btn.dataset.productUrl;
+      if (!url) return;
+      const modal = document.getElementById('product-quickview');
+      const body = document.getElementById('quickview-body');
+      const title = document.getElementById('quickview-title');
+
+      body.innerHTML = '<div class="col-span-2 text-center py-12">Loading…</div>';
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      try {
+        const res = await fetch(url, { headers: { 'Accept': 'text/html' }, credentials: 'same-origin' });
+        if (res.ok) {
+          const html = await res.text();
+          body.innerHTML = '<div class="col-span-1">' + html + '</div>';
+          title.textContent = '';
+        } else {
+          body.innerHTML = '<div class="col-span-2 text-center py-12 text-red-600">Could not load</div>';
+        }
+      } catch (err) {
+        body.innerHTML = '<div class="col-span-2 text-center py-12 text-red-600">Error loading</div>';
+      }
+    });
+  });
+
+  document.getElementById('quickview-close')?.addEventListener('click', () => {
+    const modal = document.getElementById('product-quickview');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.getElementById('quickview-body').innerHTML = '';
+  });
+
+  document.getElementById('product-quickview')?.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+      e.currentTarget.classList.add('hidden');
+      e.currentTarget.classList.remove('flex');
+    }
+  });
+});
+</script>

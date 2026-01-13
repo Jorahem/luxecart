@@ -1,0 +1,54 @@
+/* Additional small UI refinements for category & product cards */
+
+/* subtle card hover transform */
+.product-card {
+  transition: transform 220ms cubic-bezier(.2,.8,.2,1), box-shadow 220ms;
+}
+.product-card:hover {
+  transform: translateY(-6px);
+}
+
+/* image zoom smoothing */
+.product-card img {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Force line-clamp for descriptions when line-clamp utility isn't present */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Small styling for quickview modal inner content */
+#quickview-modal .product-image {
+  max-height: 420px;
+  overflow: hidden;
+}
+#quickview-modal img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* tweak for like-button */
+.like-button .fa-heart {
+  font-size: 18px;
+}
+.like-ui {
+  min-width: 40px;
+  min-height: 40px;
+}
+
+/* styles to make the products grid visually denser on wider screens */
+@media (min-width: 1280px) {
+  #products-grid .product-card { min-height: 420px; }
+}
+
+/* small accessibility focus ring */
+button:focus, a:focus {
+  outline: 3px solid rgba(99,102,241,0.18);
+  outline-offset: 2px;
+}

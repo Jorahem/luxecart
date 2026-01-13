@@ -1,0 +1,352 @@
+<%# Category show page: responsive, filterable, with Quick View modal and like/add-to-cart actions %>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- Breadcrumb + Category header -->
+  <nav class="text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-2">
+      <li><%= link_to "Home", root_path, class: "hover:underline" %></li>
+      <li>/</li>
+      <li><%= link_to "Categories", categories_path, class: "hover:underline" %></li>
+      <li>/</li>
+      <li class="text-gray-900 font-semibold"><%= @category.name %></li>
+    </ol>
+  </nav>
+
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <!-- Left: sidebar filters (collapsible on mobile) -->
+    <aside class="lg:col-span-1">
+      <div class="bg-white p-6 rounded-2xl shadow-sm sticky top-20">
+        <h3 class="text-lg font-bold text-gray-900 mb-2">Refine</h3>
+
+        <!-- Price range -->
+        <div class="mb-4">
+          <label class="text-sm font-medium text-gray-700">Price</label>
+          <form id="filters-form" method="get" action="">
+            <div class="flex gap-2 mt-2">
+              <input name="min_price" value="<%= params[:min_price] %>" placeholder="Min" class="w-1/2 px-3 py-2 rounded-md border border-gray-200 text-sm">
+              <input name="max_price" value="<%= params[:max_price] %>" placeholder="Max" class="w-1/2 px-3 py-2 rounded-md border border-gray-200 text-sm">
+            </div>
+
+            <!-- Brands -->
+            <% if defined?(Brand) && Brand.any? %>
+              <div class="mt-4">
+                <label class="text-sm font-medium text-gray-700">Brand</label>
+                <div class="mt-2 space-y-2 max-h-40 overflow-auto pr-2">
+                  <% Brand.order(:name).each do |b| %>
+                    <div>
+                      <label class="inline-flex items-center text-sm">
+                        <input type="checkbox" name="brand[]" value="<%= b.id %>" <%= 'checked' if Array(params[:brand]).map(&:to_s).include?(b.id.to_s) %> class="form-checkbox h-4 w-4 text-indigo-600">
+                        <span class="ml-2"><%= b.name %></span>
+                      </label>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+
+            <!-- Sort -->
+            <div class="mt-4">
+              <label class="text-sm font-medium text-gray-700">Sort</label>
+              <select name="sort" class="mt-2 block w-full rounded-md border border-gray-200 p-2 text-sm">
+                <option value="">Default</option>
+                <option value="price_asc" <%= 'selected' if params[:sort] == 'price_asc' %>>Price: Low → High</option>
+                <option value="price_desc" <%= 'selected' if params[:sort] == 'price_desc' %>>Price: High → Low</option>
+                <option value="newest" <%= 'selected' if params[:sort] == 'newest' %>>Newest</option>
+              </select>
+            </div>
+
+            <div class="mt-4 flex gap-2">
+              <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Apply</button>
+              <a href="<%= category_path(@category) %>" class="inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm">Reset</a>
+            </div>
+          </form>
+        </div>
+
+        <div class="mt-6 border-t pt-4">
+          <h4 class="text-sm font-semibold text-gray-700 mb-2">Quick links</h4>
+          <ul class="space-y-2 text-sm">
+            <li><%= link_to "Top Sellers", products_path(q: 'top'), class: "text-indigo-600 hover:underline" %></li>
+            <li><%= link_to "New arrivals", products_path(q: 'new'), class: "text-indigo-600 hover:underline" %></li>
+            <li><%= link_to "Sale items", products_path(q: 'sale'), class: "text-indigo-600 hover:underline" %></li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content: products grid -->
+    <div class="lg:col-span-3">
+      <!-- Category hero / banner -->
+      <div class="relative bg-gradient-to-r from-white to-gray-50 rounded-2xl overflow-hidden mb-8 p-6 flex flex-col md:flex-row items-center gap-6">
+        <div class="flex-1">
+          <h1 class="text-3xl font-extrabold text-gray-900 mb-2"><%= @category.name %></h1>
+          <% if @category.description.present? %>
+            <p class="text-gray-600 mb-4"><%= @category.description %></p>
+          <% end %>
+          <div class="flex gap-3">
+            <%= link_to "Shop all", category_path(@category), class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700" %>
+            <%= link_to "Contact us", contact_path, class: "inline-flex items-center px-4 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50" %>
+          </div>
+        </div>
+
+        <div class="w-full md:w-1/3">
+          <%# category image if present, fallback to Unsplash %>
+          <% if @category.respond_to?(:image) && @category.image.present? %>
+            <%= image_tag @category.image, alt: @category.name, class: "w-full h-40 object-cover rounded-xl shadow-sm" %>
+          <% else %>
+            <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=5b8c3f74f1" alt="<%= @category.name %>" class="w-full h-40 object-cover rounded-xl shadow-sm">
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Grid controls (mobile) -->
+      <div class="flex items-center justify-between mb-6">
+        <div class="text-sm text-gray-600">
+          <% product_count = @products.respond_to?(:total_count) ? @products.total_count : @products.size %>
+          <%= pluralize(product_count, "product") %> found
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button id="grid-toggle" class="p-2 rounded-md border bg-white text-gray-600 hidden sm:inline-flex"><i class="fa-solid fa-grip"></i></button>
+          <label class="text-sm text-gray-600">View</label>
+        </div>
+      </div>
+
+      <!-- Products grid -->
+      <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% @products.each do |product| %>
+          <div class="product-card relative bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition">
+            <div class="relative h-64 bg-gray-50 overflow-hidden">
+              <% if product.product_images.any? %>
+                <%= image_tag product.product_images.first.image, alt: product.name, class: "w-full h-full object-cover object-center transition-transform transform group-hover:scale-105" %>
+              <% else %>
+                <div class="w-full h-full flex items-center justify-center text-gray-300">
+                  <i class="fa-regular fa-image text-6xl"></i>
+                </div>
+              <% end %>
+
+              <!-- badges + quick actions -->
+              <div class="absolute top-3 left-3">
+                <% if product.featured? %>
+                  <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full">FEATURED</span>
+                <% end %>
+              </div>
+
+              <div class="absolute top-3 right-3 flex items-center gap-2">
+                <%# Like button: server-backed + UI toggle %>
+                <% liked = user_signed_in? && current_user.likes.exists?(product: product) %>
+                <button
+                  class="like-button inline-flex items-center justify-center p-2 rounded-full bg-white shadow-sm like-ui"
+                  data-product-id="<%= product.id %>"
+                  data-url="<%= like_product_path(product) rescue '#' %>"
+                  data-liked="<%= liked %>"
+                  aria-pressed="<%= liked %>"
+                  title="<%= liked ? 'Unfavorite' : 'Favorite' %>"
+                >
+                  <i class="fa-heart <%= liked ? 'fa-solid text-red-500' : 'fa-regular text-gray-600' %>"></i>
+                </button>
+
+                <%# Quick view button triggers modal with product details %>
+                <button class="quickview-button inline-flex items-center justify-center p-2 rounded-full bg-white shadow-sm" data-product-id="<%= product.id %>" data-product-url="<%= product_path(product) %>" title="Quick view">
+                  <i class="fa-solid fa-eye text-gray-600"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-5">
+              <p class="text-xs text-indigo-600 font-semibold uppercase"><%= product.category&.name %></p>
+              <h3 class="text-lg font-bold text-gray-900 mt-1 mb-2 truncate"><%= link_to product.name, product_path(product) %></h3>
+              <p class="text-sm text-gray-600 mb-4 line-clamp-2"><%= truncate(product.description, length: 120) %></p>
+
+              <div class="flex items-center justify-between">
+                <div class="text-2xl font-black text-gray-900"><%= number_to_currency(product.price) %></div>
+
+                <div class="flex items-center gap-2">
+                  <%# Add to cart (uses your existing cart add action) %>
+                  <%= button_to add_item_cart_path(product_id: product.id), method: :post, form_class: "inline-block", class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition" do %>
+                    <i class="fa-solid fa-cart-plus mr-2"></i> Add
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-8 flex items-center justify-center">
+        <%# If you're using Kaminari or will use it: %>
+        <% if defined?(paginate) %>
+          <%= paginate @products, theme: 'tailwind' %>
+        <% else %>
+          <%# Simple prev/next fallback %>
+          <% current_page = (params[:page] || 1).to_i %>
+          <% prev_page = current_page > 1 ? current_page - 1 : nil %>
+          <% next_page = @products.size == 12 ? current_page + 1 : nil %>
+          <div class="flex items-center gap-3">
+            <% if prev_page %>
+              <%= link_to "Previous", url_for(page: prev_page), class: "px-4 py-2 border rounded-md" %>
+            <% end %>
+            <span class="text-sm text-gray-500">Page <%= current_page %></span>
+            <% if next_page %>
+              <%= link_to "Next", url_for(page: next_page), class: "px-4 py-2 border rounded-md" %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Optional gallery & brand logos -->
+      <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-3">
+          <img src="https://images.unsplash.com/photo-1523381213912-1f1f7b5f4d64?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=98d8a9" class="w-full h-40 object-cover rounded-lg" alt="">
+          <img src="https://images.unsplash.com/photo-1540574163026-643ea20ade25?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=3f0a06" class="w-full h-40 object-cover rounded-lg" alt="">
+          <img src="https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=1b6d6c9e" class="w-full h-40 object-cover rounded-lg" alt="">
+          <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=b4c3c6f0" class="w-full h-40 object-cover rounded-lg" alt="">
+        </div>
+
+        <div class="col-span-1 bg-white p-6 rounded-2xl shadow-sm">
+          <h4 class="text-lg font-bold text-gray-900 mb-3">Trusted brands</h4>
+          <div class="flex items-center gap-4 flex-wrap">
+            <% if defined?(Brand) %>
+              <% Brand.limit(6).each do |brand| %>
+                <div class="w-24 h-12 flex items-center justify-center border rounded-md bg-white">
+                  <% if brand.respond_to?(:logo) && brand.logo.present? %>
+                    <%= image_tag brand.logo, alt: brand.name, class: "max-h-10 object-contain" %>
+                  <% else %>
+                    <span class="text-sm text-gray-500"><%= brand.name %></span>
+                  <% end %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick View Modal (hidden by default) -->
+<div id="quickview-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white rounded-xl max-w-4xl w-full mx-4 overflow-hidden">
+    <div class="flex items-start justify-between p-4 border-b">
+      <h3 class="text-lg font-bold" id="quickview-title"></h3>
+      <button id="quickview-close" class="text-gray-500 hover:text-gray-900"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="quickview-body" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- content injected by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- JS: filters quick-binding, like toggle (server + UI), quickview modal -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    // Like button handler: uses fetch to POST/DELETE product likes
+    document.querySelectorAll('.like-button').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const productId = btn.dataset.productId;
+        const url = btn.dataset.url;
+        let liked = (btn.dataset.liked === 'true' || btn.dataset.liked === true || btn.getAttribute('aria-pressed') === 'true');
+
+        // If no url, redirect to sign in
+        if (!url || url === '#') {
+          window.location.href = '<%= new_user_session_path %>';
+          return;
+        }
+
+        const method = liked ? 'DELETE' : 'POST';
+        try {
+          const res = await fetch(url, {
+            method: method,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': csrf,
+              'Accept': 'application/json'
+            },
+            credentials: 'same-origin'
+          });
+
+          if (res.redirected) {
+            // likely redirected to sign in
+            window.location.href = res.url;
+            return;
+          }
+
+          if (res.ok) {
+            // toggle UI
+            liked = !liked;
+            btn.dataset.liked = liked;
+            btn.setAttribute('aria-pressed', liked);
+            const icon = btn.querySelector('i.fa-heart');
+            if (liked) {
+              icon.classList.remove('fa-regular');
+              icon.classList.add('fa-solid', 'text-red-500');
+            } else {
+              icon.classList.remove('fa-solid', 'text-red-500');
+              icon.classList.add('fa-regular', 'text-gray-600');
+            }
+          } else {
+            console.error('Like request failed', res.status);
+          }
+        } catch (err) {
+          console.error('Like fetch error', err);
+        }
+      });
+    });
+
+    // Quick view: fetch product partial or build content via AJAX
+    document.querySelectorAll('.quickview-button').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const productUrl = btn.dataset.productUrl;
+        if (!productUrl) return;
+        const modal = document.getElementById('quickview-modal');
+        const body = document.getElementById('quickview-body');
+        const title = document.getElementById('quickview-title');
+        body.innerHTML = '<div class="col-span-2 text-center py-12">Loading…</div>';
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        try {
+          const res = await fetch(productUrl, {
+            headers: { 'Accept': 'text/html' },
+            credentials: 'same-origin'
+          });
+          if (res.ok) {
+            const html = await res.text();
+            // For simplicity insert the received HTML into the modal body.
+            body.innerHTML = '<div class="col-span-1">' + html + '</div>';
+            title.textContent = '';
+          } else {
+            body.innerHTML = '<div class="col-span-2 text-center py-12 text-red-600">Could not load quick view.</div>';
+          }
+        } catch (err) {
+          body.innerHTML = '<div class="col-span-2 text-center py-12 text-red-600">Error loading quick view.</div>';
+        }
+      });
+    });
+
+    // Close modal
+    document.getElementById('quickview-close')?.addEventListener('click', () => {
+      const modal = document.getElementById('quickview-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.getElementById('quickview-body').innerHTML = '';
+    });
+
+    // Close when clicking backdrop
+    document.getElementById('quickview-modal')?.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        e.currentTarget.classList.add('hidden');
+        e.currentTarget.classList.remove('flex');
+      }
+    });
+
+    // Optional: instant filter submit when fields change (uncomment to enable)
+    // document.querySelectorAll('#filters-form input, #filters-form select').forEach(el => {
+    //   el.addEventListener('change', () => document.getElementById('filters-form').submit());
+    // });
+  });
+</script>
