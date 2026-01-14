@@ -1,0 +1,4 @@
+/* small enhancements for home page toast area (optional) */
+#toast-root > div {
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}

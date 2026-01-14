@@ -112,10 +112,10 @@ end
 
 
 
+resource :cart, only: [:show]
 
 
-
-
+devise_for :users, controllers: { registrations: 'registrations' }
 
     resources :categories do
       collection do

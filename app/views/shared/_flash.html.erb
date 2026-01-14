@@ -1,0 +1,47 @@
+<% flash.each do |type, message| %>
+  <% klass =
+    case type.to_sym
+    when :notice then "flash flash--notice"
+    when :alert  then "flash flash--alert"
+    else "flash"
+    end %>
+
+  <div class="<%= klass %>" role="status" aria-live="polite" data-auto-dismiss="10000">
+    <div class="flash__inner">
+      <span class="flash__message"><%= message %></span>
+      <button type="button" class="flash__close" aria-label="Dismiss message">×</button>
+    </div>
+  </div>
+<% end %>
+
+<script>
+  (function() {
+    // Auto-dismiss and manual close handler for flash messages.
+    // Reads data-auto-dismiss in milliseconds (default 10000).
+    document.querySelectorAll('.flash').forEach(function(flashEl) {
+      var autoMs = parseInt(flashEl.dataset.autoDismiss || 10000, 10);
+
+      // Manual close button
+      var btn = flashEl.querySelector('.flash__close');
+      if (btn) {
+        btn.addEventListener('click', function() {
+          hideFlash(flashEl);
+        });
+      }
+
+      // Auto dismiss after delay
+      if (autoMs > 0) {
+        setTimeout(function() { hideFlash(flashEl); }, autoMs);
+      }
+    });
+
+    function hideFlash(el) {
+      // apply hide class to animate, then remove element after animation
+      el.classList.add('flash--hidden');
+      // duration should match CSS transition (500ms)
+      setTimeout(function() {
+        if (el && el.parentNode) el.parentNode.removeChild(el);
+      }, 500);
+    }
+  })();
+</script>

@@ -1,24 +1,25 @@
-/* Small stylistic polish for product cards and grid. */
+/* Product page specific styles to supplement Tailwind */
+.product-card { transition: transform .12s ease, box-shadow .12s ease; }
+.product-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
 
-.product-card {
-  transition: transform 220ms cubic-bezier(.2,.8,.2,1), box-shadow 220ms;
+/* List view layout: when container data-view="list", make cards span full width */
+#products-container[data-view="list"] {
+  display: block;
 }
-.product-card:hover {
-  transform: translateY(-6px);
+#products-container[data-view="list"] .product-card {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+  flex-direction: row;
 }
+#products-container[data-view="list"] .product-card .relative.h-44 { width: 220px; min-width: 220px; height: 140px; flex-shrink: 0; }
+#products-container[data-view="list"] .product-card h3 { white-space: normal; }
 
-/* Ensure image smoothing when scaling */
-img {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
+/* Grid view bookkeeping: default is grid handled by Tailwind. */
+#products-container[data-view="grid"] .product-card { display: flex; flex-direction: column; }
 
-/* focus ring */
-a:focus, button:focus, input:focus {
-  outline: 3px solid rgba(99,102,241,0.14);
-  outline-offset: 2px;
-}
+/* Toast area (simple) */
+#product-toast { right: 1.5rem; bottom: 1.5rem; }
 
-@media (max-width: 640px) {
-  .product-card { min-height: 420px; }
-}
+/* Small utilities */
+.product-card .text-sm.truncate { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }

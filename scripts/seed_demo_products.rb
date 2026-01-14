@@ -1,31 +1,22 @@
-# db/seeds.rb
-# Creates categories, brands and products safely (handles string image columns or ActiveStorage attachments).
-# Extends your existing seed set with additional demo products up to ~35 total.
+# scripts/seed_demo_products.rb
+# Creates categories, brands and demo products (up to ~35 total).
+# Robust: assigns category & brand BEFORE save and generates SKU when required.
 #
-# Usage:
-#   bin/rails db:seed
-# or (if you prefer runner)
-#   bin/rails runner db/seeds.rb
+# Run:
+#   bin/rails runner scripts/seed_demo_products.rb
 #
 require 'open-uri'
 require 'securerandom'
 
-puts "Seeding categories and brands..."
-
+puts "Creating categories and brands..."
 categories = %w[Furniture Lighting Decor Textiles Tables]
 brands = ['LuxeHome', 'NordicDesign', 'StudioCraft', 'ModernHouse']
 
-categories.each do |name|
-  Category.find_or_create_by!(name: name)
-end
-
-brands.each do |name|
-  Brand.find_or_create_by!(name: name)
-end
-
+categories.each { |name| Category.find_or_create_by!(name: name) }
+brands.each     { |name| Brand.find_or_create_by!(name: name) }
 puts "Categories and Brands created."
 
-# Initial curated product data you already had (kept as-is)
+# Curated product samples
 products_data = [
   { name: 'Luxe Velvet Chair', description: 'Plush velvet lounge chair with solid wood legs.', price: 249.99, image: 'https://images.unsplash.com/photo-1549187774-b4e9b0445b6b?q=80&w=1200&auto=format&fit=crop', category: 'Furniture', brand: 'LuxeHome' },
   { name: 'Modern Floor Lamp', description: 'Sleek metal floor lamp with dimmable LED.', price: 89.50, image: 'https://images.unsplash.com/photo-1540574163026-643ea20ade25?q=80&w=1200&auto=format&fit=crop', category: 'Lighting', brand: 'NordicDesign' },
@@ -39,15 +30,21 @@ products_data = [
   { name: 'Nordic Dining Chair', description: 'Comfortable dining chair with tapered legs.', price: 99.00, image: 'https://images.unsplash.com/photo-1549187774-b4e9b0445b6b?q=80&w=1200&auto=format&fit=crop', category: 'Furniture', brand: 'NordicDesign' }
 ]
 
-# Additional sample images per category (used for generated demo products)
 sample_images_by_category = {
   'Furniture' => [
-   'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1200&auto=format&fit=crop', // sofa
+'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1200&auto=format&fit=crop', // sofa
   'https://images.unsplash.com/photo-1501045661006-fcebe0257c3f?q=80&w=1200&auto=format&fit=crop', // living room
   'https://images.unsplash.com/photo-1493666438817-866a91353ca9?q=80&w=1200&auto=format&fit=crop', // interior decor
   'https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop', // desk workspace
   'https://images.unsplash.com/photo-1550581190-9c1c48d21d6c?q=80&w=1200&auto=format&fit=crop', // modern room
   'https://images.unsplash.com/photo-1505691938895-1758d7feb511?q=80&w=1200&auto=format&fit=crop', // bedroom
+  'https://images.unsplash.com/photo-1549187774-b4e9b0445b6b?q=80&w=1200&auto=format&fit=crop', // chair
+  'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop', // minimal interior
+  'https://images.unsplash.com/photo-1505692794400-7c6050b7c7d6?q=80&w=1200&auto=format&fit=crop', // couch
+  'https://images.unsplash.com/photo-1505691723518-36a2bbf07e4d?q=80&w=1200&auto=format&fit=crop', // furniture set
+  'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=1200&auto=format&fit=crop', // dining area
+  'https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=1200&auto=format&fit=crop'  // luxury interior
+
 
 
   ],
@@ -65,40 +62,43 @@ sample_images_by_category = {
   ],
   'Tables' => [
     'https://images.unsplash.com/photo-1505692794400-7c6050b7c7d6?q=80&w=1200&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1481277542470-605612bd2d61?q=80&w=1200&auto=format&fit=crop'
+    'https://images.unsplash.com/photo-1481277542470-605612bd2d61?q=80&w=1200&auto=format&fit=crop',
+
+
+
+
+
+  "https://images.unsplash.com/photo-1505692794400-7c6050b7c7d6?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1481277542470-605612bd2d61?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1505691723518-36a2bbf07e4d?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1540574163026-643ea20ade25?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1200&auto=format&fit=crop"
+
+
+
+
+
   ]
 }
 
-puts "Seeding products (initial curated list)..."
-
-created = 0
-updated = 0
-
-# Helper to attach/set image using available strategy
 def set_product_image(product, image_url)
   return if image_url.blank?
-
-  # Strategy A: string column 'image'
   if Product.column_names.include?('image') && product.respond_to?(:image=)
     begin
       product.update_column(:image, image_url)
       return true
-    rescue
-      # fall through
-    end
+    rescue; end
   end
 
-  # Strategy B: string column 'image_url'
   if Product.column_names.include?('image_url') && product.respond_to?(:image_url=)
     begin
       product.update_column(:image_url, image_url)
       return true
-    rescue
-      # fall through
-    end
+    rescue; end
   end
 
-  # Strategy C: ActiveStorage single attachment named `image`
   if product.respond_to?(:image) && product.image.respond_to?(:attach)
     begin
       io = URI.open(image_url)
@@ -109,7 +109,6 @@ def set_product_image(product, image_url)
     end
   end
 
-  # Strategy D: ActiveStorage collection `images`
   if product.respond_to?(:images) && product.images.respond_to?(:attach)
     begin
       io = URI.open(image_url)
@@ -120,10 +119,12 @@ def set_product_image(product, image_url)
     end
   end
 
-  # No strategy worked
   puts "[seeds] No image setter available for Product #{product.name}; skipping image."
   false
 end
+
+puts "Seeding curated products..."
+created = 0; updated = 0
 
 products_data.each do |attrs|
   begin
@@ -131,46 +132,49 @@ products_data.each do |attrs|
     brand = Brand.find_by(name: attrs[:brand])
 
     unless category && brand
-      puts "Skipping #{attrs[:name]}: missing category or brand (#{attrs[:category]}, #{attrs[:brand]})"
+      puts "Skipping #{attrs[:name]}: missing category or brand"
       next
     end
 
+    # Build product but ensure category & brand are assigned BEFORE save
     product = Product.find_or_initialize_by(name: attrs[:name])
-    # track whether this is new or updated
-    new_record = product.new_record?
-
     product.description = attrs[:description] if product.respond_to?(:description=)
     product.price = attrs[:price] if product.respond_to?(:price=)
-    product.category = category if product.respond_to?(:category=)
-    product.brand = brand if product.respond_to?(:brand=)
 
-    # generate SKU if required
+    # assign associations (ensure these are set before save)
+    if product.respond_to?(:category=)
+      product.category = category
+    elsif Product.column_names.include?('category_id')
+      product.category_id = category.id
+    end
+
+    if product.respond_to?(:brand=)
+      product.brand = brand
+    elsif Product.column_names.include?('brand_id')
+      product.brand_id = brand.id
+    end
+
+    # Ensure SKU exists if app requires it
     if product.respond_to?(:sku=) && product.sku.blank?
       product.sku = "#{product.name.parameterize.upcase}-#{SecureRandom.hex(3)}"
     end
 
-    # set sensible defaults for common fields if they exist
+    # sensible defaults
     product.track_inventory = true if product.respond_to?(:track_inventory=) && product.track_inventory.nil?
     product.stock_quantity = 100 if product.respond_to?(:stock_quantity=) && (product.stock_quantity.nil? || product.stock_quantity == 0)
     product.status = 'active' if product.respond_to?(:status=) && product.status.blank?
 
+    # Save now that required associations/sku are present
     product.save!
-    if new_record
+
+    if product.previous_changes.key?('id')
       created += 1
     else
       updated += 1
     end
 
-    image_url = attrs[:image]
-    if image_url.present?
-      begin
-        set_product_image(product, image_url)
-      rescue => e
-        puts "[seeds] Image attach/set failed for #{product.name}: #{e.class} - #{e.message}"
-      end
-    end
-
-    puts "Created/updated product: #{product.name} (SKU: #{product.try(:sku)})"
+    set_product_image(product, attrs[:image]) if attrs[:image].present?
+    puts "Created/updated product: #{product.name} (id: #{product.id})"
   rescue ActiveRecord::RecordInvalid => e
     puts "[seeds] Validation failed for #{attrs[:name]}: #{e.record.errors.full_messages.join(', ')}"
   rescue => e
@@ -178,74 +182,74 @@ products_data.each do |attrs|
   end
 end
 
-puts "Initial curated products seeded. Created: #{created}, Updated: #{updated}"
+puts "Curated seeding done. Created: #{created}, Updated: #{updated}"
 
-# Now: generate additional demo products so total products >= desired_total
+# Now create additional demo products until desired_total reached
 desired_total = 35
 current_total = Product.count
 to_create = [0, desired_total - current_total].max
 
 if to_create > 0
-  puts "Creating #{to_create} additional demo products to reach #{desired_total} total..."
+  puts "Creating #{to_create} additional demo products..."
   demo_created = 0
-
-  # Use categories list to distribute products
   category_records = Category.all.to_a
   brand_records = Brand.all.to_a
-
   idx = 0
+
   while demo_created < to_create
     cat = category_records[idx % category_records.length]
     brand = brand_records[idx % brand_records.length]
-    seq = (Product.where("name LIKE ?", "#{cat.name} Demo %").count + 1)
-
+    seq = Product.where("name LIKE ?", "#{cat.name} Demo %").count + 1
     demo_name = "#{cat.name} Demo #{seq}"
-    # Avoid duplicate names just in case
-    next if Product.exists?(name: demo_name)
-
-    description = "Demo #{demo_name} — sample product created by seeds for category #{cat.name}."
-    price = ((20 + rand * 480) * 100).round / 100.0
+    if Product.exists?(name: demo_name)
+      idx += 1
+      next
+    end
 
     p = Product.new
     p.name = demo_name
-    p.description = description if p.respond_to?(:description=)
+    p.description = "Demo #{demo_name} — sample product for #{cat.name}."
     if p.respond_to?(:price=)
-      p.price = price
+      p.price = ((20 + rand * 480) * 100).round / 100.0
     elsif p.respond_to?(:unit_price_decimal=)
-      p.unit_price_decimal = price
+      p.unit_price_decimal = ((20 + rand * 480) * 100).round / 100.0
     end
 
-    # associate
-    p.category = cat if p.respond_to?(:category=)
-    p.brand = brand if p.respond_to?(:brand=)
+    # assign associations before save
+    if p.respond_to?(:category=)
+      p.category = cat
+    elsif Product.column_names.include?('category_id')
+      p.category_id = cat.id
+    end
 
-    # defaults
-    p.track_inventory = true if p.respond_to?(:track_inventory=) && p.track_inventory.nil?
-    p.stock_quantity = 50 if p.respond_to?(:stock_quantity=) && (p.stock_quantity.nil? || p.stock_quantity == 0)
-    p.status = 'active' if p.respond_to?(:status=) && p.status.blank?
+    if p.respond_to?(:brand=)
+      p.brand = brand
+    elsif Product.column_names.include?('brand_id')
+      p.brand_id = brand.id
+    end
 
     # SKU
     if p.respond_to?(:sku=)
       p.sku = "#{p.name.parameterize.upcase}-#{SecureRandom.hex(3)}"
     end
 
+    p.track_inventory = true if p.respond_to?(:track_inventory=)
+    p.stock_quantity = 50 if p.respond_to?(:stock_quantity=)
+    p.status = 'active' if p.respond_to?(:status=)
+
     begin
       p.save!
       demo_created += 1
       puts "Created demo product: #{p.name} (id: #{p.id})"
 
-      # pick an image for this category
       imgs = sample_images_by_category[cat.name] || sample_images_by_category.values.flatten
       img = imgs.sample
-
-      begin
-        set_product_image(p, img)
-      rescue => e
-        puts "[seeds] Failed to attach image for demo #{p.name}: #{e.class} - #{e.message}"
-      end
+      set_product_image(p, img)
+    rescue ActiveRecord::RecordInvalid => e
+      puts "[seeds] Validation failed for demo #{demo_name}: #{e.record.errors.full_messages.join(', ')}"
+      demo_created += 1
     rescue => e
       puts "[seeds] Could not create demo product #{demo_name}: #{e.class} - #{e.message}"
-      # avoid infinite loops: increment demo_created anyway to progress
       demo_created += 1
     end
 

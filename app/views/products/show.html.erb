@@ -1,21 +1,67 @@
-<div class="product-show grid">
-  <div class="left">
-    <% if @product.image.present? %>
-      <img src="<%= @product.image %>" alt="<%= @product.name %>" class="product-show-image" />
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title><%= @product&.name || "Product" %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= stylesheet_link_tag "application", media: "all" %>
+</head>
+<body class="product-page">
+  <main class="product-container">
+    <% if @product %>
+      <div class="product-show grid">
+        <div class="left">
+          <%# Determine an image source from several options %>
+          <% image_src = nil %>
+          <% if @product.respond_to?(:image_url) && @product.image_url.present? %>
+            <% image_src = @product.image_url %>
+          <% elsif @product.respond_to?(:image) %>
+            <%# If image is a string column (URL/path) %>
+            <% begin %>
+              <% if @product.image.present? && !@product.image.respond_to?(:attached?) %>
+                <% image_src = @product.image %>
+              end
+            <% rescue %>
+            <% end %>
+          <% end %>
+
+          <%# ActiveStorage attachment check %>
+          <% if image_src.blank? && @product.respond_to?(:image) && @product.image.respond_to?(:attached?) && @product.image.attached? %>
+            <%= image_tag url_for(@product.image), alt: @product.name, class: "product-show-image" %>
+          <% elsif image_src.present? %>
+            <img src="<%= image_src %>" alt="<%= @product.name %>" class="product-show-image" />
+          <% else %>
+            <div class="placeholder-image large">No image</div>
+          <% end %>
+        </div>
+
+        <div class="right">
+          <h1><%= @product.name %></h1>
+          <% if @product.respond_to?(:price) && @product.price.present? %>
+            <p class="price"><%= number_to_currency(@product.price) %></p>
+          <% elsif @product.respond_to?(:price_cents) && @product.price_cents.present? %>
+            <p class="price"><%= number_to_currency(BigDecimal(@product.price_cents) / 100) %></p>
+          <% end %>
+
+          <div class="description">
+            <%= simple_format(@product.description.to_s) %>
+          </div>
+
+          <%# add-to-cart form/button (adjust to your routes) %>
+          <%= form_with url: add_item_cart_path, method: :post, local: true do |f| %>
+            <%= hidden_field_tag :product_id, @product.id %>
+            <%= number_field_tag :quantity, 1, min: 1, class: "qty-input" %>
+            <%= f.submit "Add to cart", class: "btn btn-primary" %>
+          <% end %>
+        </div>
+      </div>
     <% else %>
-      <div class="placeholder-image large">No image</div>
+      <div class="not-found">
+        <h2>Product not found</h2>
+        <p>The product you requested doesn't exist or has been removed.</p>
+        <%= link_to "Back to products", products_path, class: "btn btn-secondary" %>
+      </div>
     <% end %>
-  </div>
-
-  <div class="right">
-    <h1 class="product-name"><%= @product.name %></h1>
-    <p class="product-price"><%= number_to_currency(@product.price) %></p>
-
-    <div class="product-description"><%= simple_format(@product.description) %></div>
-
-    <div class="product-actions">
-      <button class="btn btn-primary add-to-cart" data-product-id="<%= @product.id %>">Add to cart</button>
-      <%= link_to 'Back to products', products_path, class: 'btn btn-link' %>
-    </div>
-  </div>
-</div>
+  </main>
+</body>
+</html>

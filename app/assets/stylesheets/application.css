@@ -7,10 +7,16 @@
  *= require_self
  */
 
+
+
+ @import "home";
 /* Small custom rules for footer / layout fallbacks (kept minimal because Tailwind provides the main styling) */
+
+
 
 footer a { text-decoration: none; }
 footer a:hover { text-decoration: underline; }
 
 /* Accessibility: ensure footer text has comfortable contrast on small screens */
 footer .text-xs, footer .text-sm { line-height: 1.4; }
+

@@ -1,30 +1,42 @@
-<article class="product-card" data-product-id="<%= product.id %>">
-  <div class="media">
-    <% if product.image.present? %>
-      <%= link_to product_path(product) do %>
-        <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy" class="product-image" />
-      <% end %>
+<%# Product card partial - expects local `product` %>
+<article class="bg-white rounded-lg shadow p-4 flex flex-col group"
+         data-product-id="<%= product.id %>">
+  <div class="relative rounded overflow-hidden h-44 mb-3">
+    <% if product.respond_to?(:image) && product.image&.attached? %>
+      <%= image_tag url_for(product.image), class: "object-cover w-full h-full", alt: product.name, loading: "lazy" %>
+    <% elsif product.respond_to?(:image_url) && product.image_url.present? %>
+      <img src="<%= product.image_url %>" alt="<%= product.name %>" class="object-cover w-full h-full" loading="lazy" />
     <% else %>
-      <div class="placeholder-image">No image</div>
+      <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1200&auto=format&fit=crop" alt="Placeholder" class="object-cover w-full h-full" loading="lazy" />
+    <% end %>
+
+    <% if product.respond_to?(:featured) && product.featured %>
+      <span class="absolute top-3 left-3 bg-indigo-600 text-white text-xs px-2 py-1 rounded">Featured</span>
     <% end %>
   </div>
 
-  <div class="card-body">
-    <h3 class="product-title"><%= link_to truncate(product.name, length: 48), product_path(product) %></h3>
+  <h3 class="text-sm font-semibold mb-1 truncate">
+    <%= link_to product.name, product_path(product), class: "hover:text-indigo-600" %>
+  </h3>
 
-    <div class="meta">
-      <span class="price"><%= number_to_currency(product.price) %></span>
-      <%# Optionally show brand/category if present %>
-      <% if product.respond_to?(:brand) && product.brand %>
-        <span class="brand"><%= product.brand.name %></span>
-      <% end %>
+  <div class="text-xs text-gray-500 mb-2 truncate"><%= truncate(product.try(:short_description).to_s, length: 80) %></div>
+
+  <div class="mt-auto flex items-center justify-between gap-3">
+    <div class="text-lg font-bold text-indigo-600">
+      <% price_val = (product.respond_to?(:price) && product.price) || (product.respond_to?(:unit_price_decimal) && product.unit_price_decimal) || 0 %>
+      <%= number_to_currency(price_val) %>
     </div>
 
-    <p class="description"><%= truncate(product.description, length: 120) %></p>
+    <div class="flex items-center gap-2">
+      <%# button_to sends POST to add_item_cart_path with product_id param (works without JS) %>
+      <%= button_to add_item_cart_path, method: :post, params: { product_id: product.id, quantity: 1 }, class: "inline-flex items-center gap-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm" do %>
+        <i class="fa fa-cart-plus"></i>
+        Add
+      <% end %>
 
-    <div class="card-actions">
-      <button class="btn btn-primary add-to-cart" data-product-id="<%= product.id %>">Add to cart</button>
-      <%= link_to 'View', product_path(product), class: 'btn btn-secondary' %>
+      <%= link_to product_path(product), class: "inline-flex items-center text-gray-600 hover:text-indigo-600", title: "View product" do %>
+        <i class="fa fa-arrow-right"></i>
+      <% end %>
     </div>
   </div>
 </article>

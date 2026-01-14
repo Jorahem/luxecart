@@ -1,0 +1,4 @@
+/* Footer small helpers (Tailwind covers most) */
+.footer-payment-icon { height: 1.5rem; display: inline-block; }
+#back-to-top { background: transparent; border: 0; padding: 0.15rem; border-radius: 6px; }
+#back-to-top:hover { background: rgba(99,102,241,0.08); }

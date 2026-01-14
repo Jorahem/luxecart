@@ -1,62 +1,254 @@
-<section class="hero">
-  <div class="container">
-    <div class="hero-left">
-      <div class="eyebrow">New arrivals</div>
-      <h1 class="hero-title">Elevate Your Style</h1>
-      <p class="hero-sub">Experience the future of premium shopping with LuxeCart. Curated collections from world-class brands delivered to your doorstep.</p>
-      <div class="hero-actions">
-        <%= link_to 'Shop Now', products_path, class: 'btn btn-primary' %>
-        <%= link_to 'View Collections', categories_path, class: 'btn btn-outline' %>
+<%# Home#index - image-rich interactive landing page (safe ActiveStorage checks + many images) %>
+
+<!-- HERO GALLERY -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+  <div class="col-span-2 relative rounded-lg overflow-hidden shadow-lg">
+    <div class="relative h-72 md:h-96 bg-gray-100">
+      <img
+        src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1600&auto=format&fit=crop"
+        alt="Luxe hero"
+        class="w-full h-full object-cover"
+        loading="lazy"
+      />
+      <div class="absolute inset-0 bg-black/35 flex flex-col justify-center p-8">
+        <h1 class="text-3xl md:text-5xl text-white font-extrabold mb-3">Discover premium picks at LuxeCart</h1>
+        <p class="text-white/90 max-w-2xl mb-6">Handpicked products, curated collections and luxury deals — all in one beautiful place.</p>
+        <div class="flex gap-3">
+          <%= link_to "Shop featured", products_path, class: "inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold shadow" %>
+          <%= link_to "Explore categories", categories_path, class: "inline-flex items-center gap-2 px-6 py-3 bg-white/90 hover:bg-white text-indigo-700 rounded-lg font-semibold" %>
+        </div>
       </div>
     </div>
+  </div>
 
-    <div class="hero-image">
-      <% if @featured_products && @featured_products.first && @featured_products.first.image.present? %>
-        <%= image_tag @featured_products.first.image, alt: @featured_products.first.name %>
-      <% else %>
-        <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1200&auto=format&fit=crop" alt="Hero image" />
-      <% end %>
+  <div class="flex flex-col gap-4">
+    <div class="h-36 md:h-44 rounded-lg overflow-hidden shadow">
+      <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop"
+           alt="Featured style" class="w-full h-full object-cover" loading="lazy" />
+    </div>
+    <div class="h-36 md:h-44 rounded-lg overflow-hidden shadow">
+      <img src="https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=800&auto=format&fit=crop"
+           alt="New arrivals" class="w-full h-full object-cover" loading="lazy" />
     </div>
   </div>
 </section>
 
-<div class="container">
-  <section class="categories">
-    <h2>Shop by Category</h2>
-    <div class="category-list">
-      <% Category.limit(6).each do |c| %>
-        <%= link_to c.name, category_path(c), class: 'cat' %>
-      <% end %>
-    </div>
-  </section>
+<!-- FEATURED PRODUCTS (larger grid) -->
+<section class="mb-10">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-2xl font-bold">Featured products</h2>
+    <p class="text-sm text-gray-500">Top picks for you</p>
+  </div>
 
-  <section style="padding: 22px 0;">
-    <h2>Featured Products</h2>
-    <p class="muted">Handpicked premium items just for you. Discover our most popular selections.</p>
-
-    <div class="products-grid">
-      <% (@featured_products || Product.limit(8)).each do |product| %>
-        <article class="product-card">
-          <div class="media">
-            <% if product.image.present? %>
-              <%= link_to image_tag(product.image, alt: product.name), product_path(product) %>
+  <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <% products = @featured_products.presence || [] %>
+    <% if products.any? %>
+      <% products.each do |product| %>
+        <article class="bg-white rounded-lg shadow p-4 flex flex-col">
+          <div class="h-44 mb-3 rounded overflow-hidden bg-gray-100 flex items-center justify-center">
+            <%# ActiveStorage safe check %>
+            <% if product.respond_to?(:image) && product.image.attached? %>
+              <%= image_tag url_for(product.image.variant(resize_to_limit: [800, 600])), class: "object-cover w-full h-full", loading: "lazy", alt: product.name %>
+            <% elsif product.respond_to?(:image_url) && product.image_url.present? %>
+              <img src="<%= product.image_url %>" class="object-cover w-full h-full" alt="<%= product.name %>" loading="lazy" />
             <% else %>
-              <%= link_to image_tag('https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=800&auto=format&fit=crop', alt: product.name), product_path(product) %>
+              <img src="https://images.unsplash.com/photo-1526178612438-47b6c1d2d0c0?q=80&w=1200&auto=format&fit=crop"
+                   class="object-cover w-full h-full" alt="Placeholder" loading="lazy" />
             <% end %>
           </div>
-          <div class="card-body">
-            <h3 class="product-title"><%= link_to truncate(product.name, length: 48), product_path(product) %></h3>
-            <p class="product-desc"><%= truncate(product.description, length: 80) %></p>
-            <div class="product-meta">
-              <span class="price"><%= number_to_currency(product.price) %></span>
-              <div class="card-actions">
-                <%= button_to 'Add', add_item_cart_path, params: { product_id: product.id }, remote: false, method: :post, class: 'btn btn-primary add-to-cart' %>
-                <%= link_to 'View', product_path(product), class: 'btn btn-outline' %>
-              </div>
+
+          <h3 class="text-md font-semibold truncate"><%= product.name %></h3>
+          <p class="text-sm text-gray-500 mt-1 flex-1"><%= truncate(product.try(:description).to_s, length: 90) %></p>
+
+          <div class="mt-3 flex items-center justify-between">
+            <div class="text-lg font-bold text-indigo-600">
+              <% price =
+                   if product.respond_to?(:price) && product.price.present?
+                     product.price
+                   elsif product.respond_to?(:unit_price_decimal) && product.unit_price_decimal.present?
+                     product.unit_price_decimal
+                   else
+                     0
+                   end %>
+              <%= number_to_currency(price) %>
             </div>
+
+            <button class="add-to-cart inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded"
+                    data-product-id="<%= product.id %>">
+              <i class="fa fa-cart-plus"></i>
+              Add
+            </button>
           </div>
         </article>
       <% end %>
-    </div>
-  </section>
-</div>
+    <% else %>
+      <%# fallback demo cards %>
+      <% 8.times do |i| %>
+        <div class="bg-white rounded-lg shadow p-4 flex flex-col items-center text-center">
+          <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=800&auto=format&fit=crop"
+               class="w-full h-40 object-cover rounded mb-4" alt="Demo <%= i+1 %>" loading="lazy" />
+          <div class="font-semibold mb-2">Demo Product <%= i+1 %></div>
+          <div class="text-indigo-600 font-bold mb-3">Rs49.99</div>
+          <button class="add-to-cart inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded"
+                  data-product-id="demo-<%= i %>">
+            <i class="fa fa-cart-plus"></i> Add
+          </button>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</section>
+
+<!-- BRANDS / PARTNERS strip -->
+<section class="mb-10">
+  <h2 class="text-2xl font-bold mb-4">Trusted brands</h2>
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 items-center">
+    <% brand_images = [
+    
+         "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1200&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1505740106531-4243f3831b16?q=80&w=1200&auto=format&fit=crop"
+       ] %>
+
+    <% brand_images.each_with_index do |img, idx| %>
+      <div class="bg-white p-4 rounded-lg shadow flex items-center justify-center">
+        <img src="<%= img %>" alt="Brand <%= idx+1 %>" class="max-h-16 object-contain" loading="lazy" />
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<!-- IMAGE GALLERY (Instagram-like) -->
+<section class="mb-10">
+  <h2 class="text-2xl font-bold mb-4">Gallery</h2>
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <% gallery_urls = [
+        #  "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=800&auto=format&fit=crop",
+        #  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop",
+        #  "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=800&auto=format&fit=crop",
+        #  "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=800&auto=format&fit=crop",
+        #  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop",
+        #  "https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=800&auto=format&fit=crop",
+        #  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop",
+        #  "https://images.unsplash.com/photo-1505740106531-4243f3831b16?q=80&w=800&auto=format&fit=crop"
+
+
+
+          "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop"
+
+       ] %>
+
+    <% gallery_urls.each do |g| %>
+      <div class="rounded overflow-hidden shadow-sm">
+        <img src="<%= g %>" alt="Gallery image" class="w-full h-36 object-cover" loading="lazy" />
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<!-- TESTIMONIALS (small cards) -->
+<section class="mb-10">
+  <h2 class="text-2xl font-bold mb-4">What customers say</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <% (@testimonials || [
+         { name: "Aisha M.", text: "Fast shipping, beautiful packaging — I'm in love with my purchase!" },
+         { name: "Liam R.", text: "Top quality and excellent support. LuxeCart made it easy." },
+         { name: "Sofia P.", text: "Amazing selection and great deals — will order again." }
+       ]).each do |t| %>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <div class="flex items-center gap-4 mb-3">
+          <div class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
+            <i class="fa fa-user"></i>
+          </div>
+          <div class="font-semibold"><%= t[:name] %></div>
+        </div>
+        <p class="text-gray-600"><%= t[:text] %></p>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="bg-indigo-50 rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+  <div>
+    <h3 class="text-xl font-bold">Join our newsletter</h3>
+    <p class="text-gray-600">Get exclusive offers and new releases — delivered weekly.</p>
+  </div>
+
+  <form id="newsletter-form" class="flex gap-2 w-full md:w-auto">
+    <input id="newsletter-email" type="email" placeholder="Your email" required
+           class="px-4 py-2 rounded border border-gray-200 w-full md:w-72" />
+    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">Subscribe</button>
+  </form>
+</section>
+
+<!-- TOAST ROOT -->
+<div id="toast-root" class="fixed top-6 right-6 z-50"></div>
+
+<!-- INTERACTIVE JS (inline, safe) -->
+<script>
+  (function () {
+    // CSRF token for fetch POSTs
+    function getCsrf() { var m = document.querySelector('meta[name="csrf-token"]'); return m ? m.getAttribute('content') : ''; }
+
+    // Add-to-cart handling
+    document.querySelectorAll('.add-to-cart').forEach(function(btn) {
+      btn.addEventListener('click', function () {
+        var productId = this.dataset.productId;
+        addToCart(productId, 1);
+      });
+    });
+
+    function addToCart(productId, qty) {
+      var url = "<%= j add_item_cart_path %>";
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": getCsrf(),
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({ product_id: productId, quantity: qty })
+      })
+      .then(function(r) {
+        if (r.ok) {
+          showToast("Added to cart ✓");
+        } else {
+          r.json().then(function(j){ showToast((j && j.error) || "Failed to add to cart", true); }).catch(function(){ showToast("Failed to add to cart", true); });
+        }
+      })
+      .catch(function(){ showToast("Network error — try again", true); });
+    }
+
+    function showToast(message, isError) {
+      var root = document.getElementById('toast-root');
+      var el = document.createElement('div');
+      el.className = 'max-w-sm p-3 rounded shadow-lg ' + (isError ? 'bg-red-100 text-red-800' : 'bg-white text-gray-800');
+      el.style.marginTop = '0.5rem';
+      el.innerHTML = '<div class="flex items-center gap-3"><div class="flex-1">' + message + '</div><button class="text-sm">×</button></div>';
+      root.appendChild(el);
+      el.querySelector('button').addEventListener('click', function(){ el.remove(); });
+      setTimeout(function(){ if (el.parentNode) el.remove(); }, 4000);
+    }
+
+    // Newsletter demo (client-only)
+    var newsletterForm = document.getElementById('newsletter-form');
+    if (newsletterForm) {
+      newsletterForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var email = document.getElementById('newsletter-email').value;
+        if (!email) { showToast("Please enter a valid email", true); return; }
+        showToast("Thanks — we'll email deals to " + email);
+        this.reset();
+      });
+    }
+  })();
+</script>

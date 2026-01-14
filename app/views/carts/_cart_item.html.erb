@@ -1,0 +1,57 @@
+<%# app/views/carts/_cart_item.html.erb - single cart item partial %>
+
+<%# Resolve a usable unit_price (decimal) for display and for the JS data-price attribute %>
+<% unit_price =
+  if cart_item.respond_to?(:unit_price) && cart_item.unit_price.present?
+    BigDecimal(cart_item.unit_price.to_s)
+  elsif cart_item.respond_to?(:unit_price_decimal) && cart_item.unit_price_decimal.present?
+    BigDecimal(cart_item.unit_price_decimal.to_s)
+  elsif cart_item.respond_to?(:unit_price_cents) && cart_item.unit_price_cents.present?
+    BigDecimal(cart_item.unit_price_cents.to_s) / 100
+  elsif cart_item.respond_to?(:price_cents) && cart_item.price_cents.present?
+    BigDecimal(cart_item.price_cents.to_s) / 100
+  elsif cart_item.product && cart_item.product.respond_to?(:price) && cart_item.product.price.present?
+    BigDecimal(cart_item.product.price.to_s)
+  elsif cart_item.product && cart_item.product.respond_to?(:price_cents) && cart_item.product.price_cents.present?
+    BigDecimal(cart_item.product.price_cents.to_s) / 100
+  else
+    BigDecimal("0")
+  end %>
+
+<li class="cart-item flex items-center gap-4 py-4 border-b"
+    data-id="<%= cart_item.id %>"
+    data-price="<%= unit_price.to_f %>">
+
+  <div class="w-20 h-20 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+    <% if cart_item.product && cart_item.product.respond_to?(:image_url) && cart_item.product.image_url.present? %>
+      <img src="<%= cart_item.product.image_url %>" alt="<%= cart_item.product.name %>" class="object-cover w-full h-full" loading="lazy" />
+    <% elsif cart_item.product && cart_item.product.respond_to?(:image) && cart_item.product.image&.attached? %>
+      <%= image_tag url_for(cart_item.product.image), class: "object-cover w-full h-full", alt: cart_item.product.name, loading: "lazy" %>
+    <% else %>
+      <div class="w-full h-full bg-gray-200 flex items-center justify-center text-sm text-gray-500">
+        No image
+      </div>
+    <% end %>
+  </div>
+
+  <div class="flex-1 min-w-0">
+    <h4 class="item-name text-sm font-medium"><%= cart_item.product&.name || "Product ##{cart_item.product_id}" %></h4>
+
+    <div class="item-meta text-sm text-gray-600 mt-1">
+      <span class="item-price"><%= number_to_currency(unit_price) %></span>
+
+      <span class="mx-3 qty-controls" data-id="<%= cart_item.id %>">
+        <button class="qty-btn decrease" aria-label="Decrease quantity">−</button>
+        <input type="number" class="qty-input" value="<%= cart_item.quantity %>" min="1" style="width:3.5rem; text-align:center;" />
+        <button class="qty-btn increase" aria-label="Increase quantity">+</button>
+      </span>
+
+      <span class="mx-3 item-subtotal"><%= number_to_currency((unit_price * cart_item.quantity.to_i).to_f) %></span>
+    </div>
+  </div>
+
+  <div class="cart-actions ml-4">
+    <%# Uses your existing remove_item route; adjust if needed %>
+    <%= link_to 'Remove', remove_item_cart_path(cart_item), method: :delete, data: { confirm: 'Remove this item?' }, class: 'remove-btn text-sm text-red-600 hover:underline' %>
+  </div>
+</li>

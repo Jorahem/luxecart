@@ -1,47 +1,195 @@
-<footer class="bg-white border-t">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="py-8 md:flex md:items-center md:justify-between">
-      <!-- Branding & copyright -->
-      <div class="flex items-center justify-center md:justify-start space-x-3">
-        <div class="text-sm font-semibold text-indigo-600">LUXE<span class="text-gray-900">CART</span></div>
-        <div class="text-sm text-gray-500">&copy; <%= Time.current.year %> LuxeCart</div>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+/>
+<footer class="bg-white border-t mt-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+
+      <!-- About -->
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white">
+            <i class="fa fa-gem"></i>
+          </div>
+          <div class="text-lg font-bold">LuxeCart</div>
+        </div>
+        <p class="text-sm text-gray-600">
+          LuxeCart sources premium products and delivers a smooth shopping experience. Fast shipping, easy returns, and exceptional support.
+        </p>
+
+        <div class="mt-4 text-sm text-gray-500">
+          <div><strong>Address</strong>: 123 Market St, City, Country</div>
+          <div class="mt-1"><strong>Phone</strong>: <a href="tel:+1234567890" class="text-indigo-600 hover:underline">+1 (234) 567-890</a></div>
+          <div class="mt-1"><strong>Email</strong>: <a href="mailto:support@luxecart.example" class="text-indigo-600 hover:underline">support@luxecart.example</a></div>
+        </div>
       </div>
 
-      <!-- Links: use helper if defined, otherwise fallback to plain path -->
-      <div class="mt-4 md:mt-0 flex flex-col sm:flex-row items-center justify-center md:justify-end gap-3">
-        <% if respond_to?(:privacy_path) %>
-          <%= link_to "Privacy", privacy_path, class: "text-sm text-gray-500 hover:text-indigo-600" %>
-        <% else %>
-          <%= link_to "Privacy", "/privacy", class: "text-sm text-gray-500 hover:text-indigo-600" %>
-        <% end %>
+      <!-- Quick links -->
+      <div>
+        <h4 class="text-md font-semibold mb-3">Quick links</h4>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li><%= link_to "Home", root_path, class: "hover:text-indigo-600" %></li>
+          <li><%= link_to "Products", products_path, class: "hover:text-indigo-600" %></li>
+          <li><%= link_to "Categories", categories_path, class: "hover:text-indigo-600" %></li>
+          <li><%= link_to "Cart", cart_path, class: "hover:text-indigo-600" %></li>
+          <li><%= link_to "Orders", orders_path, class: "hover:text-indigo-600" if defined?(orders_path) %></li>
+          <li><%= link_to "Support", contact_path, class: "hover:text-indigo-600" %></li>
+        </ul>
+      </div>
 
-        <% if respond_to?(:terms_path) %>
-          <%= link_to "Terms", terms_path, class: "text-sm text-gray-500 hover:text-indigo-600" %>
-        <% else %>
-          <%= link_to "Terms", "/terms", class: "text-sm text-gray-500 hover:text-indigo-600" %>
-        <% end %>
+      <!-- Customer care -->
+      <div>
+        <h4 class="text-md font-semibold mb-3">Customer care</h4>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li><%= link_to "Shipping & returns", about_path(anchor: 'shipping'), class: "hover:text-indigo-600" %></li>
+          <li><%= link_to "Payment options", about_path(anchor: 'payments'), class: "hover:text-indigo-600" %></li>
+          <li><%= link_to "FAQ", about_path(anchor: 'faq'), class: "hover:text-indigo-600" %></li>
+          <li><%= link_to "Privacy", privacy_path, class: "hover:text-indigo-600" %></li>
+          <li><%= link_to "Terms", terms_path, class: "hover:text-indigo-600" %></li>
+        </ul>
+      </div>
 
-        <% if respond_to?(:contact_path) %>
-          <%= link_to "Contact", contact_path, class: "text-sm text-gray-500 hover:text-indigo-600" %>
-        <% else %>
-          <%= link_to "Contact", "/contact", class: "text-sm text-gray-500 hover:text-indigo-600" %>
-        <% end %>
+      <!-- Newsletter + social -->
+      <div>
+        <h4 class="text-md font-semibold mb-3">Stay in touch</h4>
+
+        <p class="text-sm text-gray-600 mb-3">Subscribe for exclusive deals and early access to new arrivals.</p>
+
+        <form id="footer-newsletter-form" class="flex gap-2" action="<%= respond_to?(:newsletter_subscriptions_path) ? newsletter_subscriptions_path : '#' %>" method="post" data-remote="true" onsubmit="return false;">
+          <input id="footer-newsletter-email" type="email" required placeholder="Your email"
+                 class="w-full px-3 py-2 rounded border border-gray-200 text-sm" aria-label="Email address for newsletter">
+          <button id="footer-newsletter-submit" type="button" class="px-4 py-2 bg-indigo-600 text-white rounded text-sm">Subscribe</button>
+        </form>
+
+        <div id="footer-newsletter-msg" class="mt-3 text-sm" aria-live="polite" role="status"></div>
+
+        <div class="mt-6">
+          <h5 class="text-sm font-medium mb-2">Follow us</h5>
+
+<div class="flex items-center gap-3">
+  <a
+    href="https://www.facebook.com"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="text-gray-600 hover:text-indigo-600"
+    aria-label="Facebook"
+  >
+    <i class="fa fa-facebook fa-lg"></i>
+  </a>
+
+  <a
+    href="https://twitter.com"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="text-gray-600 hover:text-indigo-600"
+    aria-label="Twitter"
+  >
+    <i class="fa fa-twitter fa-lg"></i>
+  </a>
+
+  <a
+    href="https://www.instagram.com"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="text-gray-600 hover:text-indigo-600"
+    aria-label="Instagram"
+  >
+    <i class="fa fa-instagram fa-lg"></i>
+  </a>
+
+  <a
+    href="https://www.pinterest.com"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="text-gray-600 hover:text-indigo-600"
+    aria-label="Pinterest"
+  >
+    <i class="fa fa-pinterest fa-lg"></i>
+  </a>
+</div>
+
+        </div>
       </div>
     </div>
 
-    <!-- Optional extra row: social icons and small print -->
-    <div class="border-t pt-4 pb-6">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div class="text-xs text-gray-400 text-center md:text-left">
-          Handcrafted with quality — secure payments with Stripe.
-        </div>
+   <!-- Payments / trust and footer bottom -->
+<div class="mt-8 border-t pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+  <div class="flex items-center gap-4">
+    <div class="text-sm text-gray-500">&copy; <span id="footer-year"><%= Time.current.year %></span> LuxeCart. All rights reserved.</div>
+    <div class="text-sm text-gray-500 hidden sm:block">| Built with ♥</div>
+  </div>
 
-        <div class="flex items-center justify-center gap-4">
-          <a href="#" class="text-gray-400 hover:text-indigo-600"><i class="fab fa-facebook-f" aria-hidden="true"></i><span class="sr-only">Facebook</span></a>
-          <a href="#" class="text-gray-400 hover:text-indigo-600"><i class="fab fa-instagram" aria-hidden="true"></i><span class="sr-only">Instagram</span></a>
-          <a href="#" class="text-gray-400 hover:text-indigo-600"><i class="fab fa-twitter" aria-hidden="true"></i><span class="sr-only">Twitter</span></a>
-        </div>
+  <!-- Nepali payment logos -->
+  <div class="flex items-center gap-3">
+    <%= image_tag "esewa.png", alt: "eSewa", class: "h-6 object-contain", loading: "lazy" if Rails.application.assets.find_asset("esewa.png") || File.exist?(Rails.root.join('app','assets','images','esewa.png')) %>
+    <%= image_tag "khalti.png", alt: "Khalti", class: "h-6 object-contain", loading: "lazy" if Rails.application.assets.find_asset("khalti.png") || File.exist?(Rails.root.join('app','assets','images','khalti.png')) %>
+    <%= image_tag "imepay.png", alt: "IME Pay / ConnectIPS", class: "h-6 object-contain", loading: "lazy" if Rails.application.assets.find_asset("imepay.png") || File.exist?(Rails.root.join('app','assets','images','imepay.png')) %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <button id="back-to-top" class="text-gray-600 hover:text-indigo-600" aria-label="Back to top">
+      <i class="fa fa-chevron-up"></i>
+    </button>
+  </div>
+</div>
+
+
+
+
+      
+
+      <div class="flex items-center gap-3">
+        <button id="back-to-top" class="text-gray-600 hover:text-indigo-600" aria-label="Back to top">
+          <i class="fa fa-chevron-up"></i>
+        </button>
       </div>
     </div>
   </div>
+
+  <script>
+    (function() {
+      // Footer newsletter handler: demo + AJAX placeholder
+      const form = document.getElementById('footer-newsletter-form');
+      const emailInput = document.getElementById('footer-newsletter-email');
+      const submitBtn = document.getElementById('footer-newsletter-submit');
+      const msg = document.getElementById('footer-newsletter-msg');
+
+      function showMsg(text, isError) {
+        msg.textContent = text;
+        msg.className = isError ? 'text-sm text-red-600 mt-3' : 'text-sm text-green-600 mt-3';
+        setTimeout(() => { msg.textContent = ''; msg.className = 'text-sm'; }, 7000);
+      }
+
+      if (submitBtn) {
+        submitBtn.addEventListener('click', function () {
+          const email = (emailInput && emailInput.value || '').trim();
+          if (!email) { showMsg('Please enter a valid email address', true); return; }
+
+          // If you have a server endpoint to receive newsletter signups, POST here.
+          // Example (uncomment & set correct path):
+          /*
+          fetch('<%= j(newsletter_subscriptions_path) rescue "#" %>', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': document.querySelector("meta[name='csrf-token']").getAttribute("content") },
+            body: JSON.stringify({ email: email })
+          })
+          .then(r => r.json()).then(j => showMsg(j.message || 'Thanks — you are subscribed!'))
+          .catch(() => showMsg('Subscription failed — try again later', true));
+          */
+
+          // Demo fallback (no server): show success toast and clear input
+          showMsg("Thanks — we'll send deals to " + email);
+          emailInput.value = '';
+        });
+      }
+
+      // Back to top
+      const back = document.getElementById('back-to-top');
+      back && back.addEventListener('click', function (e) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    })();
+  </script>
 </footer>

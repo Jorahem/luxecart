@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Your Cart</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-someHash" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <%= stylesheet_link_tag "carts", media: "all" %>
+</head>
+<body class="cart-page">
+  <main class="cart-container">
+    <header class="cart-header">
+      <h1><i class="fa fa-shopping-cart"></i> Your Cart</h1>
+      <p class="muted">Review items below. Adjust quantities or remove items.</p>
+    </header>
+
+    <section class="cart-body">
+      <ul id="cart-items" class="cart-items-list">
+        <% if @cart_items.present? && @cart_items.any? %>
+          <%= render partial: 'cart_item', collection: @cart_items, as: :cart_item %>
+        <% else %>
+          <li class="empty">Your cart is empty.</li>
+        <% end %>
+      </ul>
+
+      <aside class="cart-summary">
+        <div class="summary-card">
+          <h3>Order summary</h3>
+
+          <%# Server-side safe subtotal computation (works if CartItem lacks unit_price_decimal) %>
+          <% subtotal = @cart_items.to_a.sum do |i|
+               unit_price =
+                 if i.respond_to?(:unit_price) && i.unit_price.present?
+                   BigDecimal(i.unit_price.to_s)
+                 elsif i.respond_to?(:unit_price_decimal) && i.unit_price_decimal.present?
+                   BigDecimal(i.unit_price_decimal.to_s)
+                 elsif i.respond_to?(:unit_price_cents) && i.unit_price_cents.present?
+                   BigDecimal(i.unit_price_cents.to_s) / 100
+                 elsif i.respond_to?(:price_cents) && i.price_cents.present?
+                   BigDecimal(i.price_cents.to_s) / 100
+                 elsif i.product && i.product.respond_to?(:price) && i.product.price.present?
+                   BigDecimal(i.product.price.to_s)
+                 elsif i.product && i.product.respond_to?(:price_cents) && i.product.price_cents.present?
+                   BigDecimal(i.product.price_cents.to_s) / 100
+                 else
+                   BigDecimal("0")
+                 end
+               (unit_price * i.quantity.to_i).to_f
+             end %>
+
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <strong id="subtotal"><%= number_to_currency(subtotal) %></strong>
+          </div>
+          <div class="summary-row small muted">
+            <span>Estimated tax & shipping calculated at checkout</span>
+          </div>
+
+          <button id="checkout-btn" class="btn-primary">Proceed to checkout</button>
+          <button id="continue-btn" class="btn-secondary" onclick="window.location = '<%= root_path %>'">
+            <i class="fa fa-arrow-left"></i> Continue shopping
+          </button>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const cartItemsList = document.getElementById('cart-items');
+      const subtotalEl = document.getElementById('subtotal');
+
+      function recalcSubtotal() {
+        let subtotal = 0;
+        document.querySelectorAll('.cart-item').forEach(item => {
+          const price = parseFloat(item.dataset.price || 0);
+          const qtyInput = item.querySelector('.qty-input');
+          const qty = parseInt(qtyInput && qtyInput.value || 0, 10) || 0;
+          subtotal += price * qty;
+        });
+        subtotalEl.textContent = new Intl.NumberFormat('<%= I18n.locale %>', {
+          style: 'currency',
+          currency: '<%= (I18n.t("number.currency.format.unit") rescue "USD") %>'
+        }).format(subtotal);
+      }
+
+      // Delegate clicks for qty increase/decrease
+      cartItemsList.addEventListener('click', function(e) {
+        const btn = e.target.closest('.qty-btn');
+        if (!btn) return;
+        const container = btn.closest('.cart-item');
+        const input = container.querySelector('.qty-input');
+        let value = parseInt(input.value, 10) || 1;
+        if (btn.classList.contains('increase')) value++;
+        if (btn.classList.contains('decrease')) value = Math.max(1, value - 1);
+        input.value = value;
+        recalcSubtotal();
+
+        // Optionally: send PATCH to update quantity on server
+        // fetch(`/cart/items/${container.dataset.id}`, { method: 'PATCH', headers: {...}, body: JSON.stringify({ quantity: value }) })
+      });
+
+      // Delegate remove
+      cartItemsList.addEventListener('click', function(e) {
+        const remove = e.target.closest('.remove-btn');
+        if (!remove) return;
+        const item = remove.closest('.cart-item');
+        if (!confirm('Remove this item from your cart?')) return;
+
+        // Optionally send DELETE to backend, e.g.:
+        // fetch(`/cart/remove_item/${item.dataset.id}`, { method: 'DELETE', headers: {...} })
+        item.remove();
+        recalcSubtotal();
+      });
+
+      // Manual qty input changes
+      cartItemsList.addEventListener('change', function(e) {
+        if (e.target.matches('.qty-input')) {
+          e.target.value = Math.max(1, parseInt(e.target.value || 1, 10));
+          recalcSubtotal();
+        }
+      });
+
+      recalcSubtotal();
+    });
+  </script>
+</body>
+</html>
