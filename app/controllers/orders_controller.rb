@@ -1,30 +1,61 @@
 class OrdersController < ApplicationController
-  before_action :authenticate_user!
-  before_action :set_order, only: [:show, :cancel]
+  before_action :set_cart
 
-  def index
-    @orders = current_user.orders.recent.page(params[:page]).per(10)
+  def new
+    redirect_to cart_path, alert: 'Your cart is empty.' if @cart.cart_items.empty?
+    @order = Order.new
   end
 
-  def show
-    @order_items = @order.order_items.includes(:product)
-  end
-
-  def cancel
-    if @order.pending? || @order.processing?
-      @order.update(status: :cancelled, cancelled_at: Time.current)
-      @order.order_items.each do |item|
-        item.product.increment!(:stock_quantity, item.quantity)
-      end
-      redirect_to order_path(@order), notice: 'Order cancelled successfully.'
-    else
-      redirect_to order_path(@order), alert: 'Order cannot be cancelled.'
+  def create
+    if @cart.cart_items.empty?
+      redirect_to cart_path, alert: 'Your cart is empty.' and return
     end
+
+    @order = current_user ? current_user.orders.build(order_params) : Order.new(order_params)
+    # compute totals server-side
+    @order.subtotal = @cart.subtotal
+    @order.shipping_cost = @cart.shipping_cost
+    @order.tax = @cart.tax
+    @order.total_price = @cart.total
+    @order.payment_method = params[:order][:payment_method]
+
+    Order.transaction do
+      @order.save!
+      @cart.cart_items.each do |ci|
+        @order.order_items.create!(
+          product_id: ci.product_id,
+          quantity: ci.quantity,
+          unit_price: ci.price,
+          subtotal: (ci.price.to_d * ci.quantity)
+        )
+      end
+      @cart.clear!
+    end
+
+    respond_to do |format|
+      format.html { redirect_to order_success_path(@order), notice: 'Order placed successfully.' }
+      format.json { render json: { success: true, order_id: @order.id } }
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    flash.now[:alert] = e.message
+    render :new, status: :unprocessable_entity
+  end
+
+  def success
+    @order = Order.find(params[:id])
   end
 
   private
 
-  def set_order
-    @order = current_user.orders.find(params[:id])
+  def set_cart
+    @cart = if session[:cart_id].present?
+              Cart.find_by(id: session[:cart_id]) || Cart.create!
+            else
+              Cart.create!
+            end
+  end
+
+  def order_params
+    params.require(:order).permit(:full_name, :email, :phone, :shipping_street, :shipping_city, :shipping_postal_code, :shipping_state, :payment_method)
   end
 end

@@ -1,0 +1,19 @@
+<main class="container">
+  <h1>Order <%= @order.id %></h1>
+  <p>Thank you — your order was received.</p>
+
+  <section>
+    <h3>Shipping</h3>
+    <p><%= @order.shipping_full_name %><br>
+      <%= @order.shipping_street %><br>
+      <%= [@order.shipping_city, @order.shipping_state, @order.shipping_postal_code].compact.join(', ') %>
+    </p>
+  </section>
+
+  <section>
+    <h3>Summary</h3>
+    <%= render 'checkout/order_summary', cart: OpenStruct.new(cart_items: @order.order_items.map { |oi|
+      OpenStruct.new(product: oi.product, quantity: oi.quantity, line_subtotal: oi.subtotal)
+    }, subtotal: @order.subtotal, shipping_cost: @order.shipping_cost, tax_amount: @order.tax, total_price: @order.total_price) %>
+  </section>
+</main>

@@ -1,0 +1,19 @@
+<% content_for :title, "Dashboard" %>
+
+<h1>Admin Dashboard</h1>
+
+<div>
+  <p>Total orders: <strong><%= @total_orders || Order.count rescue "N/A" %></strong></p>
+  <p>Total customers: <strong><%= @total_customers || User.count rescue "N/A" %></strong></p>
+</div>
+
+<h2>Recent admin activities</h2>
+<% if defined?(@recent_activities) && @recent_activities.present? %>
+  <ul>
+    <% @recent_activities.each do |a| %>
+      <li><%= a.created_at.strftime("%Y-%m-%d %H:%M") %> — <%= a.admin&.email %> — <%= a.action %></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No recent activities.</p>
+<% end %>

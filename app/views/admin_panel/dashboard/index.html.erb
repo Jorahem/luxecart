@@ -1,0 +1,167 @@
+<% content_for :title, "Dashboard Overview" %>
+
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+  <div>
+    <h2 style="margin:0">Dashboard Overview</h2>
+    <div class="muted">Overview of your shop performance</div>
+  </div>
+
+  <div>
+    <select style="padding:8px;border-radius:8px;border:1px solid rgba(11,18,32,0.04)">
+      <option>Last 7 days</option>
+      <option>Last Week</option>
+      <option>Last Month</option>
+    </select>
+  </div>
+</div>
+
+<!-- KPI row -->
+<div class="row">
+  <div class="card" style="grid-column: span 1;">
+    <div class="muted">Total Transaction</div>
+    <div class="kpi-value"><%= number_to_currency(@total_transaction || 0) %></div>
+    <div class="muted">vs last 7 days <span style="color:green">▲ 34%</span></div>
+  </div>
+
+  <div class="card">
+    <div class="muted">Total Product</div>
+    <div class="kpi-value"><%= @total_product %></div>
+    <div class="muted">vs last 7 days <span style="color:green">▲ 8%</span></div>
+  </div>
+
+  <div class="card">
+    <div class="muted">Complete Order</div>
+    <div class="kpi-value"><%= @complete_order %></div>
+    <div class="muted">vs last 7 days <span style="color:green">▲ 25%</span></div>
+  </div>
+
+  <div class="card">
+    <div class="muted">Cancel Order</div>
+    <div class="kpi-value"><%= @cancel_order %></div>
+    <div class="muted">vs last 7 days <span style="color:red">▼ 3%</span></div>
+  </div>
+</div>
+
+<!-- Chart & Countries -->
+<div class="panel">
+  <div class="card chart-area">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div>
+        <div class="muted">This month sales report</div>
+        <div style="font-weight:700;font-size:18px"><%= number_to_currency(@revenue_series.sum) %> <span style="color:green;font-weight:600;margin-left:8px">▲ 34%</span></div>
+      </div>
+      <div class="muted">Monthly</div>
+    </div>
+
+    <canvas id="salesChart" height="200" data-labels="<%= @revenue_dates.map { |d| d.strftime('%d %b') }.to_json %>" data-values="<%= @revenue_series.to_json %>"></canvas>
+
+    <div class="table-wrapper">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+        <div class="muted">Last Transaction</div>
+        <div class="muted">Sort by <i class="fa-solid fa-angle-down"></i></div>
+      </div>
+
+      <table class="trans" style="margin-top:8px">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Order ID</th>
+            <th>Product Name</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @recent_transactions.each do |o| %>
+            <% first_item = o.order_items.first if o.respond_to?(:order_items) %>
+            <% p = first_item&.product rescue nil %>
+            <tr>
+              <td><input type="checkbox" /></td>
+              <td><%= o.try(:order_number) || "##{o.id}" %></td>
+              <td style="display:flex;align-items:center;gap:12px">
+                <%= image_tag(p.try(:image_url) || p.try(:image) || "https://via.placeholder.com/44", class: "product-thumb") if p || true %>
+                <div><%= p&.name || (first_item&.name || "Product") %></div>
+              </td>
+              <td><%= p.try(:category).try(:name) || p.try(:category) || "-" %></td>
+              <td><%= number_to_currency(o.try(:total_price) || 0) %></td>
+              <td class="muted"><%= o.created_at.strftime("%d %b, %Y") %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div>
+        <div class="muted">Top Countries by Sell</div>
+        <div style="font-weight:700">of the week based on country</div>
+      </div>
+      <div class="muted">Country</div>
+    </div>
+
+    <!-- map placeholder -->
+    <div style="height:160px;background:linear-gradient(180deg,#f8fbff,#ffffff);border-radius:8px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;">
+      <img src="https://via.placeholder.com/220x120?text=Map" alt="map" style="opacity:0.85">
+    </div>
+
+    <div class="countries">
+      <% @top_countries.each do |row| %>
+        <% country = row[:country] || row[0] || 'Unknown' %>
+        <% count = row[:count] || row[1] || 0 %>
+        <% percent = [[(count.to_f / (@top_countries.map{|r| (r[:count] || r[1] || 1).to_f}.max || 1) * 100).round, 0].max, 100].min %>
+        <div class="country-row">
+          <div style="width:36px;"><img src="https://flagcdn.com/16x12/us.png" alt="" style="width:28px;height:auto;border-radius:4px"></div>
+          <div style="min-width:120px"><strong><%= country %></strong></div>
+          <div class="bar"><i style="width:<%= percent %>%"></i></div>
+          <div style="width:36px;text-align:right" class="muted"><%= percent %>%</div>
+        </div>
+      <% end %>
+    </div>
+
+    <div style="margin-top:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="muted">Recent Order</div>
+        <a href="<%= admin_orders_path %>">See All</a>
+      </div>
+
+      <ul class="recent-orders" style="margin-top:8px;padding:0;list-style:none">
+        <% @recent_orders.each do |o| %>
+          <% item = o.order_items.first rescue nil %>
+          <% p = item&.product rescue nil %>
+          <li>
+            <img src="<%= (p.try(:image_url) || p.try(:image) || 'https://via.placeholder.com/48') %>" alt="" style="width:44px;height:44px;border-radius:8px;object-fit:cover">
+            <div style="flex:1">
+              <div style="font-weight:700"><%= p&.name || item&.name || "Product" %></div>
+              <div class="muted"><%= p&.category || "-" %> • <%= number_to_currency(item.try(:unit_price) || 0) %></div>
+            </div>
+            <div class="muted"><%= number_to_currency(o.try(:total_price) || 0) %></div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    const c = document.getElementById('salesChart');
+    if(c){
+      const labels = JSON.parse(c.dataset.labels || '[]');
+      const values = JSON.parse(c.dataset.values || '[]');
+      new Chart(c.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Revenue', data: values, borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.08)', tension: .35, pointRadius:3, fill:true },
+            { label: 'Previous', data: values.map(v=>v*0.75), borderColor: '#ef4444', borderDash: [6,6], backgroundColor: 'transparent', tension:.35, pointRadius:0 }
+          ]
+        },
+        options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} }
+      });
+    }
+  });
+</script>

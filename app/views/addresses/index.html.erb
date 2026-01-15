@@ -1,0 +1,46 @@
+<main class="addresses-page">
+  <div class="container">
+    <header class="page-header">
+      <h1>Your addresses</h1>
+      <p class="lead">Manage shipping addresses for your account.</p>
+    </header>
+
+    <div class="content-grid">
+      <section class="card">
+        <% if @addresses.any? %>
+          <ul class="address-list">
+            <% @addresses.each do |addr| %>
+              <li class="address-item">
+                <div class="address-main">
+                  <strong><%= [addr.first_name, addr.last_name].compact.join(" ") %></strong>
+                  <div class="small muted">
+                    <%= [addr.street_address, addr.city, addr.state, addr.postal_code].compact.join(", ") %>
+                  </div>
+                  <% if addr.phone.present? %>
+                    <div class="small muted">Phone: <%= addr.phone %></div>
+                  <% end %>
+                </div>
+
+                <div class="address-actions">
+                  <%= link_to 'Edit', edit_address_path(addr), class: 'btn btn-link' %>
+                  <%= link_to 'Delete', address_path(addr), method: :delete, data: { confirm: 'Remove this address?' }, class: 'btn btn-link danger' %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p>No addresses saved yet.</p>
+        <% end %>
+
+        <div style="margin-top:12px;">
+          <%= link_to 'Add new address', new_address_path, class: 'btn btn-primary' %>
+        </div>
+      </section>
+
+      <aside class="card help">
+        <h3>Delivery tip</h3>
+        <p class="small muted">Make sure your postal/ZIP code and state/region are correct to avoid delays.</p>
+      </aside>
+    </div>
+  </div>
+</main>

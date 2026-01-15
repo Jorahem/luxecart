@@ -1,0 +1,238 @@
+<%# Checkout page - modern two-column layout %>
+<%= stylesheet_link_tag "checkout_theme", media: "all" %>
+
+<main class="page-checkout">
+  <div class="wrap">
+    <!-- progress indicator -->
+    <div class="progress">
+      <div class="step done"><span>1</span><div class="label">cart</div></div>
+      <div class="line"></div>
+      <div class="step active"><span>2</span><div class="label">checkout</div></div>
+    </div>
+
+    <div class="panel">
+      <!-- left column: addresses / shipping -->
+      <section class="left">
+        <h3 class="section-title">Shipping Address</h3>
+
+        <div class="address-card">
+          <div class="address-header">
+            <label class="radio-new">
+              <input type="radio" name="address_choice" value="new" checked>
+              <span class="radio-mark"></span>
+              <span class="radio-text">Add New Address</span>
+            </label>
+          </div>
+
+          <!-- address form -->
+          <div class="address-form" id="address-form">
+            <form id="checkout-address-form" action="<%= addresses_path %>" method="post">
+              <%= csrf_meta_tags %>
+              <input type="hidden" name="return_to" value="checkout">
+              <input type="hidden" id="form-address-id" name="address[id]" value="">
+              <div class="row">
+                <div class="col">
+                  <label>First Name</label>
+                  <input name="address[first_name]" id="addr_fn" class="input" />
+                </div>
+                <div class="col">
+                  <label>Last Name</label>
+                  <input name="address[last_name]" id="addr_ln" class="input" />
+                </div>
+              </div>
+
+              <div class="row">
+                <label>Street Address</label>
+                <input name="address[street_address]" id="addr_street" class="input full" />
+              </div>
+
+              <div class="row small-cols">
+                <div class="col">
+                  <label>Apt / Unit</label>
+                  <input name="address[apt]" id="addr_apt" class="input" />
+                </div>
+                <div class="col">
+                  <label>State</label>
+                  <input name="address[state]" id="addr_state" class="input" />
+                </div>
+                <div class="col">
+                  <label>Zip</label>
+                  <input name="address[postal_code]" id="addr_zip" class="input" />
+                </div>
+              </div>
+
+              <div class="actions-row">
+                <button type="button" id="cancel-address" class="btn btn-outline">cancel</button>
+                <button type="button" id="save-address" class="btn btn-primary">Save this Address</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- saved addresses list (if any) -->
+          <div class="saved-addresses" id="saved-addresses">
+            <% if @addresses.present? %>
+              <ul class="address-list">
+                <% @addresses.each do |addr| %>
+                  <li class="addr-item" data-id="<%= addr.id %>"
+                      data-first-name="<%= h addr.first_name %>"
+                      data-last-name="<%= h addr.last_name %>"
+                      data-street="<%= h addr.street_address %>"
+                      data-apt="<%= h(addr.try(:apt)) %>"
+                      data-city="<%= h(addr.city) %>"
+                      data-state="<%= h(addr.state) %>"
+                      data-zip="<%= h(addr.postal_code) %>"
+                      data-phone="<%= h(addr.phone) %>">
+                    <label class="addr-select">
+                      <input type="radio" name="selected_address" value="<%= addr.id %>" class="addr-radio" <%= 'checked' if @default_address && @default_address.id == addr.id %> />
+                      <div class="addr-content">
+                        <div class="addr-name"><strong><%= [addr.first_name, addr.last_name].compact.join(' ') %></strong></div>
+                        <div class="addr-lines"><%= [addr.street_address, addr.city, addr.state, addr.postal_code].compact.join(', ') %></div>
+                        <% if addr.phone.present? %>
+                          <div class="addr-phone">Phone: <%= addr.phone %></div>
+                        <% end %>
+                      </div>
+                    </label>
+
+                    <div class="addr-actions">
+                      <button class="link edit-addr" data-id="<%= addr.id %>">Edit</button>
+                      <button class="link danger delete-addr" data-id="<%= addr.id %>">Delete</button>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            <% end %>
+          </div>
+        </div>
+      </section>
+
+      <!-- right column: summary -->
+      <aside class="right">
+        <div class="summary-box">
+          <button id="place-order" class="btn btn-place">Place Order</button>
+          <p class="disclaimer">By placing your order, you agree to our company <a href="#">Privacy policy</a> and <a href="#">Conditions of use</a>.</p>
+
+          <hr class="divider">
+
+     <div id="order-summary">
+  <%= render 'checkout/order_summary', cart: @cart %>
+</div>
+        </div>
+
+
+
+        
+      </aside>
+    </div>
+  </div>
+</main>
+
+<!-- minimal JS to handle inline add/edit/delete + selection -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const savedList = document.getElementById('saved-addresses');
+  const form = document.getElementById('checkout-address-form');
+  const saveBtn = document.getElementById('save-address');
+  const cancelBtn = document.getElementById('cancel-address');
+  const addrItems = document.querySelectorAll('.addr-item');
+
+  function clearForm() {
+    ['addr_fn','addr_ln','addr_street','addr_apt','addr_state','addr_zip'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('form-address-id').value = '';
+  }
+
+  // Click edit: prefill form
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('.edit-addr')) {
+      const id = e.target.dataset.id;
+      const li = document.querySelector('.addr-item[data-id="'+id+'"]');
+      if (!li) return;
+      document.getElementById('addr_fn').value = li.dataset.firstName || '';
+      document.getElementById('addr_ln').value = li.dataset.lastName || '';
+      document.getElementById('addr_street').value = li.dataset.street || '';
+      document.getElementById('addr_apt').value = li.dataset.apt || '';
+      document.getElementById('addr_state').value = li.dataset.state || '';
+      document.getElementById('addr_zip').value = li.dataset.zip || '';
+      document.getElementById('form-address-id').value = id;
+      // show form (already visible in this design)
+      window.scrollTo({ top: form.offsetTop - 40, behavior: 'smooth' });
+    }
+
+    if (e.target.matches('.delete-addr')) {
+      if (!confirm('Remove this address?')) return;
+      const id = e.target.dataset.id;
+      fetch('/addresses/' + id, {
+        method: 'DELETE',
+        headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+                   'Accept': 'application/json' }
+      }).then(res => {
+        if (res.ok) {
+          const li = document.querySelector('.addr-item[data-id="'+id+'"]');
+          if (li) li.remove();
+        } else {
+          alert('Could not delete address.');
+        }
+      }).catch(()=> alert('Network error'));
+    }
+  });
+
+  // Cancel button resets
+  cancelBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    clearForm();
+  });
+
+  // Save handler (simplified: sends form via POST or PATCH depending on id)
+  saveBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    const id = document.getElementById('form-address-id').value;
+    const method = id ? 'PATCH' : 'POST';
+    const url = id ? '/addresses/' + id : '/addresses';
+    const fd = new FormData(form);
+
+    fetch(url, {
+      method: method,
+      headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+                 'Accept': 'application/json' },
+      body: fd
+    }).then(async resp => {
+      const json = await resp.json().catch(()=>null);
+      if (resp.ok && json && json.success) {
+        // replace or insert item using returned html if provided (server must render partial when JSON)
+        // fallback: reload page to show changes
+        location.reload();
+      } else {
+        alert((json && json.errors) ? json.errors.join(', ') : 'Could not save address');
+      }
+    }).catch(()=> alert('Network error'));
+  });
+
+  // When user clicks a radio, ensure selected_address_id hidden input is set before placing order
+  document.addEventListener('change', function(e) {
+    if (e.target.matches('.addr-radio')) {
+      // create or set hidden field in checkout form
+      let hf = document.querySelector('input[name="selected_address_id"][type="hidden"]');
+      if (!hf) {
+        hf = document.createElement('input');
+        hf.type = 'hidden';
+        hf.name = 'selected_address_id';
+        const checkoutForm = document.querySelector('form[action*="/checkout"]');
+        if (checkoutForm) checkoutForm.appendChild(hf);
+      }
+      hf.value = e.target.value;
+    }
+  });
+
+  // place order button: submit the checkout form
+  document.getElementById('place-order').addEventListener('click', function() {
+    const checkoutForm = document.querySelector('form[action*="/checkout"]');
+    if (checkoutForm) checkoutForm.submit();
+    else {
+      // fallback: navigate to checkout create endpoint (may not be desired)
+      alert('Cannot submit order: checkout form not found.');
+    }
+  });
+});
+</script>

@@ -1,0 +1,25 @@
+<% addresses ||= [] %>
+<% if addresses.present? && addresses.any? %>
+  <div class="addresses">
+    <% addresses.each do |addr| %>
+      <label class="address">
+        <%= radio_button_tag :selected_address_id, addr.id, (addr == default_address) %>
+        <div class="address-info">
+          <div class="name"><%= [addr.first_name, addr.last_name].compact.join(" ") %></div>
+          <div class="line small muted">
+            <%= [addr.street_address, addr.city, addr.state, addr.postal_code].compact.join(", ") %>
+          </div>
+        </div>
+      </label>
+    <% end %>
+    <div class="address-actions">
+      <%= link_to "Add new address", new_address_path, class: "btn btn-link" %>
+      <%= link_to "Manage addresses", addresses_path, class: "btn btn-link" %>
+    </div>
+  </div>
+<% else %>
+  <div class="no-address">
+    <p class="muted">No saved addresses found.</p>
+    <%= link_to "Add address", new_address_path, class: "btn btn-primary" %>
+  </div>
+<% end %>

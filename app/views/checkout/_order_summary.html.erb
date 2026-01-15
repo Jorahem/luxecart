@@ -1,0 +1,31 @@
+<%# Right column order summary partial - clean layout %>
+<div class="summary-details">
+  <%# Render list of cart items (simple) %>
+  <ul class="summary-items">
+    <% (@cart.cart_items || []).each do |item| %>
+      <li>
+        <div class="item-left"><%= item.product&.name || 'Product' %> <div class="small muted"><%= pluralize(item.quantity, 'item') %></div></div>
+        <div class="item-right"><%= number_to_currency((item.respond_to?(:unit_price_decimal) && item.unit_price_decimal.present?) ? item.unit_price_decimal * item.quantity : (item.product&.price.to_f * item.quantity)) %></div>
+      </li>
+    <% end %>
+  </ul>
+
+  <% subtotal = @cart ? @cart.total_amount.to_d : BigDecimal('0') %>
+  <% tax = (subtotal * 0.10).round(2) %>
+  <% shipping = 9.99 %>
+  <% total = (subtotal + tax + shipping).round(2) %>
+
+  <div class="summary-lines">
+    <div class="line"><span>Items</span><span><%= number_to_currency(subtotal) %></span></div>
+    <div class="line"><span>Shipping and handling</span><span><%= number_to_currency(shipping) %></span></div>
+    <div class="line"><span>Before tax</span><span><%= number_to_currency(subtotal + shipping) %></span></div>
+    <div class="line"><span>Tax Collected</span><span><%= number_to_currency(tax) %></span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="total-line">
+    <span>Order Total:</span>
+    <strong><%= number_to_currency(total) %></strong>
+  </div>
+</div>

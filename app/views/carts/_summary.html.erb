@@ -1,0 +1,11 @@
+<div class="summary-card">
+  <h3>Order summary</h3>
+
+  <div class="summary-row"><span>Items (<%= cart.total_quantity %>)</span><span><%= number_to_currency(cart.subtotal) %></span></div>
+  <div class="summary-row"><span>Shipping</span><span><%= number_to_currency(cart.shipping_cost) %></span></div>
+  <div class="summary-row"><span>Tax</span><span><%= number_to_currency(cart.tax) %></span></div>
+  <hr>
+  <div class="summary-total"><span>Total</span><strong><%= number_to_currency(cart.total) %></strong></div>
+
+  <%= link_to 'Proceed to Checkout', new_order_path, class: 'btn btn-primary full-width' %>
+</div>

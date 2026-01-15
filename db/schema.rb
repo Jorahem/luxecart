@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_01_13_144018) do
+ActiveRecord::Schema[7.1].define(version: 2026_01_15_090500) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -57,6 +57,32 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_13_144018) do
     t.datetime "updated_at", null: false
     t.index ["is_default"], name: "index_addresses_on_is_default"
     t.index ["user_id"], name: "index_addresses_on_user_id"
+  end
+
+  create_table "admin_activities", force: :cascade do |t|
+    t.integer "admin_id", null: false
+    t.string "action", null: false
+    t.string "trackable_type"
+    t.bigint "trackable_id"
+    t.text "metadata"
+    t.string "ip_address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_admin_activities_on_admin_id"
+    t.index ["trackable_type", "trackable_id"], name: "index_admin_activities_on_trackable_type_and_trackable_id"
+  end
+
+  create_table "admins", force: :cascade do |t|
+    t.string "email", null: false
+    t.string "password_digest", null: false
+    t.string "role", default: "admin", null: false
+    t.string "remember_token"
+    t.datetime "remember_token_expires_at"
+    t.integer "failed_attempts", default: 0, null: false
+    t.boolean "locked", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_admins_on_email", unique: true
   end
 
   create_table "brands", force: :cascade do |t|
@@ -145,6 +171,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_13_144018) do
     t.string "product_sku"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "subtotal", precision: 12, scale: 2, default: "0.0", null: false
     t.index ["order_id", "product_id"], name: "index_order_items_on_order_id_and_product_id"
     t.index ["order_id"], name: "index_order_items_on_order_id"
     t.index ["product_id"], name: "index_order_items_on_product_id"
@@ -170,6 +197,13 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_13_144018) do
     t.string "coupon_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "shipping_full_name"
+    t.string "shipping_phone"
+    t.string "shipping_street"
+    t.string "shipping_city"
+    t.string "shipping_state"
+    t.string "shipping_postal_code"
+    t.decimal "tax", precision: 12, scale: 2, default: "0.0", null: false
     t.index ["order_number"], name: "index_orders_on_order_number", unique: true
     t.index ["payment_status"], name: "index_orders_on_payment_status"
     t.index ["status"], name: "index_orders_on_status"
@@ -269,6 +303,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_13_144018) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "users"
+  add_foreign_key "admin_activities", "admins"
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "products"
   add_foreign_key "carts", "users"

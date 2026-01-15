@@ -1,7 +1,4 @@
-/* app/assets/stylesheets/cart.css
-   Minimal, modern cart & checkout styles used by app/views/carts/show.html.erb
-*/
-
+/* Minimal, modern cart & checkout styles */
 .container { max-width: 1100px; margin: 36px auto; padding: 0 18px; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:#222; }
 h1 { margin-bottom: 12px; font-weight:700; color:#222; }
 .cart-grid, .checkout-grid { display: grid; grid-template-columns: 1fr 360px; gap: 24px; align-items:start; }

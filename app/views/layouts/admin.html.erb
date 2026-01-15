@@ -1,0 +1,323 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Admin • <%= content_for?(:title) ? yield(:title) : "Dashboard" %></title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <!-- Chart.js and Font Awesome for icons -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+
+  <style>
+    /* Dark, glassy admin theme inspired by the reference */
+    :root{
+      --bg: #0b0b0d;
+      --panel: #0f1113;
+      --panel-2: #121214;
+      --muted: #9aa3ad;
+      --text: #e6eefc;
+      --accent: #c0f66b;    /* neon green */
+      --accent-2: #b49cff;  /* neon purple */
+      --card-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      --glass-border: rgba(255,255,255,0.03);
+    }
+
+    html,body { height:100%; margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: #0b0b0d; color:var(--text); -webkit-font-smoothing:antialiased; }
+
+    /* outer device frame look */
+    .frame {
+      max-width:1280px;
+      margin:28px auto;
+      padding:20px;
+      border-radius:18px;
+      background:linear-gradient(180deg,#0b0b0d,#0f1012);
+      box-shadow: 0 18px 60px rgba(2,6,23,0.7), inset 0 2px 8px rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.02);
+    }
+
+    .admin-grid {
+      display:grid;
+      grid-template-columns: 240px 1fr 320px;
+      gap:20px;
+    }
+
+    /* left nav */
+    nav.left {
+      background: linear-gradient(180deg,var(--panel), var(--panel-2));
+      padding:18px;
+      border-radius:12px;
+      border:1px solid var(--glass-border);
+      box-shadow:var(--card-shadow);
+      height:calc(100vh - 120px);
+      position:sticky;
+      top:28px;
+      overflow:auto;
+    }
+    .logo {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:18px;
+    }
+    .logo .mark {
+      width:44px;height:44px;border-radius:8px;background: linear-gradient(135deg, var(--accent-2), #6ee7b7);
+      display:flex;align-items:center;justify-content:center;font-weight:800;color:#061017;
+      font-size:18px;box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+    }
+    .nav-item {
+      display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;margin:8px 0;color:var(--muted);text-decoration:none;
+    }
+    .nav-item.active, .nav-item:hover {
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      color:var(--text);
+    }
+
+    /* center content */
+    .center {
+      padding:6px;
+    }
+    .topbar {
+      display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;
+    }
+    .top-left { display:flex;align-items:center;gap:12px; }
+    .search {
+      display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;background:#0b0b0c;border:1px solid rgba(255,255,255,0.02);
+      color:var(--muted);
+    }
+    .kpi-row { display:flex;gap:14px;margin-bottom:16px; }
+    .kpi {
+      flex:1;padding:14px;border-radius:10px;background:linear-gradient(180deg,#111214,#0e0f11);border:1px solid rgba(255,255,255,0.02);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.6);
+    }
+    .kpi .title { color:var(--muted); font-size:13px; }
+    .kpi .amount { font-weight:700; font-size:20px; margin-top:6px; color:var(--text); }
+    .kpi .spark { height:36px; margin-top:10px; }
+
+    /* charts and panels */
+    .panel-big { background: linear-gradient(180deg,#0e0f11,#0b0b0d); padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.02); box-shadow:var(--card-shadow); }
+    .chart-wrap { height:300px; display:flex;align-items:center; }
+    .right-column { position:sticky; top:28px; height:calc(100vh - 120px); overflow:auto; }
+
+    /* donut card */
+    .donut-card { padding:14px;border-radius:12px;background:linear-gradient(180deg,#0f1113,#0d0d0f); border:1px solid rgba(255,255,255,0.02); }
+
+    /* lists */
+    .recent-orders { list-style:none;padding:0;margin:0; }
+    .recent-orders li { display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;background:transparent;margin-bottom:8px;border:1px solid rgba(255,255,255,0.01); }
+    .recent-orders img { width:44px;height:44px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,0.03); }
+
+    /* product table */
+    .table { width:100%; border-collapse:collapse; margin-top:12px; }
+    .table th, .table td { padding:10px 8px; text-align:left; color:var(--muted); border-bottom:1px solid rgba(255,255,255,0.02); }
+    .table tr { background:transparent; }
+
+    /* footer panel */
+    .promo { margin-top:20px; padding:12px;border-radius:10px;background:linear-gradient(90deg,#0d0d10,#0a0a0c); border:1px solid rgba(255,255,255,0.02); text-align:center; color:var(--muted); }
+
+    /* responsive */
+    @media (max-width:1100px) {
+      .admin-grid { grid-template-columns: 1fr; }
+      nav.left { display:none; }
+      .right-column { position:static; height:auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame" role="application">
+    <div class="admin-grid">
+      <!-- LEFT NAV -->
+      <nav class="left" aria-label="Main navigation">
+        <div class="logo">
+          <!-- Replace 'GP' text with your logo image if you have a file -->
+          <div class="mark">GP</div>
+          <div>
+            <div style="font-weight:700">GOIPSU</div>
+            <div style="font-size:12px;color:var(--muted)">Admin</div>
+          </div>
+        </div>
+
+        <!-- Nav items -->
+        <a href="<%= admin_dashboard_path %>" class="nav-item active"><i class="fa-solid fa-grid" style="width:18px"></i> Dashboard</a>
+        <a href="<%= admin_products_path rescue '#' %>" class="nav-item"><i class="fa-solid fa-box" style="width:18px"></i> Products</a>
+        <a href="<%= admin_orders_path rescue '#' %>" class="nav-item"><i class="fa-solid fa-receipt" style="width:18px"></i> Orders</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-chart-line" style="width:18px"></i> Sales</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-chart-pie" style="width:18px"></i> Reports</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-gear" style="width:18px"></i> Settings</a>
+
+        <div style="margin-top:20px" class="promo">
+          <div style="font-weight:700;margin-bottom:6px">Get Premium</div>
+          <div style="font-size:12px;color:var(--muted)">Upgrade for more analytics</div>
+          <div style="margin-top:10px"><a class="action" href="#" style="background:var(--accent);padding:8px 12px;border-radius:8px;color:#081016;text-decoration:none;font-weight:700">Upgrade</a></div>
+        </div>
+      </nav>
+
+      <!-- CENTER -->
+      <section class="center">
+        <div class="topbar">
+          <div class="top-left">
+            <h2 style="margin:0 12px 0 0">Dashboard</h2>
+            <div class="search"><i class="fa-solid fa-magnifying-glass" style="opacity:0.75"></i><input placeholder="Search... (press /)" style="background:transparent;border:none;outline:none;color:var(--muted);margin-left:8px" /></div>
+          </div>
+
+          <div style="display:flex;gap:12px;align-items:center">
+            <button title="Toggle theme" style="background:transparent;border:none;color:var(--muted)"><i class="fa-regular fa-sun"></i></button>
+            <button title="Notifications" style="background:transparent;border:none;color:var(--muted)"><i class="fa-regular fa-bell"></i></button>
+            <div style="width:44px;height:44px;border-radius:50%;overflow:hidden"><img src="https://via.placeholder.com/44" alt="avatar" style="width:100%;height:100%;object-fit:cover"></div>
+          </div>
+        </div>
+
+        <!-- KPI row -->
+        <div class="kpi-row">
+          <div class="kpi">
+            <div class="title">Total Sales</div>
+            <div class="amount"><%= number_to_currency(@total_sales || 9568.19) %></div>
+            <canvas class="spark" id="spark1"></canvas>
+          </div>
+
+          <div class="kpi">
+            <div class="title">Total Earnings</div>
+            <div class="amount"><%= number_to_currency(@total_earnings || 4593.36) %></div>
+            <canvas class="spark" id="spark2"></canvas>
+          </div>
+
+          <div class="kpi">
+            <div class="title">Total Orders</div>
+            <div class="amount"><%= (@total_orders_display || "150 k") %></div>
+            <canvas class="spark" id="spark3"></canvas>
+          </div>
+
+          <div class="kpi">
+            <div class="title">Visitors</div>
+            <div class="amount"><%= (@visitors || "18.5k") %></div>
+            <canvas class="spark" id="spark4"></canvas>
+          </div>
+        </div>
+
+        <!-- Earnings chart + lower table -->
+        <div class="panel">
+          <div class="panel-big">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <div style="font-weight:700">Earning Analytics</div>
+              <div class="muted">Monthly</div>
+            </div>
+
+            <div class="chart-wrap">
+              <canvas id="earningsChart" width="800" height="300" data-labels='<%= (@revenue_dates || []).map{|d| d.strftime("%b") }.to_json %>' data-values='<%= (@revenue_series || []).to_json %>'></canvas>
+            </div>
+
+            <!-- Table -->
+            <div style="margin-top:14px">
+              <div style="font-weight:700;margin-bottom:8px">Top Selling Products</div>
+              <table class="table">
+                <thead>
+                  <tr><th>Product</th><th>Price</th><th>Orders</th><th>Stock</th><th>Amount</th></tr>
+                </thead>
+                <tbody>
+                  <% (@top_products || []).each do |p| %>
+                    <tr>
+                      <td style="display:flex;align-items:center;gap:10px">
+                        <img src="<%= (p.try(:image_url) || 'https://via.placeholder.com/48') %>" style="width:44px;height:44px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,0.03)" alt="">
+                        <div><strong style="color:var(--text)"><%= p.try(:name) || 'Sample Product' %></strong><div class="muted" style="font-size:12px"><%= p.try(:category).try(:name) rescue '' %></div></div>
+                      </td>
+                      <td><%= number_to_currency(p.try(:price) || 250) %></td>
+                      <td class="muted"><%= p.try(:orders_count) || rand(10..90) %></td>
+                      <td class="muted"><%= p.try(:stock_quantity) || rand(1..40) %></td>
+                      <td><strong><%= number_to_currency((p.try(:price) || 250) * (p.try(:orders_count) || 12)) %></strong></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN -->
+          <aside class="right-column">
+            <div class="donut-card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <div style="font-weight:700">Mode of Order</div>
+                <div class="muted" style="font-size:13px">Online vs Store</div>
+              </div>
+              <canvas id="donutChart" width="280" height="220" data-values='[60,40]' data-labels='["Online","Store"]'></canvas>
+              <div style="display:flex;justify-content:space-between;margin-top:12px">
+                <div><span style="display:inline-block;width:10px;height:10px;background:var(--accent);margin-right:8px;border-radius:2px"></span> Online</div>
+                <div class="muted">60%</div>
+              </div>
+            </div>
+
+            <div style="height:20px"></div>
+
+            <div class="panel-big">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <div style="font-weight:700">Recent Orders</div>
+                <div class="muted">See all</div>
+              </div>
+
+              <ul class="recent-orders">
+                <% (@recent_orders || []).each do |o| %>
+                  <% item = o.order_items&.first rescue nil %>
+                  <% p = item&.product rescue nil %>
+                  <li>
+                    <img src="<%= (p.try(:image_url) || 'https://via.placeholder.com/44') %>" alt="">
+                    <div style="flex:1">
+                      <div style="font-weight:700"><%= p&.name || (item&.name || 'Product') %></div>
+                      <div class="muted" style="font-size:13px"><%= time_ago_in_words(o.created_at) rescue 'a moment' %> ago</div>
+                    </div>
+                    <div style="font-weight:700"><%= number_to_currency(o.try(:total_price) || 250) %></div>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- RIGHT (unused but keep grid balanced) -->
+      <div></div>
+    </div>
+  </div>
+
+  <!-- Chart JS initialization -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      // Sparkline small charts
+      function drawSpark(id, data){
+        const ctx = document.getElementById(id).getContext('2d');
+        new Chart(ctx, { type: 'line', data: { labels: data.map((_,i)=>i), datasets: [{ data: data, borderColor: '#9afc7a', backgroundColor: 'rgba(154,252,122,0.06)', tension:0.4, pointRadius:0 }] }, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}} } });
+      }
+      drawSpark('spark1',[12,20,10,25,18,30,22]);
+      drawSpark('spark2',[6,10,14,18,12,20,22]);
+      drawSpark('spark3',[8,16,12,20,14,24,19]);
+      drawSpark('spark4',[4,6,10,8,12,14,16]);
+
+      // Earnings big chart
+      const earningsCanvas = document.getElementById('earningsChart');
+      if(earningsCanvas){
+        const labels = JSON.parse(earningsCanvas.dataset.labels || '[]');
+        const values = JSON.parse(earningsCanvas.dataset.values || '[]');
+        new Chart(earningsCanvas.getContext('2d'), {
+          type: 'line',
+          data: {
+            labels: labels.length ? labels : ['Jan','Feb','Mar','Apr','May','Jun','Jul'],
+            datasets: [{ label:'Earnings', data: values.length ? values : [1200, 2100, 1800, 2600, 2400, 3000, 3600], borderColor: 'rgba(192,246,107,1)', backgroundColor: 'rgba(192,246,107,0.06)', tension:0.35, fill:true, pointRadius:3 }]
+          },
+          options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ y:{ grid:{color:'rgba(255,255,255,0.02)'}}, x:{ grid:{display:false} } } }
+        });
+      }
+
+      // Donut chart
+      const donut = document.getElementById('donutChart');
+      if(donut){
+        const vals = JSON.parse(donut.dataset.values || '[60,40]');
+        const labels = JSON.parse(donut.dataset.labels || '["A","B"]');
+        new Chart(donut.getContext('2d'), {
+          type:'doughnut',
+          data:{ labels: labels, datasets:[{ data: vals, backgroundColor:['#9afc7a','#2b2b2b'], hoverOffset:6 }]},
+          options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}}
+        });
+      }
+    });
+  </script>
+</body>
+</html>

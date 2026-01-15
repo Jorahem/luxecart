@@ -1,0 +1,23 @@
+<main class="addresses-page">
+  <div class="container">
+    <header class="page-header">
+      <h1>Add a new address</h1>
+      <p class="lead">Enter shipping details so we can deliver your order.</p>
+    </header>
+
+    <div class="content-grid">
+      <section class="card">
+        <%= render 'form', address: @address %>
+      </section>
+
+      <aside class="card help">
+        <h3>Address tips</h3>
+        <ul>
+          <li>Use your full legal name for delivery.</li>
+          <li>Include apartment / suite number in Address line 2.</li>
+          <li>Double-check postal / ZIP code for faster deliveries.</li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+</main>

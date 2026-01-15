@@ -49,6 +49,29 @@ gem 'kaminari', '1.2.2'
 
 
 
+
+
+
+gem "bcrypt", "~> 3.1"
+gem "pundit"
+gem "sidekiq"
+gem "redis"
+gem "rack-attack"
+gem "recaptcha", require: "recaptcha/rails" # or hcaptcha
+gem "chartkick"
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 

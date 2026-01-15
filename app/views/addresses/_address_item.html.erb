@@ -1,0 +1,29 @@
+<li class="address-item" data-address-id="<%= address.id %>"
+    data-first-name="<%= h(address.first_name) %>"
+    data-last-name="<%= h(address.last_name) %>"
+    data-street-address="<%= h(address.street_address) %>"
+    data-city="<%= h(address.city) %>"
+    data-state="<%= h(address.state) %>"
+    data-postal-code="<%= h(address.postal_code) %>"
+    data-phone="<%= h(address.phone) %>"
+    data-is-default="<%= address.is_default? %>">
+  <div class="address-row">
+    <label class="address-radio" style="display:flex; align-items:flex-start; gap:10px;">
+      <%= radio_button_tag :selected_address_id, address.id, false, class: 'select-address-radio' %>
+      <div class="address-info">
+        <div class="address-name"><strong><%= [address.first_name, address.last_name].compact.join(' ') %></strong></div>
+        <div class="address-lines small muted">
+          <%= [address.street_address, address.city, address.state, address.postal_code].compact.join(', ') %>
+        </div>
+        <% if address.phone.present? %>
+          <div class="small muted">Phone: <%= address.phone %></div>
+        <% end %>
+      </div>
+    </label>
+
+    <div class="address-actions" style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+      <button type="button" class="btn btn-link edit-address-btn" data-address-id="<%= address.id %>">Edit</button>
+      <button type="button" class="btn btn-link danger delete-address-btn" data-address-id="<%= address.id %>">Delete</button>
+    </div>
+  </div>
+</li>

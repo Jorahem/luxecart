@@ -1,0 +1,50 @@
+<%= stylesheet_link_tag "cart_checkout", media: "all" %>
+
+<main class="checkout container">
+  <h1>Checkout</h1>
+
+  <div class="checkout-grid">
+    <section class="checkout-form">
+      <%= form_with model: @order, url: orders_path, local: true do |f| %>
+        <h2>Customer information</h2>
+        <div class="two-col">
+          <div>
+            <%= f.label :shipping_full_name, "Full name" %>
+            <%= f.text_field :shipping_full_name, required: true, class: 'input' %>
+          </div>
+          <div>
+            <%= f.label :shipping_phone, "Phone" %>
+            <%= f.telephone_field :shipping_phone, class: 'input' %>
+          </div>
+        </div>
+
+        <div>
+          <%= f.label :shipping_street, "Shipping address" %>
+          <%= f.text_field :shipping_street, required: true, class: 'input full' %>
+        </div>
+
+        <div class="three-col">
+          <div><%= f.label :shipping_city, "City" %><%= f.text_field :shipping_city, class: 'input' %></div>
+          <div><%= f.label :shipping_state, "State" %><%= f.text_field :shipping_state, class: 'input' %></div>
+          <div><%= f.label :shipping_postal_code, "Postal Code" %><%= f.text_field :shipping_postal_code, class: 'input' %></div>
+        </div>
+
+        <h3>Payment method</h3>
+        <div class="payment-options">
+          <%= f.radio_button :payment_method, 'cod', checked: true %> <%= f.label :payment_method_cod, 'Cash on Delivery' %><br>
+          <%= f.radio_button :payment_method, 'card' %> <%= f.label :payment_method_card, 'Card (coming soon)' %><br>
+          <%= f.radio_button :payment_method, 'wallet' %> <%= f.label :payment_method_wallet, 'Digital Wallet (coming soon)' %>
+        </div>
+
+        <div class="actions">
+          <%= f.submit "Place Order", class: 'btn btn-primary big' %>
+          <%= link_to 'Back to cart', cart_path, class: 'btn btn-secondary' %>
+        </div>
+      <% end %>
+    </section>
+
+    <aside class="checkout-summary sticky">
+      <%= render 'checkout/order_summary', cart: @cart %>
+    </aside>
+  </div>
+</main>
