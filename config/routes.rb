@@ -44,6 +44,8 @@ Rails.application.routes.draw do
   # Also provide a dedicated JSON-only summary route (convenience)
   get '/cart/summary', to: 'carts#summary', as: :cart_summary, defaults: { format: :json }
 
+  get '/cart/remove_item/:id', to: redirect('/cart')
+
   # Wishlist
   resource :wishlist, only: [:show] do
     post :add_item
@@ -70,6 +72,9 @@ Rails.application.routes.draw do
   # -------------------------
   # Search
   get :search, to: 'search#index'
+
+
+  get '/cart/add_item', to: redirect('/cart')
 
   # Static pages
   get '/about',   to: 'pages#about',   as: :about

@@ -1,4 +1,3 @@
-
 <%= stylesheet_link_tag 'cart_checkout', media: 'all' %>
 
 <main class="cart-page container">
@@ -26,7 +25,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Delegate quantity buttons and remove actions
   const list = document.getElementById('cart-items-list');
   if (!list) return;
 
@@ -35,84 +33,124 @@ document.addEventListener('DOMContentLoaded', function() {
     return m ? m.getAttribute('content') : '';
   }
 
-  // Update item on server and refresh summary / subtotal in page
+  // Build URL for updating item (PATCH)
+  function updateUrlFor(itemId) {
+    // server-side helper embedding a template that we replace in JS
+    return "<%= j url_for(controller: :carts, action: :update_item, id: ':ID') %>".replace(':ID', itemId);
+  }
+
+  // Update item on server and refresh subtotal/summary
   async function updateItem(itemId, qty) {
-    const url = "<%= url_for(controller: :carts, action: :update_item, id: ':ID') %>".replace(':ID', itemId);
-    const resp = await fetch(url, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrf(), 'Accept': 'application/json' },
-      credentials: 'same-origin',
-      body: JSON.stringify({ quantity: qty })
-    });
-    if (resp.ok) {
+    const url = updateUrlFor(itemId);
+    try {
+      const resp = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': getCsrf(),
+          'Accept': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ quantity: qty })
+      });
+
+      if (!resp.ok) {
+        console.error('Failed to update item', resp.status);
+        return;
+      }
+
       const json = await resp.json();
-      // update item subtotal if returned
+
+      // Update the displayed subtotal for this item, if provided
       if (json.item_subtotal) {
         const itemEl = document.querySelector('.cart-item[data-id="' + itemId + '"]');
         const subEl = itemEl && itemEl.querySelector('.item-subtotal');
         if (subEl) subEl.textContent = json.item_subtotal;
       }
-      // update order summary
+
+      // Update order summary HTML if returned
       if (json.summary_html) {
-        document.getElementById('order-summary').innerHTML = json.summary_html;
+        const summary = document.getElementById('order-summary');
+        if (summary) summary.innerHTML = json.summary_html;
       }
-    } else {
-      console.error('Failed to update item');
+    } catch (err) {
+      console.error('Update item error', err);
     }
   }
 
-  // Remove item
+  // Remove item (AJAX) and update DOM
   async function removeItem(itemId, url) {
-    const resp = await fetch(url, {
-      method: 'DELETE',
-      headers: { 'X-CSRF-Token': getCsrf(), 'Accept': 'application/json' },
-      credentials: 'same-origin'
-    });
-    if (resp.ok) {
+    try {
+      const resp = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRF-Token': getCsrf(),
+          'Accept': 'application/json'
+        },
+        credentials: 'same-origin'
+      });
+
+      if (!resp.ok) {
+        console.error('Failed to remove item', resp.status);
+        return;
+      }
+
       const json = await resp.json();
       const li = document.querySelector('.cart-item[data-id="' + itemId + '"]');
       if (li) li.remove();
-      if (json.summary_html) document.getElementById('order-summary').innerHTML = json.summary_html;
-      // if empty now, reload to show empty state
+
+      if (json.summary_html) {
+        const summary = document.getElementById('order-summary');
+        if (summary) summary.innerHTML = json.summary_html;
+      }
+
+      // If cart is now empty, reload to show empty-state
       if (!document.querySelectorAll('.cart-item').length) window.location.reload();
-    } else {
-      console.error('Failed to remove item');
+    } catch (err) {
+      console.error('Remove item error', err);
     }
   }
 
+  // Delegate clicks: increase/decrease
   list.addEventListener('click', function(e) {
-    const inc = e.target.closest('.qty-btn.increase');
-    const dec = e.target.closest('.qty-btn.decrease');
-    if (inc || dec) {
-      const btn = inc || dec;
-      const li = btn.closest('.cart-item');
-      const input = li.querySelector('.qty-input');
-      let qty = parseInt(input.value || '1', 10);
-      qty = inc ? qty + 1 : Math.max(1, qty - 1);
-      input.value = qty;
-      const id = li.dataset.id;
-      updateItem(id, qty);
-    }
+    const incBtn = e.target.closest('.qty-btn.increase');
+    const decBtn = e.target.closest('.qty-btn.decrease');
 
-    const rem = e.target.closest('.remove-btn');
-    if (rem) {
-      e.preventDefault();
-      if (!confirm('Remove this item?')) return;
-      const li = rem.closest('.cart-item');
-      const id = li.dataset.id;
-      const url = rem.getAttribute('data-remove-url') || rem.getAttribute('href');
-      removeItem(id, url);
+    if (incBtn || decBtn) {
+      const btn = incBtn || decBtn;
+      const itemId = btn.dataset.itemId || btn.getAttribute('data-item-id');
+      const li = btn.closest('.cart-item');
+      const input = li && li.querySelector('.qty-input');
+      if (!input) return;
+
+      let qty = parseInt(input.value || '1', 10);
+      qty = incBtn ? qty + 1 : Math.max(1, qty - 1);
+      input.value = qty;
+
+      updateItem(itemId, qty);
     }
   });
 
+  // Handle manual quantity changes (blur or enter)
   list.addEventListener('change', function(e) {
-    if (e.target.matches('.qty-input')) {
-      const input = e.target;
-      const li = input.closest('.cart-item');
-      const qty = Math.max(1, parseInt(input.value || '1', 10));
+    const input = e.target.closest('.qty-input');
+    if (input) {
+      const itemId = input.dataset.itemId || input.getAttribute('data-item-id');
+      let qty = parseInt(input.value || '1', 10);
+      qty = Math.max(1, isNaN(qty) ? 1 : qty);
       input.value = qty;
-      updateItem(li.dataset.id, qty);
+      updateItem(itemId, qty);
     }
+  });
+
+  // Intercept remove forms (button_to generated forms)
+  document.querySelectorAll('form.remove-item-form').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const itemId = form.dataset.itemId || form.getAttribute('data-item-id') || (form.querySelector('button') && form.querySelector('button').dataset && form.querySelector('button').dataset.itemId);
+      const url = form.action;
+      removeItem(itemId, url);
+    });
   });
 });
 </script>
