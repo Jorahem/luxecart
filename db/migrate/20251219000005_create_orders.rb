@@ -26,10 +26,11 @@ class CreateOrders < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
-    add_index :orders, :order_number, unique: true
-    add_index :orders, :user_id
-    add_index :orders, :status
-    add_index :orders, :payment_status
-    add_index :orders, :stripe_payment_intent_id
+    # Make index creation idempotent so running migrations (or partial DB state) won't error
+    add_index :orders, :order_number, unique: true unless index_exists?(:orders, :order_number)
+    add_index :orders, :user_id unless index_exists?(:orders, :user_id)
+    add_index :orders, :status unless index_exists?(:orders, :status)
+    add_index :orders, :payment_status unless index_exists?(:orders, :payment_status)
+    add_index :orders, :stripe_payment_intent_id unless index_exists?(:orders, :stripe_payment_intent_id)
   end
 end

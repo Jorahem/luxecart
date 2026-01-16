@@ -28,4 +28,10 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  number:
+    currency:
+      format:
+        unit: "Rs."
+        separator: "."
+        delimiter: ","
+        format: "%u%n"
