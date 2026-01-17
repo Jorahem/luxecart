@@ -22,11 +22,14 @@ class OrdersController < ApplicationController
     Order.transaction do
       @order.save!
       @cart.cart_items.each do |ci|
+        # create order_item snapshots that match current schema
         @order.order_items.create!(
           product_id: ci.product_id,
           quantity: ci.quantity,
           unit_price: ci.price,
-          subtotal: (ci.price.to_d * ci.quantity)
+          total_price: (ci.price.to_d * ci.quantity),
+          product_name: ci.product&.name,
+          product_sku: ci.product&.sku
         )
       end
       @cart.clear!
@@ -56,6 +59,14 @@ class OrdersController < ApplicationController
   end
 
   def order_params
-    params.require(:order).permit(:full_name, :email, :phone, :shipping_street, :shipping_city, :shipping_postal_code, :shipping_state, :payment_method)
+    params.require(:order).permit(
+      :shipping_full_name,
+      :shipping_phone,
+      :shipping_street,
+      :shipping_city,
+      :shipping_state,
+      :shipping_postal_code,
+      :payment_method
+    )
   end
 end

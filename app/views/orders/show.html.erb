@@ -13,7 +13,7 @@
   <section>
     <h3>Summary</h3>
     <%= render 'checkout/order_summary', cart: OpenStruct.new(cart_items: @order.order_items.map { |oi|
-      OpenStruct.new(product: oi.product, quantity: oi.quantity, line_subtotal: oi.subtotal)
+      OpenStruct.new(product: oi.product, quantity: oi.quantity, line_subtotal: oi.total_price)
     }, subtotal: @order.subtotal, shipping_cost: @order.shipping_cost, tax_amount: @order.tax, total_price: @order.total_price) %>
   </section>
 </main>

@@ -162,7 +162,7 @@
 
                 <div class="flex items-center gap-2">
                   <%# Add to cart (uses your existing cart add action) %>
-                  <%= button_to add_item_cart_path(product_id: product.id), method: :post, form_class: "inline-block", class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition" do %>
+                  <%= button_to add_item_cart_path(product_id: product.id), method: :post, form_class: "add-to-cart inline-block", class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition" do %>
                     <i class="fa-solid fa-cart-plus mr-2"></i> Add
                   <% end %>
                 </div>
@@ -349,4 +349,4 @@
     //   el.addEventListener('change', () => document.getElementById('filters-form').submit());
     // });
   });
-</script>
+</script> 
