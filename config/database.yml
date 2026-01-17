@@ -1,11 +1,14 @@
+# PostgreSQL configuration for Rails
+# Uses environment variables when appropriate. Adjust DB names/credentials to match your environment.
+
 default: &default
   adapter: postgresql
   encoding: unicode
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
   username: <%= ENV.fetch("DB_USERNAME", "luxecart_user") %>
   password: <%= ENV.fetch("DB_PASSWORD", "") %>
-  host: <%= ENV.fetch("DB_HOST", "localhost") %>
-  port: <%= ENV.fetch("DB_PORT", 5432) %>
+  host:     <%= ENV.fetch("DB_HOST", "localhost") %>
+  port:     <%= ENV.fetch("DB_PORT", 5432) %>
 
 development:
   <<: *default
@@ -17,4 +20,7 @@ test:
 
 production:
   <<: *default
+  # Prefer DATABASE_URL in production if present (e.g., from hosting provider)
+  url: <%= ENV["DATABASE_URL"] %>
+  # fallback name if DATABASE_URL is not provided
   database: <%= ENV.fetch("DB_NAME_PRODUCTION", "luxecart_production") %>
