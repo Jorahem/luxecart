@@ -1,66 +1,104 @@
-<%# Category show page: responsive, filterable, with Quick View modal and like/add-to-cart actions %>
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<%# Full Category show page with AJAX Add-to-Cart that updates cart badge in-place %>
 
-  <!-- Breadcrumb + Category header -->
-  <nav class="text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
-    <ol class="flex items-center space-x-2">
-      <li><%= link_to "Home", root_path, class: "hover:underline" %></li>
-      <li>/</li>
-      <li><%= link_to "Categories", categories_path, class: "hover:underline" %></li>
-      <li>/</li>
-      <li class="text-gray-900 font-semibold"><%= @category.name %></li>
-    </ol>
-  </nav>
+<%# --- Helpers (defined in template to avoid inline-rescue pitfalls) --- %>
+<%#
+  safe_attached?(obj) => boolean
+  image_for(obj) => url string or nil
+%>
+<% def safe_attached?(obj)
+     return false unless obj.respond_to?(:attached?)
+     begin
+       obj.attached?
+     rescue StandardError
+       false
+     end
+   end
+
+   def image_for(obj)
+     return nil if obj.nil?
+     if safe_attached?(obj)
+       begin
+         url_for(obj)
+       rescue StandardError
+         nil
+       end
+     else
+       s = obj.to_s
+       s.present? ? s : nil
+     end
+   end
+%>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <!-- Breadcrumb + Category header + Cart badge -->
+  <div class="flex items-center justify-between mb-4">
+    <nav class="text-sm text-gray-500" aria-label="Breadcrumb">
+      <ol class="flex items-center space-x-2">
+        <li><%= link_to "Home", root_path, class: "hover:underline" %></li>
+        <li>/</li>
+        <li><%= link_to "Categories", categories_path, class: "hover:underline" %></li>
+        <li>/</li>
+        <li class="text-gray-900 font-semibold"><%= @category.name %></li>
+      </ol>
+    </nav>
+
+    <!-- Cart link + badge -->
+    <div class="flex items-center gap-4">
+      <%= link_to cart_path, class: "inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900" do %>
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span id="cart-count" class="inline-flex items-center justify-center bg-indigo-600 text-white rounded-full px-2 py-0.5 text-xs">
+          <%= (defined?(current_cart) && current_cart.try(:total_items)) || 0 %>
+        </span>
+      <% end %>
+    </div>
+  </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-    <!-- Left: sidebar filters (collapsible on mobile) -->
+    <!-- Left: sidebar filters -->
     <aside class="lg:col-span-1">
       <div class="bg-white p-6 rounded-2xl shadow-sm sticky top-20">
         <h3 class="text-lg font-bold text-gray-900 mb-2">Refine</h3>
 
-        <!-- Price range -->
-        <div class="mb-4">
-          <label class="text-sm font-medium text-gray-700">Price</label>
-          <form id="filters-form" method="get" action="">
+        <form id="filters-form" method="get" action="">
+          <div class="mb-4">
+            <label class="text-sm font-medium text-gray-700">Price</label>
             <div class="flex gap-2 mt-2">
               <input name="min_price" value="<%= params[:min_price] %>" placeholder="Min" class="w-1/2 px-3 py-2 rounded-md border border-gray-200 text-sm">
               <input name="max_price" value="<%= params[:max_price] %>" placeholder="Max" class="w-1/2 px-3 py-2 rounded-md border border-gray-200 text-sm">
             </div>
+          </div>
 
-            <!-- Brands -->
-            <% if defined?(Brand) && Brand.any? %>
-              <div class="mt-4">
-                <label class="text-sm font-medium text-gray-700">Brand</label>
-                <div class="mt-2 space-y-2 max-h-40 overflow-auto pr-2">
-                  <% Brand.order(:name).each do |b| %>
-                    <div>
-                      <label class="inline-flex items-center text-sm">
-                        <input type="checkbox" name="brand[]" value="<%= b.id %>" <%= 'checked' if Array(params[:brand]).map(&:to_s).include?(b.id.to_s) %> class="form-checkbox h-4 w-4 text-indigo-600">
-                        <span class="ml-2"><%= b.name %></span>
-                      </label>
-                    </div>
-                  <% end %>
-                </div>
+          <% if defined?(Brand) && Brand.any? %>
+            <div class="mb-4">
+              <label class="text-sm font-medium text-gray-700">Brand</label>
+              <div class="mt-2 space-y-2 max-h-40 overflow-auto pr-2">
+                <% Brand.order(:name).each do |b| %>
+                  <div>
+                    <label class="inline-flex items-center text-sm">
+                      <input type="checkbox" name="brand[]" value="<%= b.id %>" <%= 'checked' if Array(params[:brand]).map(&:to_s).include?(b.id.to_s) %> class="form-checkbox h-4 w-4 text-indigo-600">
+                      <span class="ml-2"><%= b.name %></span>
+                    </label>
+                  </div>
+                <% end %>
               </div>
-            <% end %>
-
-            <!-- Sort -->
-            <div class="mt-4">
-              <label class="text-sm font-medium text-gray-700">Sort</label>
-              <select name="sort" class="mt-2 block w-full rounded-md border border-gray-200 p-2 text-sm">
-                <option value="">Default</option>
-                <option value="price_asc" <%= 'selected' if params[:sort] == 'price_asc' %>>Price: Low → High</option>
-                <option value="price_desc" <%= 'selected' if params[:sort] == 'price_desc' %>>Price: High → Low</option>
-                <option value="newest" <%= 'selected' if params[:sort] == 'newest' %>>Newest</option>
-              </select>
             </div>
+          <% end %>
 
-            <div class="mt-4 flex gap-2">
-              <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Apply</button>
-              <a href="<%= category_path(@category) %>" class="inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm">Reset</a>
-            </div>
-          </form>
-        </div>
+          <div class="mb-4">
+            <label class="text-sm font-medium text-gray-700">Sort</label>
+            <select name="sort" class="mt-2 block w-full rounded-md border border-gray-200 p-2 text-sm">
+              <option value="">Default</option>
+              <option value="price_asc" <%= 'selected' if params[:sort] == 'price_asc' %>>Price: Low → High</option>
+              <option value="price_desc" <%= 'selected' if params[:sort] == 'price_desc' %>>Price: High → Low</option>
+              <option value="newest" <%= 'selected' if params[:sort] == 'newest' %>>Newest</option>
+            </select>
+          </div>
+
+          <div class="flex gap-2">
+            <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Apply</button>
+            <a href="<%= category_path(@category) %>" class="inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm">Reset</a>
+          </div>
+        </form>
 
         <div class="mt-6 border-t pt-4">
           <h4 class="text-sm font-semibold text-gray-700 mb-2">Quick links</h4>
@@ -73,9 +111,9 @@
       </div>
     </aside>
 
-    <!-- Main content: products grid -->
+    <!-- Main content: hero + gallery + products -->
     <div class="lg:col-span-3">
-      <!-- Category hero / banner -->
+      <!-- Category hero -->
       <div class="relative bg-gradient-to-r from-white to-gray-50 rounded-2xl overflow-hidden mb-8 p-6 flex flex-col md:flex-row items-center gap-6">
         <div class="flex-1">
           <h1 class="text-3xl font-extrabold text-gray-900 mb-2"><%= @category.name %></h1>
@@ -89,65 +127,155 @@
         </div>
 
         <div class="w-full md:w-1/3">
-          <%# category image if present, fallback to Unsplash %>
           <% if @category.respond_to?(:image) && @category.image.present? %>
-            <%= image_tag @category.image, alt: @category.name, class: "w-full h-40 object-cover rounded-xl shadow-sm" %>
+            <% img = image_for(@category.image) || @category.image %>
+            <%= image_tag img, alt: @category.name, class: "w-full h-40 object-cover rounded-xl shadow-sm" %>
+          <% elsif @category.respond_to?(:image_url) && @category.image_url.present? %>
+            <%= image_tag @category.image_url, alt: @category.name, class: "w-full h-40 object-cover rounded-xl shadow-sm" %>
           <% else %>
-            <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=5b8c3f74f1" alt="<%= @category.name %>" class="w-full h-40 object-cover rounded-xl shadow-sm">
+            <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop" alt="<%= @category.name %>" class="w-full h-40 object-cover rounded-xl shadow-sm">
           <% end %>
         </div>
       </div>
 
-      <!-- Grid controls (mobile) -->
+      <%# ---------------- Underwear gallery (uses active AJAX Add buttons) ---------------- %>
+      <% fallback_product = Product.first rescue nil %>
+      <% fallback_id = fallback_product&.id %>
+
+      <% men_images = [
+        "https://m.media-amazon.com/images/I/51bed6hGfqL._AC_SL1000_.jpg",
+        "https://via.placeholder.com/600x600.png?text=Men+2",
+        "https://via.placeholder.com/600x600.png?text=Men+3",
+        "https://via.placeholder.com/600x600.png?text=Men+4",
+        "https://via.placeholder.com/600x600.png?text=Men+5",
+        "https://via.placeholder.com/600x600.png?text=Men+6"
+      ] %>
+
+      <% women_images = [
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRj0NoQJyvI_BIjhm6bMNUD5J_KyTZESCWLYw&s",
+        "https://via.placeholder.com/600x600.png?text=Women+2",
+        "https://via.placeholder.com/600x600.png?text=Women+3",
+        "https://via.placeholder.com/600x600.png?text=Women+4",
+        "https://via.placeholder.com/600x600.png?text=Women+5",
+        "https://via.placeholder.com/600x600.png?text=Women+6"
+      ] %>
+
+      <% children_images = [
+        "https://kytebaby.com/cdn/shop/files/1703CS-01_457d5168-470b-4ae0-a5f9-3ac6964ac29e.jpg?v=1758285639&width=3000",
+        "https://via.placeholder.com/600x600.png?text=Child+2",
+        "https://via.placeholder.com/600x600.png?text=Child+3",
+        "https://via.placeholder.com/600x600.png?text=Child+4",
+        "https://via.placeholder.com/600x600.png?text=Child+5",
+        "https://via.placeholder.com/600x600.png?text=Child+6"
+      ] %>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">Explore Underwear Collections</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <% { 'Men' => men_images, 'Women' => women_images, 'Children' => children_images }.each do |subname, imgs| %>
+            <section class="bg-white p-4 rounded-2xl shadow-sm">
+              <h3 class="text-lg font-semibold text-gray-800 mb-3"><%= subname %></h3>
+
+              <% subcat = Category.find_by(name: subname) rescue nil %>
+              <% products = subcat&.products&.limit(6)&.to_a || [] %>
+
+              <div class="grid grid-cols-3 gap-3">
+                <% 6.times do |i| %>
+                  <% p = products[i] %>
+                  <% slot_product_id = p&.id || fallback_id %>
+
+                  <div class="flex flex-col items-center text-center">
+                    <% image_src = nil %>
+                    <% if p %>
+                      <% if p.respond_to?(:product_images) && p.product_images.any? %>
+                        <% pi = p.product_images.first %>
+                        <% image_src ||= image_for(pi.image) if pi.respond_to?(:image) %>
+                        <% image_src ||= (pi.respond_to?(:image_url) ? pi.image_url : nil) %>
+                      <% end %>
+                      <% image_src ||= (p.respond_to?(:image_url) ? p.image_url : nil) %>
+                      <% image_src ||= image_for(p.image) if p.respond_to?(:image) %>
+                    <% end %>
+                    <% image_src ||= imgs[i] %>
+
+                    <% if p %>
+                      <%= link_to product_path(p) do %>
+                        <img src="<%= image_src %>" alt="<%= "#{subname} #{i+1}" %>" class="w-full h-32 object-cover rounded" />
+                      <% end %>
+                    <% else %>
+                      <img src="<%= image_src %>" alt="<%= "#{subname} placeholder #{i+1}" %>" class="w-full h-32 object-cover rounded" />
+                    <% end %>
+
+                    <div class="mt-2 w-full">
+                      <div class="text-sm font-medium text-gray-800 truncate">
+                        <% if p %>
+                          <%= link_to p.name, product_path(p), class: "hover:underline" %>
+                        <% else %>
+                          <%= "#{subname} item #{i+1}" %>
+                        <% end %>
+                      </div>
+
+                      <div class="text-sm text-gray-600">
+                        <% if p && p.respond_to?(:price) %>
+                          <%= number_to_currency(p.price) %>
+                        <% end %>
+                      </div>
+
+                      <div class="mt-2">
+                        <% if slot_product_id.present? %>
+                          <button type="button"
+                                  class="add-to-cart-ajax w-full inline-flex items-center justify-center px-3 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
+                                  data-url="<%= add_item_cart_path(product_id: slot_product_id) %>">
+                            <i class="fa-solid fa-cart-plus mr-2"></i> Add
+                          </button>
+                        <% else %>
+                          <button disabled class="w-full inline-flex items-center justify-center px-3 py-2 bg-gray-200 text-gray-600 rounded-md text-sm cursor-not-allowed">Add</button>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </section>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Products grid (Add buttons use AJAX too) -->
       <div class="flex items-center justify-between mb-6">
         <div class="text-sm text-gray-600">
           <% product_count = @products.respond_to?(:total_count) ? @products.total_count : @products.size %>
           <%= pluralize(product_count, "product") %> found
         </div>
-
-        <div class="flex items-center gap-3">
-          <button id="grid-toggle" class="p-2 rounded-md border bg-white text-gray-600 hidden sm:inline-flex"><i class="fa-solid fa-grip"></i></button>
-          <label class="text-sm text-gray-600">View</label>
-        </div>
       </div>
 
-      <!-- Products grid -->
       <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <% @products.each do |product| %>
           <div class="product-card relative bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition">
             <div class="relative h-64 bg-gray-50 overflow-hidden">
-              <% if product.product_images.any? %>
-                <%= image_tag product.product_images.first.image, alt: product.name, class: "w-full h-full object-cover object-center transition-transform transform group-hover:scale-105" %>
+              <% image_src = nil %>
+              <% if product.respond_to?(:product_images) && product.product_images.any? %>
+                <% pi = product.product_images.first %>
+                <% image_src = image_for(pi.image) || (pi.respond_to?(:image_url) ? pi.image_url : nil) || (pi.respond_to?(:image) ? pi.image : nil) %>
+              <% end %>
+              <% image_src ||= (product.respond_to?(:image_url) ? product.image_url.presence : nil) %>
+              <% image_src ||= image_for(product.image) %>
+
+              <% if image_src.present? %>
+                <%= image_tag image_src, alt: product.name, class: "w-full h-full object-cover object-center transition-transform transform group-hover:scale-105" %>
               <% else %>
                 <div class="w-full h-full flex items-center justify-center text-gray-300">
                   <i class="fa-regular fa-image text-6xl"></i>
                 </div>
               <% end %>
 
-              <!-- badges + quick actions -->
-              <div class="absolute top-3 left-3">
-                <% if product.featured? %>
-                  <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full">FEATURED</span>
-                <% end %>
-              </div>
-
               <div class="absolute top-3 right-3 flex items-center gap-2">
-                <%# Like button: server-backed + UI toggle %>
-                <% liked = user_signed_in? && current_user.likes.exists?(product: product) %>
-                <button
-                  class="like-button inline-flex items-center justify-center p-2 rounded-full bg-white shadow-sm like-ui"
-                  data-product-id="<%= product.id %>"
-                  data-url="<%= like_product_path(product) rescue '#' %>"
-                  data-liked="<%= liked %>"
-                  aria-pressed="<%= liked %>"
-                  title="<%= liked ? 'Unfavorite' : 'Favorite' %>"
-                >
-                  <i class="fa-heart <%= liked ? 'fa-solid text-red-500' : 'fa-regular text-gray-600' %>"></i>
-                </button>
-
-                <%# Quick view button triggers modal with product details %>
-                <button class="quickview-button inline-flex items-center justify-center p-2 rounded-full bg-white shadow-sm" data-product-id="<%= product.id %>" data-product-url="<%= product_path(product) %>" title="Quick view">
-                  <i class="fa-solid fa-eye text-gray-600"></i>
+                <button class="like-button inline-flex items-center justify-center p-2 rounded-full bg-white shadow-sm like-ui"
+                        data-product-id="<%= product.id %>"
+                        data-url="<%= (like_product_path(product) rescue '#') %>"
+                        data-liked="<%= (user_signed_in? && current_user.likes.exists?(product: product)) rescue false %>"
+                        aria-pressed="<%= (user_signed_in? && current_user.likes.exists?(product: product)) rescue false %>">
+                  <i class="fa-heart <%= (user_signed_in? && current_user.likes.exists?(product: product)) ? 'fa-solid text-red-500' : 'fa-regular text-gray-600' %>"></i>
                 </button>
               </div>
             </div>
@@ -159,72 +287,23 @@
 
               <div class="flex items-center justify-between">
                 <div class="text-2xl font-black text-gray-900"><%= number_to_currency(product.price) %></div>
-
                 <div class="flex items-center gap-2">
-                  <%# Add to cart (uses your existing cart add action) %>
-                  <%= button_to add_item_cart_path(product_id: product.id), method: :post, form_class: "add-to-cart inline-block", class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition" do %>
+                  <button type="button"
+                          class="add-to-cart-ajax inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition"
+                          data-url="<%= add_item_cart_path(product_id: product.id) %>">
                     <i class="fa-solid fa-cart-plus mr-2"></i> Add
-                  <% end %>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         <% end %>
       </div>
-
-      <!-- Pagination -->
-      <div class="mt-8 flex items-center justify-center">
-        <%# If you're using Kaminari or will use it: %>
-        <% if defined?(paginate) %>
-          <%= paginate @products, theme: 'tailwind' %>
-        <% else %>
-          <%# Simple prev/next fallback %>
-          <% current_page = (params[:page] || 1).to_i %>
-          <% prev_page = current_page > 1 ? current_page - 1 : nil %>
-          <% next_page = @products.size == 12 ? current_page + 1 : nil %>
-          <div class="flex items-center gap-3">
-            <% if prev_page %>
-              <%= link_to "Previous", url_for(page: prev_page), class: "px-4 py-2 border rounded-md" %>
-            <% end %>
-            <span class="text-sm text-gray-500">Page <%= current_page %></span>
-            <% if next_page %>
-              <%= link_to "Next", url_for(page: next_page), class: "px-4 py-2 border rounded-md" %>
-            <% end %>
-          </div>
-        <% end %>
-      </div>
-
-      <!-- Optional gallery & brand logos -->
-      <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-3">
-          <img src="https://images.unsplash.com/photo-1523381213912-1f1f7b5f4d64?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=98d8a9" class="w-full h-40 object-cover rounded-lg" alt="">
-          <img src="https://images.unsplash.com/photo-1540574163026-643ea20ade25?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=3f0a06" class="w-full h-40 object-cover rounded-lg" alt="">
-          <img src="https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=1b6d6c9e" class="w-full h-40 object-cover rounded-lg" alt="">
-          <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=b4c3c6f0" class="w-full h-40 object-cover rounded-lg" alt="">
-        </div>
-
-        <div class="col-span-1 bg-white p-6 rounded-2xl shadow-sm">
-          <h4 class="text-lg font-bold text-gray-900 mb-3">Trusted brands</h4>
-          <div class="flex items-center gap-4 flex-wrap">
-            <% if defined?(Brand) %>
-              <% Brand.limit(6).each do |brand| %>
-                <div class="w-24 h-12 flex items-center justify-center border rounded-md bg-white">
-                  <% if brand.respond_to?(:logo) && brand.logo.present? %>
-                    <%= image_tag brand.logo, alt: brand.name, class: "max-h-10 object-contain" %>
-                  <% else %>
-                    <span class="text-sm text-gray-500"><%= brand.name %></span>
-                  <% end %>
-                </div>
-              <% end %>
-            <% end %>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </div>
 
-<!-- Quick View Modal (hidden by default) -->
+<!-- Minimal Quick View Modal (kept for parity) -->
 <div id="quickview-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white rounded-xl max-w-4xl w-full mx-4 overflow-hidden">
     <div class="flex items-start justify-between p-4 border-b">
@@ -237,116 +316,120 @@
   </div>
 </div>
 
-<!-- JS: filters quick-binding, like toggle (server + UI), quickview modal -->
+<!-- AJAX Add-to-Cart JS: updates badge in-place (tries to use server cart_count JSON, otherwise increments optimistically) -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+document.addEventListener('DOMContentLoaded', function () {
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-    // Like button handler: uses fetch to POST/DELETE product likes
-    document.querySelectorAll('.like-button').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const productId = btn.dataset.productId;
-        const url = btn.dataset.url;
-        let liked = (btn.dataset.liked === 'true' || btn.dataset.liked === true || btn.getAttribute('aria-pressed') === 'true');
+  function setCartCount(count) {
+    const el = document.getElementById('cart-count');
+    if (!el) return;
+    el.textContent = count;
+  }
 
-        // If no url, redirect to sign in
-        if (!url || url === '#') {
-          window.location.href = '<%= new_user_session_path %>';
-          return;
-        }
+  function incrementCartCount(by = 1) {
+    const el = document.getElementById('cart-count');
+    if (!el) return;
+    const current = parseInt(el.textContent || '0', 10);
+    setCartCount(current + by);
+  }
 
-        const method = liked ? 'DELETE' : 'POST';
-        try {
-          const res = await fetch(url, {
-            method: method,
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': csrf,
-              'Accept': 'application/json'
-            },
-            credentials: 'same-origin'
-          });
-
-          if (res.redirected) {
-            // likely redirected to sign in
-            window.location.href = res.url;
-            return;
-          }
-
-          if (res.ok) {
-            // toggle UI
-            liked = !liked;
-            btn.dataset.liked = liked;
-            btn.setAttribute('aria-pressed', liked);
-            const icon = btn.querySelector('i.fa-heart');
-            if (liked) {
-              icon.classList.remove('fa-regular');
-              icon.classList.add('fa-solid', 'text-red-500');
-            } else {
-              icon.classList.remove('fa-solid', 'text-red-500');
-              icon.classList.add('fa-regular', 'text-gray-600');
-            }
-          } else {
-            console.error('Like request failed', res.status);
-          }
-        } catch (err) {
-          console.error('Like fetch error', err);
-        }
+  async function postAddToCart(url) {
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-CSRF-Token': csrf,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({})
       });
-    });
 
-    // Quick view: fetch product partial or build content via AJAX
-    document.querySelectorAll('.quickview-button').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const productUrl = btn.dataset.productUrl;
-        if (!productUrl) return;
-        const modal = document.getElementById('quickview-modal');
-        const body = document.getElementById('quickview-body');
-        const title = document.getElementById('quickview-title');
-        body.innerHTML = '<div class="col-span-2 text-center py-12">Loading…</div>';
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-
-        try {
-          const res = await fetch(productUrl, {
-            headers: { 'Accept': 'text/html' },
-            credentials: 'same-origin'
-          });
-          if (res.ok) {
-            const html = await res.text();
-            // For simplicity insert the received HTML into the modal body.
-            body.innerHTML = '<div class="col-span-1">' + html + '</div>';
-            title.textContent = '';
-          } else {
-            body.innerHTML = '<div class="col-span-2 text-center py-12 text-red-600">Could not load quick view.</div>';
-          }
-        } catch (err) {
-          body.innerHTML = '<div class="col-span-2 text-center py-12 text-red-600">Error loading quick view.</div>';
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.indexOf('application/json') !== -1) {
+        const data = await res.json();
+        if (data && typeof data.cart_count !== 'undefined') {
+          setCartCount(data.cart_count);
+          return { success: true, data };
         }
-      });
-    });
+      }
 
-    // Close modal
-    document.getElementById('quickview-close')?.addEventListener('click', () => {
-      const modal = document.getElementById('quickview-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      document.getElementById('quickview-body').innerHTML = '';
-    });
+      if (res.ok) {
+        // optimistic increment
+        incrementCartCount(1);
+        return { success: true };
+      }
 
-    // Close when clicking backdrop
-    document.getElementById('quickview-modal')?.addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) {
-        e.currentTarget.classList.add('hidden');
-        e.currentTarget.classList.remove('flex');
+      return { success: false, status: res.status };
+    } catch (err) {
+      console.error('Add-to-cart error', err);
+      return { success: false, error: err };
+    }
+  }
+
+  document.querySelectorAll('.add-to-cart-ajax').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const url = btn.dataset.url;
+      if (!url) return;
+
+      btn.disabled = true;
+      btn.classList.add('opacity-70', 'cursor-wait');
+
+      const result = await postAddToCart(url);
+
+      btn.disabled = false;
+      btn.classList.remove('opacity-70', 'cursor-wait');
+
+      if (!result.success) {
+        // simple feedback; replace with nicer UI if desired
+        alert('Could not add to cart. Please try again.');
+      } else {
+        // tiny badge pulse
+        const badge = document.getElementById('cart-count');
+        if (badge) {
+          badge.classList.add('ring', 'ring-indigo-300');
+          setTimeout(() => badge.classList.remove('ring', 'ring-indigo-300'), 700);
+        }
       }
     });
-
-    // Optional: instant filter submit when fields change (uncomment to enable)
-    // document.querySelectorAll('#filters-form input, #filters-form select').forEach(el => {
-    //   el.addEventListener('change', () => document.getElementById('filters-form').submit());
-    // });
   });
-</script> 
+
+  // Quickview handlers (kept minimal)
+  document.querySelectorAll('.quickview-button').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const productUrl = btn.dataset.productUrl || btn.getAttribute('data-product-url') || btn.dataset.productUrl;
+      if (!productUrl) return;
+      const modal = document.getElementById('quickview-modal');
+      const body = document.getElementById('quickview-body');
+      const title = document.getElementById('quickview-title');
+      body.innerHTML = '<div class="col-span-1 text-center py-12">Loading…</div>';
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      try {
+        const res = await fetch(productUrl, { headers: { 'Accept': 'text/html' }, credentials: 'same-origin' });
+        if (res.ok) {
+          const html = await res.text();
+          body.innerHTML = '<div class="col-span-1">' + html + '</div>';
+          title.textContent = '';
+        } else {
+          body.innerHTML = '<div class="col-span-1 text-center py-12 text-red-600">Could not load quick view.</div>';
+        }
+      } catch (err) {
+        body.innerHTML = '<div class="col-span-1 text-center py-12 text-red-600">Error loading quick view.</div>';
+      }
+    });
+  });
+
+  document.getElementById('quickview-close')?.addEventListener('click', () => {
+    const modal = document.getElementById('quickview-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.getElementById('quickview-body').innerHTML = '';
+  });
+});
+</script>

@@ -1,9 +1,8 @@
-# config/routes.rb
 Rails.application.routes.draw do
   # -------------------------
   # Authentication
   # -------------------------
-  # Devise for user authentication (single declaration)
+  # Devise for user authentication
   devise_for :users, controllers: { registrations: 'registrations' }
 
   # -------------------------
@@ -28,39 +27,49 @@ Rails.application.routes.draw do
   resources :brands, only: [:index, :show]
 
   # -------------------------
-  # Cart (single resource)
+  # Cart (explicit, single resource routes)
   # -------------------------
-  # Uses resource :cart (singular) to map to /cart
-  resource :cart, only: [:show], controller: 'carts' do
-    collection do
-      post   :add_item           # POST /cart/add_item
-      patch  'update_item/:id', action: :update_item, as: :update_item
-      delete 'remove_item/:id', action: :remove_item, as: :remove_item
-      delete :clear              # DELETE /cart/clear
-      get    :summary            # GET /cart/summary (HTML/JSON)
-    end
-  end
+  # Cart page
+  get    '/cart',                   to: 'carts#show',        as: :cart
 
-  # Also provide a dedicated JSON-only summary route (convenience)
-  get '/cart/summary', to: 'carts#summary', as: :cart_summary, defaults: { format: :json }
+  # AJAX add-to-cart (POST)
+  post   '/cart/add_item',          to: 'cart_items#create', as: :cart_add_item
 
-  get '/cart/remove_item/:id', to: redirect('/cart')
+  # Update an item's quantity (PATCH)
+  patch  '/cart/update_item/:id',   to: 'carts#update_item', as: :cart_update_item
 
+  # Remove an item from the cart (DELETE)
+  delete '/cart/remove_item/:id',   to: 'carts#remove_item', as: :cart_remove_item
+
+  # Clear the cart
+  delete '/cart/clear',             to: 'carts#clear',       as: :cart_clear
+
+  # JSON summary endpoint
+  get    '/cart/summary',           to: 'carts#summary',     as: :cart_summary, defaults: { format: :json }
+
+  # Optional: safe GET redirect to /cart if someone visits /cart/add_item by mistake
+  # (keeps browsers from showing a routing error page). This does NOT affect the POST route.
+  get    '/cart/add_item',          to: redirect('/cart')
+
+  # -------------------------
   # Wishlist
+  # -------------------------
   resource :wishlist, only: [:show] do
     post :add_item
     delete :remove_item
   end
 
-  # Orders (customer side)
-  # New + Create + Show for checkout flow; index for user order history
+  # Orders (customer/checkout)
   resources :orders, only: [:index, :new, :create, :show] do
     member do
       patch :cancel
     end
   end
 
-  # Addresses (user-managed addresses)
+  # Convenience named checkout path
+  get '/checkout', to: 'orders#new', as: :checkout
+
+  # Addresses (user-managed)
   resources :addresses do
     member do
       patch :set_default
@@ -70,13 +79,8 @@ Rails.application.routes.draw do
   # -------------------------
   # Static & utility routes
   # -------------------------
-  # Search
   get :search, to: 'search#index'
 
-
-  get '/cart/add_item', to: redirect('/cart')
-
-  # Static pages
   get '/about',   to: 'pages#about',   as: :about
   get '/contact', to: 'pages#contact', as: :contact
   post '/contact_submit', to: 'pages#contact_submit', as: :contact_submit

@@ -25,6 +25,33 @@ end
 
 puts "Categories and Brands created."
 
+# === Additional demo sections & clothing subcategories ===
+puts "Seeding extra sections and clothing subcategories..."
+
+# Top-level sections to ensure exist
+extra_sections = ['Accessories', 'Shoes', 'Underwear', 'New Arrivals', 'Sale']
+extra_sections.each do |name|
+  Category.find_or_create_by!(name: name) do |c|
+    c.slug = name.parameterize
+    c.active = true if c.respond_to?(:active=)
+  end
+end
+
+# Create Clothing parent and subcategories (Men / Women / Children)
+clothing = Category.find_or_create_by!(name: "Clothing") do |c|
+  c.slug = "clothing"
+  c.active = true if c.respond_to?(:active=)
+end
+
+%w[Men Women Children].each do |child_name|
+  Category.find_or_create_by!(name: child_name, parent_id: clothing.id) do |c|
+    c.slug = child_name.parameterize
+    c.active = true if c.respond_to?(:active=)
+  end
+end
+
+puts "Extra sections and clothing subcategories created."
+
 # Initial curated product data you already had (kept as-is)
 products_data = [
   { name: 'Luxe Velvet Chair', description: 'Plush velvet lounge chair with solid wood legs.', price: 249.99, image: 'https://images.unsplash.com/photo-1549187774-b4e9b0445b6b?q=80&w=1200&auto=format&fit=crop', category: 'Furniture', brand: 'LuxeHome' },

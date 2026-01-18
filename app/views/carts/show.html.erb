@@ -1,156 +1,347 @@
-<%= stylesheet_link_tag 'cart_checkout', media: 'all' %>
+<%# Modern Cart UI with AJAX quantity controls. Expects @items = [{ product: Product | nil, product_id: Integer, quantity: Integer }, ...] %>
 
-<main class="cart-page container">
-  <h1>Your Cart</h1>
+<%# Helper to pick the best available product image %>
+<% def product_image_src(product)
+     return "https://via.placeholder.com/200x200.png?text=No+Image" unless product
+     if product.respond_to?(:image_url) && product.image_url.present?
+       product.image_url
+     elsif product.respond_to?(:product_images) && product.product_images.any?
+       pi = product.product_images.first
+       if pi.respond_to?(:image) && pi.image.present?
+         begin
+           return url_for(pi.image) if pi.image.respond_to?(:attached?) && pi.image.attached?
+         rescue
+         end
+         return pi.image.to_s if pi.image.present?
+       elsif pi.respond_to?(:image_url) && pi.image_url.present?
+         return pi.image_url
+       end
+     elsif product.respond_to?(:image) && product.image.present?
+       begin
+         return url_for(product.image) if product.image.respond_to?(:attached?) && product.image.attached?
+       rescue
+       end
+       return product.image.to_s
+     end
+     "https://via.placeholder.com/200x200.png?text=No+Image"
+   end
+%>
 
-  <% if @cart_items.present? && @cart_items.any? %>
-    <div class="cart-grid">
-      <section class="cart-items">
-        <ul id="cart-items-list">
-          <%= render partial: 'carts/cart_item', collection: @cart_items, as: :cart_item %>
-        </ul>
-      </section>
+<div class="max-w-6xl mx-auto px-4 py-10">
+  <h1 class="text-3xl font-bold mb-6">Your Cart</h1>
 
-      <aside class="cart-summary" id="order-summary">
-        <%= render partial: 'carts/summary', locals: { cart: @cart } %>
-      </aside>
+  <% if @items.blank? %>
+    <div class="bg-white rounded-lg p-8 shadow-sm">
+      <p class="text-gray-700 mb-4">Your cart is empty.</p>
+      <%= link_to "Continue shopping", categories_path, class: "inline-block px-5 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700" %>
     </div>
   <% else %>
-    <div class="empty-cart">
-      <p>Your cart is empty.</p>
-      <%= link_to 'Continue shopping', root_path, class: 'btn btn-primary' %>
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left">
+          <thead>
+            <tr class="text-sm text-gray-600 border-b">
+              <th class="py-3 pl-2">Item</th>
+              <th class="py-3">Price</th>
+              <th class="py-3">Qty</th>
+              <th class="py-3 text-right pr-2">Subtotal</th>
+            </tr>
+          </thead>
+
+          <tbody id="cart-rows" class="text-sm text-gray-800">
+            <% total = 0 %>
+            <% @items.each do |row| %>
+              <% product = row[:product] %>
+              <% qty = row[:quantity].to_i %>
+              <% if product %>
+                <% price = product.respond_to?(:price) ? product.price.to_f : 0.0 %>
+                <% subtotal = price * qty %>
+                <% total += subtotal %>
+
+                <tr class="border-b" data-product-id="<%= product.id %>" data-price="<%= price %>">
+                  <td class="py-4 pl-2 align-top">
+                    <div class="flex items-start gap-4">
+                      <div class="w-20 h-20 flex-shrink-0 rounded overflow-hidden bg-gray-50">
+                        <%= image_tag product_image_src(product), alt: product.name, class: "w-full h-full object-cover" %>
+                      </div>
+                      <div class="flex-1">
+                        <div class="font-semibold text-gray-900"><%= link_to product.name, product_path(product), class: "hover:underline" %></div>
+                        <% if product.respond_to?(:sku) && product.sku.present? %>
+                          <div class="text-xs text-gray-500 mt-1">SKU: <%= product.sku %></div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td class="py-4 align-top"><%= number_to_currency(price) %></td>
+
+                  <td class="py-4 align-top">
+                    <div class="inline-flex items-center gap-2">
+                      <button type="button" class="decrease-qty inline-flex items-center justify-center w-8 h-8 rounded bg-gray-100 hover:bg-gray-200" title="Decrease">
+                        &minus;
+                      </button>
+
+                      <span class="mx-2 px-3 py-1 rounded bg-gray-100 text-gray-700 qty-value"><%= qty %></span>
+
+                      <button type="button" class="increase-qty inline-flex items-center justify-center w-8 h-8 rounded bg-indigo-600 text-white hover:bg-indigo-700" title="Increase">
+                        &#43;
+                      </button>
+                    </div>
+                  </td>
+
+                  <td class="py-4 pr-2 font-semibold text-right align-top">
+                    <span class="row-subtotal"><%= number_to_currency(subtotal) %></span>
+                    <div class="mt-2">
+                      <button type="button" class="remove-item text-sm text-red-600 hover:underline" >
+                        Remove
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              <% else %>
+                <% pid = row[:product_id] || 'unknown' %>
+                <tr class="border-b bg-yellow-50" data-product-id="<%= pid %>" data-price="0">
+                  <td class="py-4 pl-2">
+                    <div class="flex items-start gap-4">
+                      <div class="w-20 h-20 flex-shrink-0 rounded overflow-hidden bg-gray-50">
+                        <%= image_tag product_image_src(nil), alt: "Missing product", class: "w-full h-full object-cover" %>
+                      </div>
+                      <div class="flex-1">
+                        <div class="font-semibold text-gray-900">Product (ID: <%= pid %>)</div>
+                        <div class="text-sm text-gray-600">This product no longer exists in the catalog.</div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td class="py-4 align-top">—</td>
+                  <td class="py-4 align-top">
+                    <span class="inline-flex items-center px-3 py-1 rounded bg-gray-100 text-gray-700"><%= qty %></span>
+                  </td>
+                  <td class="py-4 pr-2 font-semibold text-right align-top">—</td>
+                </tr>
+              <% end %>
+            <% end %>
+
+            <tr class="font-bold">
+              <td colspan="3" class="py-4 text-right pr-2">Total</td>
+              <td class="py-4 pr-2 font-bold text-right" id="cart-total"><%= number_to_currency(total) %></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-6 flex items-center justify-between gap-4">
+        <div>
+          <%= link_to "Continue shopping", categories_path, class: "px-4 py-2 border rounded-md text-sm" %>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <%= link_to "Proceed to Checkout", checkout_path, class: "px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700" %>
+        </div>
+      </div>
     </div>
+
+    <!-- Client-side cart controls JS -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+        function showError(msg) {
+          alert(msg || 'Could not update the cart. Please try again.');
+        }
+
+        function updateBadge(count) {
+          const el = document.getElementById('cart-count');
+          if (!el) return;
+          el.textContent = count;
+        }
+
+        function recalcTotal() {
+          let total = 0.0;
+          document.querySelectorAll('tbody#cart-rows tr[data-product-id]').forEach(row => {
+            const price = parseFloat(row.dataset.price || 0);
+            const qtyEl = row.querySelector('.qty-value');
+            if (!qtyEl) return;
+            const qty = parseInt(qtyEl.textContent || '0', 10);
+            const subtotal = price * qty;
+            const subtotalEl = row.querySelector('.row-subtotal');
+            if (subtotalEl) subtotalEl.textContent = new Intl.NumberFormat(undefined, { style: 'currency', currency: '<%= (defined?(Money) ? Money.default_currency || "USD" : "USD") %>' }).format(subtotal);
+            total += subtotal;
+          });
+          const totalEl = document.getElementById('cart-total');
+          if (totalEl) totalEl.textContent = new Intl.NumberFormat(undefined, { style: 'currency', currency: '<%= (defined?(Money) ? Money.default_currency || "USD" : "USD") %>' }).format(total);
+        }
+
+        async function postAdd(productId) {
+          try {
+            const body = new URLSearchParams({ product_id: productId }).toString();
+            const res = await fetch('/cart/add_item', {
+              method: 'POST',
+              headers: {
+                'X-CSRF-Token': csrf,
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              credentials: 'same-origin',
+              body
+            });
+            if (!res.ok) {
+              showError();
+              return null;
+            }
+            const ct = res.headers.get('content-type') || '';
+            if (ct.indexOf('application/json') !== -1) {
+              return await res.json();
+            } else {
+              return null;
+            }
+          } catch (err) {
+            console.error(err);
+            showError();
+            return null;
+          }
+        }
+
+        async function patchUpdate(productId, quantity) {
+          try {
+            const body = new URLSearchParams({ quantity: quantity }).toString();
+            const res = await fetch(`/cart/update_item/${productId}`, {
+              method: 'PATCH',
+              headers: {
+                'X-CSRF-Token': csrf,
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              credentials: 'same-origin',
+              body
+            });
+            if (!res.ok) {
+              showError();
+              return null;
+            }
+            const ct = res.headers.get('content-type') || '';
+            if (ct.indexOf('application/json') !== -1) {
+              return await res.json();
+            } else {
+              return null;
+            }
+          } catch (err) {
+            console.error(err);
+            showError();
+            return null;
+          }
+        }
+
+        async function deleteRemove(productId) {
+          try {
+            const res = await fetch(`/cart/remove_item/${productId}`, {
+              method: 'DELETE',
+              headers: {
+                'X-CSRF-Token': csrf,
+                'Accept': 'application/json'
+              },
+              credentials: 'same-origin'
+            });
+            if (!res.ok) {
+              showError();
+              return null;
+            }
+            const ct = res.headers.get('content-type') || '';
+            if (ct.indexOf('application/json') !== -1) {
+              return await res.json();
+            } else {
+              return null;
+            }
+          } catch (err) {
+            console.error(err);
+            showError();
+            return null;
+          }
+        }
+
+        // Attach handlers
+        document.querySelectorAll('tbody#cart-rows tr[data-product-id]').forEach(row => {
+          const productId = row.dataset.productId;
+          const incBtn = row.querySelector('.increase-qty');
+          const decBtn = row.querySelector('.decrease-qty');
+          const qtyEl = row.querySelector('.qty-value');
+          const removeBtn = row.querySelector('.remove-item');
+
+          if (incBtn) {
+            incBtn.addEventListener('click', async (e) => {
+              incBtn.disabled = true;
+              const data = await postAdd(productId);
+              incBtn.disabled = false;
+              if (data && data.cart) {
+                const newQty = data.cart[productId]?.toString() || qtyEl.textContent;
+                qtyEl.textContent = newQty;
+                if (typeof data.cart_count !== 'undefined') updateBadge(data.cart_count);
+                recalcTotal();
+              } else if (data === null) {
+                // non-JSON case -> reload to reflect server
+                location.reload();
+              }
+            });
+          }
+
+          if (decBtn) {
+            decBtn.addEventListener('click', async (e) => {
+              const currentQty = parseInt(qtyEl.textContent || '0', 10);
+              if (currentQty <= 1) {
+                // If user clicks minus on 1, treat as remove confirmation
+                if (!confirm('Remove this item from your cart?')) return;
+                decBtn.disabled = true;
+                const data = await deleteRemove(productId);
+                decBtn.disabled = false;
+                if (data && data.cart) {
+                  // remove row from DOM if quantity now 0
+                  if (!data.cart[productId] || parseInt(data.cart[productId]) <= 0) {
+                    row.remove();
+                  } else {
+                    qtyEl.textContent = data.cart[productId];
+                  }
+                  if (typeof data.cart_count !== 'undefined') updateBadge(data.cart_count);
+                  recalcTotal();
+                } else if (data === null) {
+                  location.reload();
+                }
+                return;
+              }
+
+              // Reduce quantity by 1 via update endpoint
+              const newQty = currentQty - 1;
+              decBtn.disabled = true;
+              const data = await patchUpdate(productId, newQty);
+              decBtn.disabled = false;
+              if (data && data.cart) {
+                qtyEl.textContent = data.cart[productId] || newQty;
+                if (typeof data.cart_count !== 'undefined') updateBadge(data.cart_count);
+                recalcTotal();
+                // If qty became 0 remove row
+                if (!data.cart[productId] || parseInt(data.cart[productId]) <= 0) row.remove();
+              } else if (data === null) {
+                location.reload();
+              }
+            });
+          }
+
+          if (removeBtn) {
+            removeBtn.addEventListener('click', async (e) => {
+              if (!confirm('Remove this item from your cart?')) return;
+              removeBtn.disabled = true;
+              const data = await deleteRemove(productId);
+              removeBtn.disabled = false;
+              if (data && data.cart) {
+                row.remove();
+                if (typeof data.cart_count !== 'undefined') updateBadge(data.cart_count);
+                recalcTotal();
+              } else if (data === null) {
+                location.reload();
+              }
+            });
+          }
+        });
+      });
+    </script>
   <% end %>
-</main>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const list = document.getElementById('cart-items-list');
-  if (!list) return;
-
-  function getCsrf() {
-    const m = document.querySelector('meta[name="csrf-token"]');
-    return m ? m.getAttribute('content') : '';
-  }
-
-  // Build URL for updating item (PATCH)
-  function updateUrlFor(itemId) {
-    // server-side helper embedding a template that we replace in JS
-    return "<%= j url_for(controller: :carts, action: :update_item, id: ':ID') %>".replace(':ID', itemId);
-  }
-
-  // Update item on server and refresh subtotal/summary
-  async function updateItem(itemId, qty) {
-    const url = updateUrlFor(itemId);
-    try {
-      const resp = await fetch(url, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': getCsrf(),
-          'Accept': 'application/json'
-        },
-        credentials: 'same-origin',
-        body: JSON.stringify({ quantity: qty })
-      });
-
-      if (!resp.ok) {
-        console.error('Failed to update item', resp.status);
-        return;
-      }
-
-      const json = await resp.json();
-
-      // Update the displayed subtotal for this item, if provided
-      if (json.item_subtotal) {
-        const itemEl = document.querySelector('.cart-item[data-id="' + itemId + '"]');
-        const subEl = itemEl && itemEl.querySelector('.item-subtotal');
-        if (subEl) subEl.textContent = json.item_subtotal;
-      }
-
-      // Update order summary HTML if returned
-      if (json.summary_html) {
-        const summary = document.getElementById('order-summary');
-        if (summary) summary.innerHTML = json.summary_html;
-      }
-    } catch (err) {
-      console.error('Update item error', err);
-    }
-  }
-
-  // Remove item (AJAX) and update DOM
-  async function removeItem(itemId, url) {
-    try {
-      const resp = await fetch(url, {
-        method: 'DELETE',
-        headers: {
-          'X-CSRF-Token': getCsrf(),
-          'Accept': 'application/json'
-        },
-        credentials: 'same-origin'
-      });
-
-      if (!resp.ok) {
-        console.error('Failed to remove item', resp.status);
-        return;
-      }
-
-      const json = await resp.json();
-      const li = document.querySelector('.cart-item[data-id="' + itemId + '"]');
-      if (li) li.remove();
-
-      if (json.summary_html) {
-        const summary = document.getElementById('order-summary');
-        if (summary) summary.innerHTML = json.summary_html;
-      }
-
-      // If cart is now empty, reload to show empty-state
-      if (!document.querySelectorAll('.cart-item').length) window.location.reload();
-    } catch (err) {
-      console.error('Remove item error', err);
-    }
-  }
-
-  // Delegate clicks: increase/decrease
-  list.addEventListener('click', function(e) {
-    const incBtn = e.target.closest('.qty-btn.increase');
-    const decBtn = e.target.closest('.qty-btn.decrease');
-
-    if (incBtn || decBtn) {
-      const btn = incBtn || decBtn;
-      const itemId = btn.dataset.itemId || btn.getAttribute('data-item-id');
-      const li = btn.closest('.cart-item');
-      const input = li && li.querySelector('.qty-input');
-      if (!input) return;
-
-      let qty = parseInt(input.value || '1', 10);
-      qty = incBtn ? qty + 1 : Math.max(1, qty - 1);
-      input.value = qty;
-
-      updateItem(itemId, qty);
-    }
-  });
-
-  // Handle manual quantity changes (blur or enter)
-  list.addEventListener('change', function(e) {
-    const input = e.target.closest('.qty-input');
-    if (input) {
-      const itemId = input.dataset.itemId || input.getAttribute('data-item-id');
-      let qty = parseInt(input.value || '1', 10);
-      qty = Math.max(1, isNaN(qty) ? 1 : qty);
-      input.value = qty;
-      updateItem(itemId, qty);
-    }
-  });
-
-  // Intercept remove forms (button_to generated forms)
-  document.querySelectorAll('form.remove-item-form').forEach(function(form) {
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const itemId = form.dataset.itemId || form.getAttribute('data-item-id') || (form.querySelector('button') && form.querySelector('button').dataset && form.querySelector('button').dataset.itemId);
-      const url = form.action;
-      removeItem(itemId, url);
-    });
-  });
-});
-</script>
+</div>

@@ -1,0 +1,281 @@
+<%# Dedicated Shoes page (rendered by CategoriesController#show when category is Shoes) %>
+
+<%# --- Helpers (defined here to avoid inline rescue) --- %>
+<%#
+  safe_attached?(obj) -> boolean
+  image_for(obj) -> url or nil
+  products_for_gender(category, gender, limit) -> Array of Product
+%>
+<% def safe_attached?(obj)
+     return false unless obj.respond_to?(:attached?)
+     begin
+       obj.attached?
+     rescue StandardError
+       false
+     end
+   end
+
+   def image_for(obj)
+     return nil if obj.nil?
+     if safe_attached?(obj)
+       begin
+         url_for(obj)
+       rescue StandardError
+         nil
+       end
+     else
+       s = obj.to_s
+       s.present? ? s : nil
+     end
+   end
+
+   def products_for_gender(category, gender, limit = 6)
+     return [] unless category
+     gender_str = gender.to_s.downcase
+
+     # 1) If Product has a 'gender' column
+     if Product.column_names.include?('gender')
+       begin
+         found = category.products.where('LOWER(gender) = ?', gender_str).limit(limit).to_a
+         return found if found.any?
+       rescue StandardError
+       end
+     end
+
+     # 2) Try subcategory named after gender
+     begin
+       subcat = Category.find_by(name: gender.capitalize)
+       if subcat && subcat.respond_to?(:products)
+         found = subcat.products.limit(limit).to_a
+         return found if found.any?
+       end
+     rescue StandardError
+     end
+
+     # 3) Name match inside category products
+     begin
+       found = category.products.where('LOWER(name) LIKE ?', "%#{gender_str}%").limit(limit).to_a
+       return found if found.any?
+     rescue StandardError
+     end
+
+     # 4) Fallback to any products in category
+     begin
+       return category.products.limit(limit).to_a
+     rescue StandardError
+       return []
+     end
+   end
+%>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <!-- Breadcrumb + Cart badge -->
+  <div class="flex items-center justify-between mb-6">
+    <nav class="text-sm text-gray-500" aria-label="Breadcrumb">
+      <ol class="flex items-center space-x-2">
+        <li><%= link_to "Home", root_path, class: "hover:underline" %></li>
+        <li>/</li>
+        <li><%= link_to "Categories", categories_path, class: "hover:underline" %></li>
+        <li>/</li>
+        <li class="text-gray-900 font-semibold"><%= @category.name %></li>
+      </ol>
+    </nav>
+
+    <div>
+      <a href="/cart" class="inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span id="cart-count" class="inline-flex items-center justify-center bg-indigo-600 text-white rounded-full px-2 py-0.5 text-xs">
+          <%= (session[:cart]&.values&.map(&:to_i)&.sum) || 0 %>
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Shoes hero -->
+  <div class="bg-gradient-to-r from-white to-gray-50 rounded-2xl p-6 mb-8 flex items-center gap-6">
+    <div class="flex-1">
+      <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Shoes</h1>
+      <p class="text-gray-600">Shop our shoes collection for Men, Women and Children.</p>
+    </div>
+
+    <div class="w-64">
+      <% if @category.respond_to?(:image) && @category.image.present? %>
+        <%= image_tag image_for(@category.image) || @category.image, alt: @category.name, class: "w-full h-40 object-cover rounded-lg" %>
+      <% elsif @category.respond_to?(:image_url) && @category.image_url.present? %>
+        <%= image_tag @category.image_url, alt: @category.name, class: "w-full h-40 object-cover rounded-lg" %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Men / Women / Children sections -->
+  <% ['men', 'women', 'children'].each do |gender| %>
+    <% products = products_for_gender(@category, gender, 6) %>
+    <section class="bg-white rounded-2xl shadow-sm p-4 mb-6">
+      <h2 class="text-xl font-semibold mb-4"><%= gender.capitalize %> Shoes</h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <% if products.present? %>
+          <% products.each do |p| %>
+            <div class="border rounded-lg p-3 flex flex-col">
+              <% img_src = nil
+                 if p.respond_to?(:product_images) && p.product_images.any?
+                   img_src ||= image_for(p.product_images.first.image) rescue nil
+                   img_src ||= (p.product_images.first.respond_to?(:image_url) ? p.product_images.first.image_url : nil) rescue nil
+                 end
+                 img_src ||= (p.respond_to?(:image_url) ? p.image_url : nil) rescue nil
+                 img_src ||= image_for(p.image) if p.respond_to?(:image)
+              %>
+
+              <%= link_to product_path(p) do %>
+                <img src="<%= img_src || 'https://via.placeholder.com/400x300?text=No+Image' %>" class="w-full h-40 object-cover rounded-md mb-3" alt="<%= p.name %>">
+              <% end %>
+
+              <div class="flex-1">
+                <div class="font-semibold text-sm mb-1"><%= link_to p.name, product_path(p), class: "hover:underline" %></div>
+                <div class="text-gray-600 mb-2"><%= number_to_currency(p.price) if p.respond_to?(:price) %></div>
+              </div>
+
+              <div>
+                <button type="button"
+                        class="add-to-cart-ajax inline-flex items-center px-3 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
+                        data-url="/cart/add_item"
+                        data-product-id="<%= p.id %>">
+                  <i class="fa-solid fa-cart-plus mr-2"></i> Add
+                </button>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <% 3.times do |i| %>
+            <div class="border rounded-lg p-3 flex flex-col">
+              <img src="https://via.placeholder.com/400x300.png?text=<%= URI.encode_www_form_component("#{gender.capitalize}+#{i+1}") %>" class="w-full h-40 object-cover rounded-md mb-3" alt="">
+              <div class="flex-1">
+                <div class="font-semibold text-sm mb-1"><%= "#{gender.capitalize} placeholder #{i+1}" %></div>
+                <div class="text-gray-600 mb-2">&nbsp;</div>
+              </div>
+              <div>
+                <button disabled class="inline-flex items-center px-3 py-2 bg-gray-200 text-gray-600 rounded-md text-sm cursor-not-allowed">Add</button>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <!-- Optional: all shoes grid -->
+  <div class="mt-6">
+    <h3 class="text-lg font-semibold mb-3">All Shoes</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <% (@category.products.limit(24) rescue []).each do |p| %>
+        <div class="bg-white rounded-lg shadow p-3">
+          <% img_src = nil
+             if p.respond_to?(:product_images) && p.product_images.any?
+               img_src ||= image_for(p.product_images.first.image) rescue nil
+             end
+             img_src ||= (p.respond_to?(:image_url) ? p.image_url : nil)
+             img_src ||= image_for(p.image) if p.respond_to?(:image)
+          %>
+
+          <%= link_to product_path(p) do %>
+            <img src="<%= img_src || 'https://via.placeholder.com/400x300?text=No+Image' %>" class="w-full h-40 object-cover rounded mb-3" alt="<%= p.name %>">
+          <% end %>
+
+          <div class="font-semibold"><%= link_to p.name, product_path(p) %></div>
+          <div class="text-gray-600"><%= number_to_currency(p.price) if p.respond_to?(:price) %></div>
+
+          <div class="mt-2">
+            <button type="button"
+                    class="add-to-cart-ajax inline-flex items-center px-3 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
+                    data-url="/cart/add_item"
+                    data-product-id="<%= p.id %>">
+              <i class="fa-solid fa-cart-plus mr-2"></i> Add
+            </button>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- AJAX Add-to-Cart JS -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+  function setCartCount(count) {
+    const el = document.getElementById('cart-count');
+    if (!el) return;
+    el.textContent = count;
+  }
+
+  function incrementCartCount(by = 1) {
+    const el = document.getElementById('cart-count');
+    if (!el) return;
+    const current = parseInt(el.textContent || '0', 10);
+    setCartCount(current + by);
+  }
+
+  async function postAddToCart(url, productId) {
+    try {
+      const body = new URLSearchParams({ product_id: productId }).toString();
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-CSRF-Token': csrf,
+          'Accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        credentials: 'same-origin',
+        body: body
+      });
+
+      const ct = res.headers.get('content-type') || '';
+      if (res.ok && ct.indexOf('application/json') !== -1) {
+        const data = await res.json();
+        if (data && typeof data.cart_count !== 'undefined') {
+          setCartCount(data.cart_count);
+          return { success: true };
+        }
+      }
+
+      if (res.ok) {
+        incrementCartCount(1);
+        return { success: true };
+      }
+
+      return { success: false, status: res.status };
+    } catch (err) {
+      console.error('Add-to-cart error', err);
+      return { success: false, error: err };
+    }
+  }
+
+  document.querySelectorAll('.add-to-cart-ajax').forEach(btn => {
+    btn.addEventListener('click', async function (e) {
+      e.preventDefault();
+      const url = btn.dataset.url;
+      const pid = btn.dataset.productId;
+      if (!url || !pid) return;
+
+      btn.disabled = true;
+      btn.classList.add('opacity-70', 'cursor-wait');
+
+      const result = await postAddToCart(url, pid);
+
+      btn.disabled = false;
+      btn.classList.remove('opacity-70', 'cursor-wait');
+
+      if (!result.success) {
+        alert('Could not add to cart. Please try again.');
+      } else {
+        const badge = document.getElementById('cart-count');
+        if (badge) {
+          badge.classList.add('ring', 'ring-indigo-300');
+          setTimeout(() => badge.classList.remove('ring', 'ring-indigo-300'), 700);
+        }
+      }
+    });
+  });
+});
+</script>
