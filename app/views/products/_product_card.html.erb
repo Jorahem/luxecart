@@ -1,42 +1,49 @@
-<%# Product card partial - expects local `product` %>
-<article class="bg-white rounded-lg shadow p-4 flex flex-col group"
-         data-product-id="<%= product.id %>">
-  <div class="relative rounded overflow-hidden h-44 mb-3">
-    <% if product.respond_to?(:image) && product.image&.attached? %>
-      <%= image_tag url_for(product.image), class: "object-cover w-full h-full", alt: product.name, loading: "lazy" %>
-    <% elsif product.respond_to?(:image_url) && product.image_url.present? %>
-      <img src="<%= product.image_url %>" alt="<%= product.name %>" class="object-cover w-full h-full" loading="lazy" />
-    <% else %>
-      <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1200&auto=format&fit=crop" alt="Placeholder" class="object-cover w-full h-full" loading="lazy" />
+<div class="rounded-lg border p-4 bg-white flex flex-col h-full">
+  <%# product variable expected in local assigns %>
+
+  <%# Image (ActiveStorage or image_url fallback) %>
+  <% img_src = if product.respond_to?(:image) && product.image.present?
+                 begin
+                   url_for(product.image) if product.image.respond_to?(:attached?) && product.image.attached?
+                 rescue
+                   nil
+                 end
+               end
+               img_src ||= product.respond_to?(:image_url) ? product.image_url : nil
+               img_src ||= product.product_images&.first&.image if product.respond_to?(:product_images)
+               img_src ||= asset_path('placeholder-400x300.png') rescue '/images/placeholder-400x300.png' %>
+
+  <%= link_to product_path(product), class: "block mb-3" do %>
+    <img src="<%= img_src.presence || 'https://via.placeholder.com/400x300?text=No+Image' %>"
+         alt="<%= h(product.name) %>"
+         class="w-full h-40 object-cover rounded-md">
+  <% end %>
+
+  <div class="flex-1">
+    <h3 class="text-sm font-semibold text-gray-900 mb-1">
+      <%= link_to product.name, product_path(product), class: "hover:underline" %>
+    </h3>
+
+    <% if product.respond_to?(:short_description) && product.short_description.present? %>
+      <p class="text-xs text-gray-500 mb-2"><%= truncate(product.short_description, length: 80) %></p>
     <% end %>
 
-    <% if product.respond_to?(:featured) && product.featured %>
-      <span class="absolute top-3 left-3 bg-indigo-600 text-white text-xs px-2 py-1 rounded">Featured</span>
+    <div class="text-gray-800 font-medium mb-3"><%= number_to_currency(product.try(:price) || 0) %></div>
+  </div>
+
+  <div class="mt-2 grid grid-cols-2 gap-2">
+    <%# Primary Add button — uses JS handler (data attributes) and falls back gracefully %>
+    <%= button_tag type: :button,
+                   class: "add-to-cart-ajax inline-flex items-center justify-center px-3 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm w-full",
+                   data: { url: (defined?(cart_add_item_path) ? cart_add_item_path : '/cart/add_item'), product_id: product.id },
+                   aria: { label: "Add #{product.name} to cart" } do %>
+      <i class="fa-solid fa-cart-plus mr-2"></i>
+      Add
+    <% end %>
+
+    <%# Optional: Quick view or details link %>
+    <%= link_to product_path(product), class: "inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50 w-full", title: "View details for #{product.name}" do %>
+      <i class="fa-solid fa-eye mr-2"></i> View
     <% end %>
   </div>
-
-  <h3 class="text-sm font-semibold mb-1 truncate">
-    <%= link_to product.name, product_path(product), class: "hover:text-indigo-600" %>
-  </h3>
-
-  <div class="text-xs text-gray-500 mb-2 truncate"><%= truncate(product.try(:short_description).to_s, length: 80) %></div>
-
-  <div class="mt-auto flex items-center justify-between gap-3">
-    <div class="text-lg font-bold text-indigo-600">
-      <% price_val = (product.respond_to?(:price) && product.price) || (product.respond_to?(:unit_price_decimal) && product.unit_price_decimal) || 0 %>
-      <%= number_to_currency(price_val) %>
-    </div>
-
-    <div class="flex items-center gap-2">
-      <%# button_to sends POST to add_item_cart_path with product_id param (works without JS) %>
-      <%= button_to add_item_cart_path, method: :post, params: { product_id: product.id, quantity: 1 }, class: "inline-flex items-center gap-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm" do %>
-        <i class="fa fa-cart-plus"></i>
-        Add
-      <% end %>
-
-      <%= link_to product_path(product), class: "inline-flex items-center text-gray-600 hover:text-indigo-600", title: "View product" do %>
-        <i class="fa fa-arrow-right"></i>
-      <% end %>
-    </div>
-  </div>
-</article>
+</div>

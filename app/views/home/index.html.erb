@@ -46,9 +46,15 @@
       <% products.each do |product| %>
         <article class="bg-white rounded-lg shadow p-4 flex flex-col">
           <div class="h-44 mb-3 rounded overflow-hidden bg-gray-100 flex items-center justify-center">
-            <%# ActiveStorage safe check %>
-            <% if product.respond_to?(:image) && product.image.attached? %>
-              <%= image_tag url_for(product.image.variant(resize_to_limit: [800, 600])), class: "object-cover w-full h-full", loading: "lazy", alt: product.name %>
+            <%# ActiveStorage safe check without using rescue modifier in the if condition %>
+            <% if product.respond_to?(:image) && product.image.respond_to?(:attached?) && product.image.attached? %>
+              <%# Wrap url_for in begin/rescue to avoid template crashing for unexpected errors %>
+              <% begin %>
+                <%= image_tag url_for(product.image.variant(resize_to_limit: [800, 600])), class: "object-cover w-full h-full", loading: "lazy", alt: product.name %>
+              <% rescue => _e %>
+                <img src="https://images.unsplash.com/photo-1526178612438-47b6c1d2d0c0?q=80&w=1200&auto=format&fit=crop"
+                     class="object-cover w-full h-full" alt="Placeholder" loading="lazy" />
+              <% end %>
             <% elsif product.respond_to?(:image_url) && product.image_url.present? %>
               <img src="<%= product.image_url %>" class="object-cover w-full h-full" alt="<%= product.name %>" loading="lazy" />
             <% else %>
@@ -73,8 +79,12 @@
               <%= number_to_currency(price) %>
             </div>
 
-            <button class="add-to-cart inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded"
-                    data-product-id="<%= product.id %>">
+            <%# Use the global JS-safe add-to-cart button (data-url uses the correct helper if available) %>
+            <button
+              type="button"
+              class="add-to-cart-ajax inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded"
+              data-url="<%= (defined?(cart_add_item_path) ? cart_add_item_path : '/cart/add_item') %>"
+              data-product-id="<%= product.id %>">
               <i class="fa fa-cart-plus"></i>
               Add
             </button>
@@ -89,7 +99,8 @@
                class="w-full h-40 object-cover rounded mb-4" alt="Demo <%= i+1 %>" loading="lazy" />
           <div class="font-semibold mb-2">Demo Product <%= i+1 %></div>
           <div class="text-indigo-600 font-bold mb-3">Rs49.99</div>
-          <button class="add-to-cart inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded"
+          <button class="add-to-cart-ajax inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded"
+                  data-url="<%= (defined?(cart_add_item_path) ? cart_add_item_path : '/cart/add_item') %>"
                   data-product-id="demo-<%= i %>">
             <i class="fa fa-cart-plus"></i> Add
           </button>
@@ -104,15 +115,14 @@
   <h2 class="text-2xl font-bold mb-4">Trusted brands</h2>
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 items-center">
     <% brand_images = [
-    
          "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1200&auto=format&fit=crop",
-          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1505740106531-4243f3831b16?q=80&w=1200&auto=format&fit=crop"
+         "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop",
+         "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop",
+         "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop",
+         "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop",
+         "https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1200&auto=format&fit=crop",
+         "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1200&auto=format&fit=crop",
+         "https://images.unsplash.com/photo-1505740106531-4243f3831b16?q=80&w=1200&auto=format&fit=crop"
        ] %>
 
     <% brand_images.each_with_index do |img, idx| %>
@@ -128,22 +138,10 @@
   <h2 class="text-2xl font-bold mb-4">Gallery</h2>
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
     <% gallery_urls = [
-        #  "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=800&auto=format&fit=crop",
-        #  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop",
-        #  "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=800&auto=format&fit=crop",
-        #  "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=800&auto=format&fit=crop",
-        #  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop",
-        #  "https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=800&auto=format&fit=crop",
-        #  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop",
-        #  "https://images.unsplash.com/photo-1505740106531-4243f3831b16?q=80&w=800&auto=format&fit=crop"
-
-
-
           "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop"
-
+          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop"
        ] %>
 
     <% gallery_urls.each do |g| %>
@@ -199,35 +197,7 @@
     // CSRF token for fetch POSTs
     function getCsrf() { var m = document.querySelector('meta[name="csrf-token"]'); return m ? m.getAttribute('content') : ''; }
 
-    // Add-to-cart handling
-    document.querySelectorAll('.add-to-cart').forEach(function(btn) {
-      btn.addEventListener('click', function () {
-        var productId = this.dataset.productId;
-        addToCart(productId, 1);
-      });
-    });
-
-    function addToCart(productId, qty) {
-      var url = "<%= j add_item_cart_path %>";
-      fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": getCsrf(),
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({ product_id: productId, quantity: qty })
-      })
-      .then(function(r) {
-        if (r.ok) {
-          showToast("Added to cart ✓");
-        } else {
-          r.json().then(function(j){ showToast((j && j.error) || "Failed to add to cart", true); }).catch(function(){ showToast("Failed to add to cart", true); });
-        }
-      })
-      .catch(function(){ showToast("Network error — try again", true); });
-    }
-
+    // Small toast helper
     function showToast(message, isError) {
       var root = document.getElementById('toast-root');
       var el = document.createElement('div');
@@ -238,6 +208,63 @@
       el.querySelector('button').addEventListener('click', function(){ el.remove(); });
       setTimeout(function(){ if (el.parentNode) el.remove(); }, 4000);
     }
+
+    // Handler used by site-wide "add-to-cart-ajax" buttons
+    document.querySelectorAll('.add-to-cart-ajax').forEach(function(btn) {
+      btn.addEventListener('click', async function (e) {
+        e.preventDefault();
+        var url = btn.dataset.url || '<%= (defined?(cart_add_item_path) ? cart_add_item_path : "/cart/add_item") %>';
+        var productId = btn.dataset.productId || btn.dataset.product_id;
+        if (!productId) { showToast('Invalid product', true); return; }
+
+        btn.disabled = true;
+        btn.classList.add('opacity-70', 'cursor-wait');
+
+        try {
+          var body = new URLSearchParams({ product_id: productId }).toString();
+          var res = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'X-CSRF-Token': getCsrf(),
+              'Accept': 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            credentials: 'same-origin',
+            body: body
+          });
+
+          if (!res.ok) {
+            var text = await res.text().catch(()=>null);
+            try {
+              var json = JSON.parse(text || '{}');
+              showToast((json && json.error) || 'Failed to add to cart', true);
+            } catch (err) {
+              showToast('Failed to add to cart', true);
+            }
+            return;
+          }
+
+          var ct = res.headers.get('content-type') || '';
+          if (ct.indexOf('application/json') !== -1) {
+            var data = await res.json();
+            if (typeof data.cart_count !== 'undefined') {
+              var badge = document.getElementById('cart-count');
+              if (badge) badge.textContent = data.cart_count;
+            }
+            showToast('Added to cart ✓');
+          } else {
+            // If server returned HTML or redirected, reload to pick up server-side state
+            location.reload();
+          }
+        } catch (err) {
+          console.error(err);
+          showToast('Network error — try again', true);
+        } finally {
+          btn.disabled = false;
+          btn.classList.remove('opacity-70', 'cursor-wait');
+        }
+      });
+    });
 
     // Newsletter demo (client-only)
     var newsletterForm = document.getElementById('newsletter-form');
