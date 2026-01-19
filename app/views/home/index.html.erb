@@ -1,281 +1,337 @@
-<%# Home#index - image-rich interactive landing page (safe ActiveStorage checks + many images) %>
+<%# Home#index - interactive landing page with animations, images and product highlights %>
 
-<!-- HERO GALLERY -->
-<section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-  <div class="col-span-2 relative rounded-lg overflow-hidden shadow-lg">
-    <div class="relative h-72 md:h-96 bg-gray-100">
-      <img
-        src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1600&auto=format&fit=crop"
-        alt="Luxe hero"
-        class="w-full h-full object-cover"
-        loading="lazy"
-      />
-      <div class="absolute inset-0 bg-black/35 flex flex-col justify-center p-8">
-        <h1 class="text-3xl md:text-5xl text-white font-extrabold mb-3">Discover premium picks at LuxeCart</h1>
-        <p class="text-white/90 max-w-2xl mb-6">Handpicked products, curated collections and luxury deals — all in one beautiful place.</p>
-        <div class="flex gap-3">
-          <%= link_to "Shop featured", products_path, class: "inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold shadow" %>
-          <%= link_to "Explore categories", categories_path, class: "inline-flex items-center gap-2 px-6 py-3 bg-white/90 hover:bg-white text-indigo-700 rounded-lg font-semibold" %>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="space-y-12" data-page="home">
 
-  <div class="flex flex-col gap-4">
-    <div class="h-36 md:h-44 rounded-lg overflow-hidden shadow">
-      <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop"
-           alt="Featured style" class="w-full h-full object-cover" loading="lazy" />
-    </div>
-    <div class="h-36 md:h-44 rounded-lg overflow-hidden shadow">
-      <img src="https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=800&auto=format&fit=crop"
-           alt="New arrivals" class="w-full h-full object-cover" loading="lazy" />
-    </div>
-  </div>
-</section>
+  <!-- HERO GALLERY -->
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 fade-in-up">
+    <div class="col-span-2 relative rounded-2xl overflow-hidden shadow-xl group">
+      <div class="relative h-72 md:h-96 bg-gray-100">
+        <img
+          src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1600&q=80"
+          alt="Stylish clothes and accessories in a boutique"
+          class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+          loading="lazy"
+        />
+        <div class="absolute inset-0 bg-gradient-to-tr from-black/60 via-black/40 to-transparent flex flex-col justify-center p-6 md:p-10">
+          <p class="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-xs md:text-sm text-white/80 mb-3 backdrop-blur">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
+            New drops every week
+          </p>
+          <h1 class="text-3xl md:text-5xl text-white font-extrabold leading-tight mb-3 drop-shadow">
+            Discover premium picks at <span class="text-emerald-300">LuxeCart</span>
+          </h1>
+          <p class="text-white/90 max-w-2xl mb-6 text-sm md:text-base">
+            Handpicked styles, curated collections and luxury deals — all with a smooth shopping experience.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <%= link_to products_path, class: "inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold shadow-lg shadow-indigo-500/30 transition-transform hover:-translate-y-0.5" do %>
+              <i class="fa-solid fa-bag-shopping"></i>
+              <span>Shop featured</span>
+            <% end %>
 
-<!-- FEATURED PRODUCTS (larger grid) -->
-<section class="mb-10">
-  <div class="flex items-center justify-between mb-4">
-    <h2 class="text-2xl font-bold">Featured products</h2>
-    <p class="text-sm text-gray-500">Top picks for you</p>
-  </div>
-
-  <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-    <% products = @featured_products.presence || [] %>
-    <% if products.any? %>
-      <% products.each do |product| %>
-        <article class="bg-white rounded-lg shadow p-4 flex flex-col">
-          <div class="h-44 mb-3 rounded overflow-hidden bg-gray-100 flex items-center justify-center">
-            <%# ActiveStorage safe check without using rescue modifier in the if condition %>
-            <% if product.respond_to?(:image) && product.image.respond_to?(:attached?) && product.image.attached? %>
-              <%# Wrap url_for in begin/rescue to avoid template crashing for unexpected errors %>
-              <% begin %>
-                <%= image_tag url_for(product.image.variant(resize_to_limit: [800, 600])), class: "object-cover w-full h-full", loading: "lazy", alt: product.name %>
-              <% rescue => _e %>
-                <img src="https://images.unsplash.com/photo-1526178612438-47b6c1d2d0c0?q=80&w=1200&auto=format&fit=crop"
-                     class="object-cover w-full h-full" alt="Placeholder" loading="lazy" />
-              <% end %>
-            <% elsif product.respond_to?(:image_url) && product.image_url.present? %>
-              <img src="<%= product.image_url %>" class="object-cover w-full h-full" alt="<%= product.name %>" loading="lazy" />
-            <% else %>
-              <img src="https://images.unsplash.com/photo-1526178612438-47b6c1d2d0c0?q=80&w=1200&auto=format&fit=crop"
-                   class="object-cover w-full h-full" alt="Placeholder" loading="lazy" />
+            <%= link_to categories_path, class: "inline-flex items-center gap-2 px-6 py-3 bg-white/90 hover:bg-white text-indigo-700 rounded-lg font-semibold shadow-md transition-transform hover:-translate-y-0.5" do %>
+              <i class="fa-solid fa-grid-2"></i>
+              <span>Explore categories</span>
             <% end %>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <h3 class="text-md font-semibold truncate"><%= product.name %></h3>
-          <p class="text-sm text-gray-500 mt-1 flex-1"><%= truncate(product.try(:description).to_s, length: 90) %></p>
+    <div class="flex flex-col gap-4">
+      <!-- Left small image -->
+      <div class="h-36 md:h-44 rounded-2xl overflow-hidden shadow-lg relative slide-in-right delay-1">
+        <img
+          src="https://images.unsplash.com/photo-1521572163474-4f4e0f0af0c5?auto=format&fit=crop&w=900&q=80"
+          alt="Person choosing clothes on a rack"
+          class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+          loading="lazy"
+        />
+        <div class="absolute inset-0 bg-black/35 flex items-end p-3">
+          <span class="text-white text-sm font-semibold">Curated styles</span>
+        </div>
+      </div>
 
-          <div class="mt-3 flex items-center justify-between">
-            <div class="text-lg font-bold text-indigo-600">
-              <% price =
-                   if product.respond_to?(:price) && product.price.present?
-                     product.price
-                   elsif product.respond_to?(:unit_price_decimal) && product.unit_price_decimal.present?
-                     product.unit_price_decimal
-                   else
-                     0
-                   end %>
-              <%= number_to_currency(price) %>
+      <!-- Right small image -->
+      <div class="h-36 md:h-44 rounded-2xl overflow-hidden shadow-lg relative slide-in-right delay-2">
+        <img
+          src="https://images.unsplash.com/photo-1543076447-215ad9ba6923?auto=format&fit=crop&w=900&q=80"
+          alt="Folded clothes and accessories on display"
+          class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+          loading="lazy"
+        />
+        <div class="absolute inset-0 bg-black/35 flex items-end p-3">
+          <span class="text-white text-sm font-semibold">Fresh arrivals</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOP BY CATEGORY (interactive pills) -->
+  <section class="fade-in-up delay-1">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h2 class="text-xl md:text-2xl font-bold">Shop by category</h2>
+        <p class="text-sm text-gray-500">Jump into our most popular departments.</p>
+      </div>
+      <%= link_to "View all", categories_path, class: "text-sm text-indigo-600 hover:text-indigo-700 font-medium" %>
+    </div>
+
+    <div class="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
+      <%= link_to products_path(category: "shoes"), class: "inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-900 text-white text-sm hover:bg-black transition-colors whitespace-nowrap shadow-sm" do %>
+        <i class="fa-solid fa-shoe-prints"></i>
+        <span>Shoes</span>
+      <% end %>
+
+      <%= link_to products_path(category: "men"), class: "inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 text-gray-800 text-sm hover:bg-gray-200 transition-colors whitespace-nowrap" do %>
+        <i class="fa-solid fa-person"></i>
+        <span>Men</span>
+      <% end %>
+
+      <%= link_to products_path(category: "women"), class: "inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-50 text-pink-700 text-sm hover:bg-pink-100 transition-colors whitespace-nowrap" do %>
+        <i class="fa-solid fa-person-dress"></i>
+        <span>Women</span>
+      <% end %>
+
+      <%= link_to products_path(category: "kids"), class: "inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 text-sm hover:bg-emerald-100 transition-colors whitespace-nowrap" do %>
+        <i class="fa-solid fa-child-reaching"></i>
+        <span>Kids</span>
+      <% end %>
+
+      <%= link_to products_path(q: "accessories"), class: "inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-700 text-sm hover:bg-indigo-100 transition-colors whitespace-nowrap" do %>
+        <i class="fa-solid fa-gem"></i>
+        <span>Accessories</span>
+      <% end %>
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCTS (larger grid) -->
+  <section class="fade-in-up delay-2">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-2xl font-bold">Featured products</h2>
+      <%= link_to "See all products", products_path, class: "text-sm text-indigo-600 hover:text-indigo-700 font-medium" %>
+    </div>
+
+    <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <% products = @featured_products.presence || [] %>
+      <% if products.any? %>
+        <% # fallback images we cycle through when a product has no attached image %>
+        <% featured_fallback_images = [
+             "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=1200&q=80", # shoes on display
+             "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1200&q=80", # clothes rail
+             "https://images.unsplash.com/photo-1521572163474-4f4e0f0af0c5?auto=format&fit=crop&w=1200&q=80", # picking clothes
+             "https://images.unsplash.com/photo-1528701800489-20be3c30c1d5?auto=format&fit=crop&w=1200&q=80", # product still life
+             "https://images.unsplash.com/photo-1519744792095-2f2205e87b6f?auto=format&fit=crop&w=1200&q=80", # desk accessories
+             "https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=1200&q=80", # sneakers
+             "https://images.unsplash.com/photo-1495121553079-4c61bcce189c?auto=format&fit=crop&w=1200&q=80", # folded clothes
+             "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=1200&q=80"  # watch / accessory
+           ] %>
+
+        <% products.each_with_index do |product, index| %>
+          <% fallback_img = featured_fallback_images[index % featured_fallback_images.size] %>
+
+          <article class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 flex flex-col overflow-hidden group">
+            <div class="h-44 mb-0 overflow-hidden bg-gray-100 flex items-center justify-center relative">
+              <%# Product image (ActiveStorage) or different fallback per card %>
+              <% if product.respond_to?(:image) && product.image.respond_to?(:attached?) && product.image.attached? %>
+                <%= image_tag url_for(product.image), alt: product.name, class: "w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" %>
+              <% else %>
+                <%= image_tag fallback_img, alt: "Product image", class: "w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" %>
+              <% end %>
+
+              <div class="absolute top-3 left-3">
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-semibold bg-black/70 text-white uppercase tracking-wide">
+                  Featured
+                </span>
+              </div>
             </div>
 
-            <%# Use the global JS-safe add-to-cart button (data-url uses the correct helper if available) %>
-            <button
-              type="button"
-              class="add-to-cart-ajax inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded"
-              data-url="<%= (defined?(cart_add_item_path) ? cart_add_item_path : '/cart/add_item') %>"
-              data-product-id="<%= product.id %>">
-              <i class="fa fa-cart-plus"></i>
-              Add
-            </button>
-          </div>
-        </article>
-      <% end %>
-    <% else %>
-      <%# fallback demo cards %>
-      <% 8.times do |i| %>
-        <div class="bg-white rounded-lg shadow p-4 flex flex-col items-center text-center">
-          <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=800&auto=format&fit=crop"
-               class="w-full h-40 object-cover rounded mb-4" alt="Demo <%= i+1 %>" loading="lazy" />
-          <div class="font-semibold mb-2">Demo Product <%= i+1 %></div>
-          <div class="text-indigo-600 font-bold mb-3">Rs49.99</div>
-          <button class="add-to-cart-ajax inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded"
-                  data-url="<%= (defined?(cart_add_item_path) ? cart_add_item_path : '/cart/add_item') %>"
-                  data-product-id="demo-<%= i %>">
-            <i class="fa fa-cart-plus"></i> Add
-          </button>
+            <div class="p-4 flex flex-col flex-1">
+              <h3 class="font-semibold mb-1 truncate"><%= product.name %></h3>
+              <p class="text-sm text-gray-500 line-clamp-2 mb-2"><%= product.description.to_s.truncate(80) %></p>
+
+              <div class="mt-auto flex items-center justify-between">
+                <div class="font-bold text-lg text-gray-900">
+                  <% if product.respond_to?(:price) && product.price.present? %>
+                    <%= number_to_currency(product.price) %>
+                  <% elsif product.respond_to?(:price_cents) && product.price_cents.present? %>
+                    <%= number_to_currency(BigDecimal(product.price_cents) / 100) %>
+                  <% else %>
+                    <span class="text-gray-400 text-sm">Price on request</span>
+                  <% end %>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <%= link_to product_path(product), class: "inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-100 transition-colors" do %>
+                    <i class="fa-solid fa-eye text-sm"></i>
+                  <% end %>
+
+                  <button
+                    type="button"
+                    class="add-to-cart-ajax inline-flex items-center justify-center w-9 h-9 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 text-sm shadow-sm transition-transform hover:-translate-y-0.5"
+                    data-url="/cart/add_item"
+                    data-product-id="<%= product.id %>">
+                    <i class="fa-solid fa-cart-plus"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+        <% end %>
+      <% else %>
+        <div class="col-span-full text-center text-gray-500 py-12">
+          No featured products yet. Once you add products and mark them as featured, they will appear here.
         </div>
       <% end %>
-    <% end %>
-  </div>
-</section>
+    </div>
+  </section>
+ 
 
-<!-- BRANDS / PARTNERS strip -->
-<section class="mb-10">
-  <h2 class="text-2xl font-bold mb-4">Trusted brands</h2>
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 items-center">
-    <% brand_images = [
-         "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1200&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1200&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1200&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1505740106531-4243f3831b16?q=80&w=1200&auto=format&fit=crop"
-       ] %>
-
-    <% brand_images.each_with_index do |img, idx| %>
-      <div class="bg-white p-4 rounded-lg shadow flex items-center justify-center">
-        <img src="<%= img %>" alt="Brand <%= idx+1 %>" class="max-h-16 object-contain" loading="lazy" />
+  <!-- WHY LUXECART (value props) -->
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in-up delay-3">
+    <div class="bg-white rounded-2xl shadow-sm p-5 flex gap-3 items-start">
+      <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+        <i class="fa-solid fa-truck-fast"></i>
       </div>
-    <% end %>
-  </div>
-</section>
-
-<!-- IMAGE GALLERY (Instagram-like) -->
-<section class="mb-10">
-  <h2 class="text-2xl font-bold mb-4">Gallery</h2>
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-    <% gallery_urls = [
-          "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1200&auto=format&fit=crop",
-          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop",
-          "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop",
-          "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop"
-       ] %>
-
-    <% gallery_urls.each do |g| %>
-      <div class="rounded overflow-hidden shadow-sm">
-        <img src="<%= g %>" alt="Gallery image" class="w-full h-36 object-cover" loading="lazy" />
+      <div>
+        <h3 class="font-semibold mb-1">Fast & reliable shipping</h3>
+        <p class="text-sm text-gray-500">
+          Get your favorites delivered quickly with tracking from checkout to your doorstep.
+        </p>
       </div>
-    <% end %>
-  </div>
-</section>
+    </div>
 
-<!-- TESTIMONIALS (small cards) -->
-<section class="mb-10">
-  <h2 class="text-2xl font-bold mb-4">What customers say</h2>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <% (@testimonials || [
-         { name: "Aisha M.", text: "Fast shipping, beautiful packaging — I'm in love with my purchase!" },
-         { name: "Liam R.", text: "Top quality and excellent support. LuxeCart made it easy." },
-         { name: "Sofia P.", text: "Amazing selection and great deals — will order again." }
-       ]).each do |t| %>
-      <div class="bg-white p-6 rounded-lg shadow">
-        <div class="flex items-center gap-4 mb-3">
-          <div class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
-            <i class="fa fa-user"></i>
+    <div class="bg-white rounded-2xl shadow-sm p-5 flex gap-3 items-start">
+      <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center">
+        <i class="fa-solid fa-shield-heart"></i>
+      </div>
+      <div>
+        <h3 class="font-semibold mb-1">Secure payment</h3>
+        <p class="text-sm text-gray-500">
+          Powered by trusted payment gateways so you can shop with confidence.
+        </p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm p-5 flex gap-3 items-start">
+      <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center">
+        <i class="fa-solid fa-arrow-rotate-left"></i>
+      </div>
+      <div>
+        <h3 class="font-semibold mb-1">Easy returns</h3>
+        <p class="text-sm text-gray-500">
+          Simple return policy on eligible items to keep your experience smooth.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- TRENDING STRIP -->
+  <section class="fade-in-up delay-4">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-lg font-semibold">Trending right now</h2>
+      <span class="text-xs uppercase tracking-wide text-emerald-600 font-semibold flex items-center gap-1">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Live
+      </span>
+    </div>
+
+    <div class="flex gap-4 overflow-x-auto pb-2 hide-scrollbar">
+      <% trending = (@trending_products || @featured_products || []).first(8) %>
+
+      <% # Fallback images to cycle through when a product has no attached image %>
+      <% fallback_trending_images = [
+           "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=600&q=80",  # clothes rail
+           "https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=600&q=80",  # shoes
+           "https://images.unsplash.com/photo-1528701800489-20be3c30c1d5?auto=format&fit=crop&w=600&q=80",  # product still life
+           "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80",  # accessories
+           "https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?auto=format&fit=crop&w=600&q=80",  # sneakers
+           "https://images.unsplash.com/photo-1495121553079-4c61bcce189c?auto=format&fit=crop&w=600&q=80",  # folded clothes
+           "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=80",  # models
+           "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=600&q=80"   # watch/accessory
+         ] %>
+
+      <% trending.each_with_index do |product, idx| %>
+        <% fallback_img = fallback_trending_images[idx % fallback_trending_images.size] %>
+
+        <%= link_to product_path(product), class: "min-w-[180px] bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-3 flex flex-col" do %>
+          <div class="h-24 mb-2 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+            <% if product.respond_to?(:image) && product.image.respond_to?(:attached?) && product.image.attached? %>
+              <%= image_tag url_for(product.image), alt: product.name, class: "w-full h-full object-cover" %>
+            <% else %>
+              <%= image_tag fallback_img, alt: "Trending product", class: "w-full h-full object-cover" %>
+            <% end %>
           </div>
-          <div class="font-semibold"><%= t[:name] %></div>
-        </div>
-        <p class="text-gray-600"><%= t[:text] %></p>
-      </div>
-    <% end %>
-  </div>
-</section>
+          <div class="text-xs text-gray-500 mb-1 truncate"><%= product.category.try(:name) if product.respond_to?(:category) %></div>
+          <div class="text-sm font-semibold truncate"><%= product.name %></div>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
 
-<!-- NEWSLETTER -->
-<section class="bg-indigo-50 rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-  <div>
-    <h3 class="text-xl font-bold">Join our newsletter</h3>
-    <p class="text-gray-600">Get exclusive offers and new releases — delivered weekly.</p>
-  </div>
 
-  <form id="newsletter-form" class="flex gap-2 w-full md:w-auto">
-    <input id="newsletter-email" type="email" placeholder="Your email" required
-           class="px-4 py-2 rounded border border-gray-200 w-full md:w-72" />
-    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">Subscribe</button>
-  </form>
-</section>
 
-<!-- TOAST ROOT -->
-<div id="toast-root" class="fixed top-6 right-6 z-50"></div>
 
-<!-- INTERACTIVE JS (inline, safe) -->
+
+  <!-- CTA STRIP -->
+  <section class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-2xl px-6 py-6 md:px-8 md:py-7 flex flex-col md:flex-row items-center justify-between gap-4 fade-in-up delay-5">
+    <div>
+      <h2 class="text-xl md:text-2xl font-bold text-white mb-1">Ready to upgrade your wardrobe?</h2>
+      <p class="text-sm text-white/80 max-w-xl">
+        Create an account to save favorites, track orders and enjoy a faster checkout experience.
+      </p>
+    </div>
+
+    <div class="flex gap-3">
+      <% if user_signed_in? %>
+        <%= link_to "Continue shopping", products_path, class: "inline-flex items-center gap-2 px-5 py-2.5 bg-white text-indigo-700 rounded-lg font-semibold shadow-md hover:bg-gray-50 transition-colors" %>
+      <% else %>
+        <%= link_to new_user_registration_path, class: "inline-flex items-center gap-2 px-5 py-2.5 bg-white text-indigo-700 rounded-lg font-semibold shadow-md hover:bg-gray-50 transition-colors" do %>
+          <i class="fa-solid fa-user-plus"></i>
+          <span>Create account</span>
+        <% end %>
+        <%= link_to new_user_session_path, class: "inline-flex items-center gap-2 px-5 py-2.5 border border-white/50 text-white rounded-lg font-semibold hover:bg-white/10 transition-colors" do %>
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>Login</span>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+</div>
+
+<%# Tiny animation helper (no external library needed) %>
 <script>
-  (function () {
-    // CSRF token for fetch POSTs
-    function getCsrf() { var m = document.querySelector('meta[name="csrf-token"]'); return m ? m.getAttribute('content') : ''; }
-
-    // Small toast helper
-    function showToast(message, isError) {
-      var root = document.getElementById('toast-root');
-      var el = document.createElement('div');
-      el.className = 'max-w-sm p-3 rounded shadow-lg ' + (isError ? 'bg-red-100 text-red-800' : 'bg-white text-gray-800');
-      el.style.marginTop = '0.5rem';
-      el.innerHTML = '<div class="flex items-center gap-3"><div class="flex-1">' + message + '</div><button class="text-sm">×</button></div>';
-      root.appendChild(el);
-      el.querySelector('button').addEventListener('click', function(){ el.remove(); });
-      setTimeout(function(){ if (el.parentNode) el.remove(); }, 4000);
-    }
-
-    // Handler used by site-wide "add-to-cart-ajax" buttons
-    document.querySelectorAll('.add-to-cart-ajax').forEach(function(btn) {
-      btn.addEventListener('click', async function (e) {
-        e.preventDefault();
-        var url = btn.dataset.url || '<%= (defined?(cart_add_item_path) ? cart_add_item_path : "/cart/add_item") %>';
-        var productId = btn.dataset.productId || btn.dataset.product_id;
-        if (!productId) { showToast('Invalid product', true); return; }
-
-        btn.disabled = true;
-        btn.classList.add('opacity-70', 'cursor-wait');
-
-        try {
-          var body = new URLSearchParams({ product_id: productId }).toString();
-          var res = await fetch(url, {
-            method: 'POST',
-            headers: {
-              'X-CSRF-Token': getCsrf(),
-              'Accept': 'application/json',
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            credentials: 'same-origin',
-            body: body
-          });
-
-          if (!res.ok) {
-            var text = await res.text().catch(()=>null);
-            try {
-              var json = JSON.parse(text || '{}');
-              showToast((json && json.error) || 'Failed to add to cart', true);
-            } catch (err) {
-              showToast('Failed to add to cart', true);
-            }
-            return;
-          }
-
-          var ct = res.headers.get('content-type') || '';
-          if (ct.indexOf('application/json') !== -1) {
-            var data = await res.json();
-            if (typeof data.cart_count !== 'undefined') {
-              var badge = document.getElementById('cart-count');
-              if (badge) badge.textContent = data.cart_count;
-            }
-            showToast('Added to cart ✓');
-          } else {
-            // If server returned HTML or redirected, reload to pick up server-side state
-            location.reload();
-          }
-        } catch (err) {
-          console.error(err);
-          showToast('Network error — try again', true);
-        } finally {
-          btn.disabled = false;
-          btn.classList.remove('opacity-70', 'cursor-wait');
-        }
-      });
+  document.addEventListener('DOMContentLoaded', function () {
+    const animated = document.querySelectorAll('[data-page="home"] .fade-in-up, [data-page="home"] .slide-in-right');
+    animated.forEach((el) => {
+      el.classList.add('opacity-0', 'translate-y-4');
     });
 
-    // Newsletter demo (client-only)
-    var newsletterForm = document.getElementById('newsletter-form');
-    if (newsletterForm) {
-      newsletterForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var email = document.getElementById('newsletter-email').value;
-        if (!email) { showToast("Please enter a valid email", true); return; }
-        showToast("Thanks — we'll email deals to " + email);
-        this.reset();
+    function reveal() {
+      const trigger = window.innerHeight * 0.9;
+      animated.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < trigger) {
+          el.classList.remove('opacity-0', 'translate-y-4');
+          el.classList.add('transition-all', 'duration-700', 'opacity-100', 'translate-y-0');
+        }
       });
     }
-  })();
+
+    reveal();
+    window.addEventListener('scroll', reveal);
+  });
 </script>
+
+<style>
+  /* Hide scrollbars for horizontal strips */
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Simple delay utilities (used with fade-in-up / slide-in-right) */
+  .delay-1 { transition-delay: 0.05s; }
+  .delay-2 { transition-delay: 0.1s; }
+  .delay-3 { transition-delay: 0.15s; }
+  .delay-4 { transition-delay: 0.2s; }
+  .delay-5 { transition-delay: 0.25s; }
+</style>

@@ -1,13 +1,17 @@
 # app/controllers/cart_items_controller.rb
 class CartItemsController < ApplicationController
-  # Allow anonymous users to add to cart (adjust if you require login)
-  skip_before_action :authenticate_user!, only: [:create], raise: false if respond_to?(:skip_before_action)
+  # NOW: require user to be logged in for create
+  before_action :authenticate_user!
 
   # POST /cart/add_item
   def create
     product = Product.find_by(id: params[:product_id])
     unless product
-      render json: { error: 'Product not found' }, status: :not_found and return
+      respond_to do |format|
+        format.json { render json: { error: 'Product not found' }, status: :not_found }
+        format.html { redirect_back fallback_location: products_path, alert: 'Product not found' }
+      end
+      return
     end
 
     session[:cart] ||= {}
@@ -17,9 +21,25 @@ class CartItemsController < ApplicationController
     cart_count = session[:cart].values.map(&:to_i).sum
     Rails.logger.debug "[CartItemsController#create] session[:cart]=#{session[:cart].inspect}"
 
-    render json: { cart_count: cart_count, cart: session[:cart] }, status: :ok
+    respond_to do |format|
+      format.json do
+        render json: {
+          message: 'Added to cart',
+          cart_count: cart_count,
+          cart: session[:cart]
+        }, status: :ok
+      end
+
+      format.html do
+        redirect_back fallback_location: products_path, notice: 'Added to cart'
+      end
+    end
   rescue => e
     Rails.logger.error "[CartItemsController#create] #{e.class}: #{e.message}\n#{e.backtrace.first(8).join("\n")}"
-    render json: { error: 'Could not add to cart' }, status: :internal_server_error
+
+    respond_to do |format|
+      format.json { render json: { error: 'Could not add to cart' }, status: :internal_server_error }
+      format.html { redirect_back fallback_location: products_path, alert: 'Could not add to cart' }
+    end
   end
 end

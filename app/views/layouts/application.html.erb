@@ -85,6 +85,7 @@
     <%= render "shared/footer" %>
 
     <!-- Add-to-Cart script (site-wide). Posts to /cart/add_item and updates the badge #cart-count -->
+      <!-- Add-to-Cart script (site-wide). Posts to /cart/add_item and updates the badge #cart-count -->
     <script>
     document.addEventListener('DOMContentLoaded', function () {
       const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -100,6 +101,14 @@
         if (!el) return;
         const current = parseInt(el.textContent || '0', 10);
         setCartCount(current + by);
+      }
+
+      function redirectToLogin() {
+        // Use Devise default or your login path
+        var loginPath = '/users/sign_in';
+        // Optional: send user back to current page after login
+        var current = window.location.pathname + window.location.search;
+        window.location.href = loginPath + '?redirect=' + encodeURIComponent(current);
       }
 
       async function postAddToCart(url, productId) {
@@ -119,7 +128,14 @@
 
           console.debug('POST', url, 'product_id=', productId, 'status=', res.status);
 
+          // If the server redirected us (user not logged in), status will be 401/302 or HTML login page
           const ct = res.headers.get('content-type') || '';
+          if (!res.ok && (res.status === 401 || res.status === 302 || ct.indexOf('text/html') !== -1)) {
+            alert('First you have to login');
+            redirectToLogin();
+            return { success: false, requiresLogin: true };
+          }
+
           if (res.ok && ct.indexOf('application/json') !== -1) {
             const data = await res.json();
             console.debug('Add-to-cart response JSON:', data);
@@ -158,9 +174,9 @@
           btn.disabled = false;
           btn.classList.remove('opacity-70', 'cursor-wait');
 
-          if (!result.success) {
+          if (!result.success && !result.requiresLogin) {
             alert('Could not add to cart. Please check your network or server logs.');
-          } else {
+          } else if (result.success) {
             const badge = document.getElementById('cart-count');
             if (badge) {
               badge.classList.add('ring', 'ring-indigo-300');
@@ -171,5 +187,7 @@
       });
     });
     </script>
+  </body>
+</html>
   </body>
 </html>
