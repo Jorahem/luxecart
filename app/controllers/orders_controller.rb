@@ -1,42 +1,100 @@
 class OrdersController < ApplicationController
-  before_action :set_cart
+  before_action :authenticate_user!, except: [:success]
+  before_action :load_session_cart
+  before_action :ensure_cart_not_empty, only: [:new, :create]
 
+  # Show checkout/order summary page
   def new
-    redirect_to cart_path, alert: 'Your cart is empty.' if @cart.cart_items.empty?
     @order = Order.new
+
+    # Build a simple list of summary items from the session cart
+    @summary_items = []
+
+    @session_cart.each do |product_id_str, qty|
+      product_id = product_id_str.to_i
+      product    = Product.find_by(id: product_id)
+      next unless product
+
+      quantity = qty.to_i
+      next if quantity <= 0
+
+      unit_price =
+        if product.respond_to?(:price) && product.price.present?
+          BigDecimal(product.price.to_s)
+        else
+          BigDecimal("0")
+        end
+
+      # Use plain hashes instead of OpenStruct
+      @summary_items << {
+        product:    product,
+        quantity:   quantity,
+        unit_price: unit_price
+      }
+    end
   end
 
+  # Create an order from the session cart
   def create
-    if @cart.cart_items.empty?
-      redirect_to cart_path, alert: 'Your cart is empty.' and return
+    # Build a new order for the current user (or guest)
+    @order = current_user ? current_user.orders.build(order_params) : Order.new(order_params)
+
+    # Compute totals from the session cart
+    subtotal = 0.to_d
+
+    @session_cart.each do |product_id_str, qty|
+      product_id = product_id_str.to_i
+      product    = Product.find_by(id: product_id)
+      next unless product
+
+      quantity = qty.to_i
+      next if quantity <= 0
+
+      unit_price =
+        if product.respond_to?(:price) && product.price.present?
+          BigDecimal(product.price.to_s)
+        else
+          BigDecimal("0")
+        end
+
+      line_total = unit_price * quantity
+      subtotal  += line_total
+
+      # Build order_item snapshots that match your previous schema
+      @order.order_items.build(
+        product_id:   product.id,
+        quantity:     quantity,
+        unit_price:   unit_price,
+        total_price:  line_total,
+        product_name: product.name,
+        product_sku:  (product.respond_to?(:sku) ? product.sku : nil)
+      )
     end
 
-    @order = current_user ? current_user.orders.build(order_params) : Order.new(order_params)
-    # compute totals server-side
-    @order.subtotal = @cart.subtotal
-    @order.shipping_cost = @cart.shipping_cost
-    @order.tax = @cart.tax
-    @order.total_price = @cart.total
-    @order.payment_method = params[:order][:payment_method]
+    # If nothing could be built, treat as empty cart
+    if @order.order_items.empty?
+      redirect_to cart_path, alert: "Your cart is empty." and return
+    end
+
+    # Compute shipping/tax/total (adjust as you like)
+    shipping_cost = 0.to_d
+    tax           = 0.to_d
+    total         = subtotal + shipping_cost + tax
+
+    @order.subtotal       = subtotal
+    @order.shipping_cost  = shipping_cost
+    @order.tax            = tax
+    @order.total_price    = total
+    @order.payment_method = params.dig(:order, :payment_method)
 
     Order.transaction do
       @order.save!
-      @cart.cart_items.each do |ci|
-        # create order_item snapshots that match current schema
-        @order.order_items.create!(
-          product_id: ci.product_id,
-          quantity: ci.quantity,
-          unit_price: ci.price,
-          total_price: (ci.price.to_d * ci.quantity),
-          product_name: ci.product&.name,
-          product_sku: ci.product&.sku
-        )
-      end
-      @cart.clear!
+      # Clear **session** cart (what /cart uses)
+      session[:cart] = {}
     end
 
     respond_to do |format|
-      format.html { redirect_to order_success_path(@order), notice: 'Order placed successfully.' }
+      format.html { redirect_to order_success_path(@order), notice: "Order placed successfully." }
       format.json { render json: { success: true, order_id: @order.id } }
     end
   rescue ActiveRecord::RecordInvalid => e
@@ -50,12 +108,15 @@ class OrdersController < ApplicationController
 
   private
 
-  def set_cart
-    @cart = if session[:cart_id].present?
-              Cart.find_by(id: session[:cart_id]) || Cart.create!
-            else
-              Cart.create!
-            end
+  # Read the same cart structure used in CartsController#show
+  def load_session_cart
+    @session_cart = session[:cart] || {}
+  end
+
+  def ensure_cart_not_empty
+    if @session_cart.blank?
+      redirect_to cart_path, alert: "Your cart is empty."
+    end
   end
 
   def order_params

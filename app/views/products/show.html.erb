@@ -5,35 +5,230 @@
   <title><%= @product&.name || "Product" %></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= stylesheet_link_tag "application", media: "all" %>
+
+  <style>
+    /* Responsive product page layout */
+    .product-page {
+      background-color: #f9fafb;
+      min-height: 100vh;
+    }
+
+    .product-container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 2.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .product-container {
+        padding: 2.5rem 1.5rem 3rem;
+      }
+    }
+
+    .product-show.grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .product-show.grid {
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
+        align-items: start;
+        gap: 2rem;
+      }
+    }
+
+    .product-show .left {
+      background-color: #ffffff;
+      border-radius: 1rem;
+      padding: 1rem;
+      box-shadow: 0 10px 25px rgba(15,23,42,0.06);
+    }
+
+    @media (min-width: 768px) {
+      .product-show .left {
+        padding: 1.25rem;
+      }
+    }
+
+    .product-show-image,
+    .placeholder-image.large {
+      width: 100%;
+      max-height: 440px;
+      object-fit: cover;
+      border-radius: 0.75rem;
+      display: block;
+    }
+
+    .placeholder-image.large {
+      background: #e5e7eb;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .product-show .right {
+      background-color: #ffffff;
+      border-radius: 1rem;
+      padding: 1.25rem 1.25rem 1.5rem;
+      box-shadow: 0 10px 25px rgba(15,23,42,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    @media (min-width: 768px) {
+      .product-show .right {
+        padding: 1.5rem 1.75rem 1.75rem;
+      }
+    }
+
+    .product-show h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    @media (min-width: 768px) {
+      .product-show h1 {
+        font-size: 1.6rem;
+      }
+    }
+
+    .product-show .price {
+      margin: 0.1rem 0 0.6rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .product-show .description {
+      font-size: 0.9rem;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+
+    .product-show .add-to-cart {
+      margin-top: 1.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+    }
+
+    .product-show .qty-input {
+      width: 80px;
+      padding: 0.4rem 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid #e5e7eb;
+      font-size: 0.9rem;
+    }
+
+    .product-show .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.45rem 1.2rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .product-show .btn.btn-primary {
+      background: #4f46e5;
+      color: #ffffff;
+      box-shadow: 0 10px 20px rgba(79,70,229,0.35);
+    }
+
+    .product-show .btn.btn-primary:hover {
+      background: #4338ca;
+    }
+
+    .product-show .btn.btn-secondary {
+      background: #ffffff;
+      color: #4b5563;
+      border: 1px solid #d1d5db;
+    }
+
+    .product-show .btn.btn-secondary:hover {
+      background: #f3f4f6;
+    }
+
+    .not-found {
+      background: #ffffff;
+      border-radius: 1rem;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 10px 25px rgba(15,23,42,0.06);
+      text-align: center;
+    }
+
+    .not-found h2 {
+      margin-bottom: 0.5rem;
+    }
+
+    .not-found p {
+      margin-bottom: 1rem;
+      color: #4b5563;
+    }
+
+    .product-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 0.3rem;
+    }
+
+    .product-meta-pill {
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: #f3f4f6;
+    }
+
+    @media (max-width: 640px) {
+      .product-show .right {
+        margin-top: 0.25rem;
+      }
+    }
+  </style>
 </head>
 <body class="product-page">
   <main class="product-container">
     <% if @product %>
       <div class="product-show grid">
         <div class="left">
-          <%# Determine an image source from several options %>
-          <% image_src = nil %>
+          <%# === SIMPLE IMAGE SETUP ===================================== %>
+          <%# Put your image URL(s) here. Change them easily later.      %>
+          <% image_url_for_page =
+               case @product&.slug
+               when "luxe-bed-linen"
+                 "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=1200&q=80"
+               when "designer-throw-pillow"
+                 "https://shoppersfortune.com/cdn/shop/files/ShoppersFortuneCottonFeelDesignerThrowPillowDecorativeCushionCovers-CuteOwls_FloraSetof5A.jpg?v=1689257687"
+               # add more products like this:
+               # when "oak-coffee-table"
+               #   "https://funky-chunky-furniture.co.uk/cdn/shop/products/salters-oak-coffee-table-33777-1-p.jpg?v=1643646322"
+               else
+                 nil
+               end %>
 
-          <%# 1) explicit image_url attribute if present %>
-          <% if @product.respond_to?(:image_url) && @product.image_url.present? %>
-            <% image_src = @product.image_url %>
-
-          <%# 2) legacy string column like 'image' that stores a URL/path %>
-          <% elsif @product.respond_to?(:image) %>
-            <% begin %>
-              <% if @product.image.present? && !@product.image.respond_to?(:attached?) %>
-                <% image_src = @product.image %>
-              <% end %>
-            <% rescue %>
-              <%# swallow any unexpected errors from legacy attributes %>
-            <% end %>
-          <% end %>
-
-          <%# 3) ActiveStorage attachment check if no image_src chosen yet %>
-          <% if image_src.blank? && @product.respond_to?(:image) && @product.image.respond_to?(:attached?) && @product.image.attached? %>
+          <%# If special URL set above, use it; else fall back to model/attachment/placeholder %>
+          <% if image_url_for_page.present? %>
+            <img src="<%= image_url_for_page %>" alt="<%= @product.name %>" class="product-show-image" />
+          <% elsif @product.respond_to?(:image_url) && @product.image_url.present? %>
+            <img src="<%= @product.image_url %>" alt="<%= @product.name %>" class="product-show-image" />
+          <% elsif @product.respond_to?(:image) && @product.image.respond_to?(:attached?) && @product.image.attached? %>
             <%= image_tag url_for(@product.image), alt: @product.name, class: "product-show-image" %>
-          <% elsif image_src.present? %>
-            <img src="<%= image_src %>" alt="<%= @product.name %>" class="product-show-image" />
           <% else %>
             <div class="placeholder-image large">No image</div>
           <% end %>
@@ -48,11 +243,19 @@
             <p class="price"><%= number_to_currency(BigDecimal(@product.price_cents) / 100) %></p>
           <% end %>
 
+          <div class="product-meta-row">
+            <% if @product.respond_to?(:category) && @product.category.present? %>
+              <span class="product-meta-pill"><%= @product.category.name %></span>
+            <% end %>
+            <% if @product.respond_to?(:sku) && @product.sku.present? %>
+              <span class="product-meta-pill">SKU: <%= @product.sku %></span>
+            <% end %>
+          </div>
+
           <div class="description">
             <%= simple_format(@product.description.to_s) %>
           </div>
 
-     
           <%# add-to-cart form/button (uses /cart/add_item route) %>
           <%= form_with url: cart_add_item_path, method: :post, local: true, html: { class: 'add-to-cart' } do |f| %>
             <%= hidden_field_tag :product_id, @product.id %>
@@ -61,7 +264,7 @@
           <% end %>
 
           <%# Back button: go to previous page if possible, otherwise products list %>
-          <div style="margin-top: 12px;">
+          <div style="margin-top: 0.75rem;">
             <% back_path =
                  if request.referer.present? && URI(request.referer).path != request.path
                    request.referer
@@ -71,8 +274,6 @@
 
             <%= link_to "Back", back_path, class: "btn btn-secondary" %>
           </div>
-
-      
         </div>
       </div>
     <% else %>

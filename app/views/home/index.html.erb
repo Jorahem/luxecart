@@ -42,7 +42,7 @@
       <!-- Left small image -->
       <div class="h-36 md:h-44 rounded-2xl overflow-hidden shadow-lg relative slide-in-right delay-1">
         <img
-          src="https://images.unsplash.com/photo-1521572163474-4f4e0f0af0c5?auto=format&fit=crop&w=900&q=80"
+          src="https://thamesandhudson.com.au/cdn/shop/files/9781923049826-spread-2.jpg?v=1764963329&width=1946"
           alt="Person choosing clothes on a rack"
           class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
           loading="lazy"
@@ -119,12 +119,12 @@
         <% featured_fallback_images = [
              "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=1200&q=80", # shoes on display
              "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1200&q=80", # clothes rail
-             "https://images.unsplash.com/photo-1521572163474-4f4e0f0af0c5?auto=format&fit=crop&w=1200&q=80", # picking clothes
-             "https://images.unsplash.com/photo-1528701800489-20be3c30c1d5?auto=format&fit=crop&w=1200&q=80", # product still life
-             "https://images.unsplash.com/photo-1519744792095-2f2205e87b6f?auto=format&fit=crop&w=1200&q=80", # desk accessories
-             "https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=1200&q=80", # sneakers
-             "https://images.unsplash.com/photo-1495121553079-4c61bcce189c?auto=format&fit=crop&w=1200&q=80", # folded clothes
-             "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=1200&q=80"  # watch / accessory
+             "https://funky-chunky-furniture.co.uk/cdn/shop/products/salters-oak-coffee-table-33777-1-p.jpg?v=16436463220", # picking clothes
+             "https://www.kateaspen.com/cdn/shop/products/23277NA-3_1280x.jpg?v=1674156613", # product still life
+             "https://sowlhome.com/cdn/shop/files/sowl_athens_bed_set_organic_100_cotton_percale_linen_beige_white_duvet_cover_240_220_pillow_cases_50_75_product.jpg?v=1715346346&width=1700", # desk accessories
+             "https://shoppersfortune.com/cdn/shop/files/ShoppersFortuneCottonFeelDesignerThrowPillowDecorativeCushionCovers-CuteOwls_FloraSetof5A.jpg?v=1689257687", # sneakers
+             "https://ak1.ostkcdn.com/images/products/is/images/direct/ecb2a34deb10a54f12119f2adbf487d9d5444041/Designart-%22White-And-Blue-Feather-Spiral-II%22-Abstract-Geometric-Blue-Wall-Decor---Modern-Entryway-Framed-Wall-Art.jpg", # folded clothes
+             "https://ak1.ostkcdn.com/images/products/is/images/direct/824c72ea41000fee6934840fba599ebdc65c2442/Pitea-Scandinavian-Light-Oak-Finish-Dining-Chairs-by-iNSPIRE-Q-Modern.jpg?impolicy=medium"  # watch / accessory
            ] %>
 
         <% products.each_with_index do |product, index| %>
@@ -236,7 +236,8 @@
       </span>
     </div>
 
-    <div class="flex gap-4 overflow-x-auto pb-2 hide-scrollbar">
+    <!-- Added id for JS auto-scroll; everything else same -->
+    <div id="trending-strip" class="flex gap-4 overflow-x-auto pb-2 hide-scrollbar">
       <% trending = (@trending_products || @featured_products || []).first(8) %>
 
       <% # Fallback images to cycle through when a product has no attached image %>
@@ -320,6 +321,27 @@
 
     reveal();
     window.addEventListener('scroll', reveal);
+
+    // === Auto-scroll for Trending strip: continuous circular rotation ===
+    const trendingStrip = document.getElementById('trending-strip');
+    if (trendingStrip) {
+      const step = 220;        // approx width of one card (tweak if needed)
+      const intervalMs = 1000; // 1 second
+
+      function autoScrollTrending() {
+        const maxScroll = trendingStrip.scrollWidth - trendingStrip.clientWidth;
+
+        // If we're at (or very near) the end, instantly jump back to the start
+        if (trendingStrip.scrollLeft >= maxScroll - 5) {
+          trendingStrip.scrollLeft = 0;
+        } else {
+          // Move one card to the right (content appears to move left)
+          trendingStrip.scrollBy({ left: step, behavior: 'smooth' });
+        }
+      }
+
+      setInterval(autoScrollTrending, intervalMs);
+    }
   });
 </script>
 

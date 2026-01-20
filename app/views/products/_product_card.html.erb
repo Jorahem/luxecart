@@ -1,23 +1,61 @@
 <div class="rounded-lg border p-4 bg-white flex flex-col h-full">
   <%# product variable expected in local assigns %>
 
-  <%# Image (ActiveStorage or image_url fallback) %>
-  <% img_src = if product.respond_to?(:image) && product.image.present?
-                 begin
-                   url_for(product.image) if product.image.respond_to?(:attached?) && product.image.attached?
-                 rescue
-                   nil
-                 end
-               end
-               img_src ||= product.respond_to?(:image_url) ? product.image_url : nil
-               img_src ||= product.product_images&.first&.image if product.respond_to?(:product_images)
-               img_src ||= asset_path('placeholder-400x300.png') rescue '/images/placeholder-400x300.png' %>
+
+
+    <%# SIMPLE IMAGE SETUP FOR PRODUCT CARD (BY PRODUCT NAME) %>
+  <% card_image_url =
+       case product.name
+       when "Modern Floor Lamp"
+         "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=800&q=80"
+       when "Handwoven Rug"
+         "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=800&q=80"
+       when "Oak Coffee Table"
+         "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=800&q=80"
+       when "Ceramic Vase Set"
+         "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=800&q=80"
+       when "Minimalist Bookshelf"
+         "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=800&q=80"
+       when "Designer Throw Pillow"
+         "https://images.unsplash.com/photo-1523755231516-e43fd2e8dca5?auto=format&fit=crop&w=800&q=80"
+       when "Contemporary Wall Art"
+         "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=800&q=80"
+       when "Nordic Dining Chair"
+         "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=800&q=80"
+       else
+         nil
+       end %>
+
+  <%# Fallbacks: model fields / attachment / placeholder if no custom URL above %>
+  <% unless card_image_url.present? %>
+    <% if product.respond_to?(:image_url) && product.image_url.present? %>
+      <% card_image_url = product.image_url %>
+    <% elsif product.respond_to?(:image) &&
+          product.image.respond_to?(:attached?) &&
+          product.image.attached? %>
+      <% card_image_url = url_for(product.image) %>
+    <% end %>
+  <% end %>
+
+  <% card_image_url ||= "https://via.placeholder.com/400x300?text=No+Image" %>
 
   <%= link_to product_path(product), class: "block mb-3" do %>
-    <img src="<%= img_src.presence || 'https://via.placeholder.com/400x300?text=No+Image' %>"
+    <img src="<%= card_image_url %>"
          alt="<%= h(product.name) %>"
          class="w-full h-40 object-cover rounded-md">
   <% end %>
+
+
+
+
+
+
+
+
+
+
+
+
 
   <div class="flex-1">
     <h3 class="text-sm font-semibold text-gray-900 mb-1">

@@ -1,11 +1,17 @@
 <%# Modern Cart UI with AJAX quantity controls. Expects @items = [{ product: Product | nil, product_id: Integer, quantity: Integer }, ...] %>
 
-<%# Helper to pick the best available product image %>
+<%# Helper to pick the best available product image, with strong fallbacks %>
 <% def product_image_src(product)
+     # 1) no product at all -> basic placeholder
      return "https://via.placeholder.com/200x200.png?text=No+Image" unless product
+
+     # 2) explicit image_url attribute
      if product.respond_to?(:image_url) && product.image_url.present?
-       product.image_url
-     elsif product.respond_to?(:product_images) && product.product_images.any?
+       return product.image_url
+     end
+
+     # 3) associated product_images records
+     if product.respond_to?(:product_images) && product.product_images.any?
        pi = product.product_images.first
        if pi.respond_to?(:image) && pi.image.present?
          begin
@@ -16,13 +22,36 @@
        elsif pi.respond_to?(:image_url) && pi.image_url.present?
          return pi.image_url
        end
-     elsif product.respond_to?(:image) && product.image.present?
+     end
+
+     # 4) legacy string/url column :image on Product
+     if product.respond_to?(:image) && product.image.present?
        begin
          return url_for(product.image) if product.image.respond_to?(:attached?) && product.image.attached?
        rescue
        end
        return product.image.to_s
      end
+
+     # 5) fallback: use the same Unsplash-style placeholders used on category pages
+     if product.respond_to?(:category) && product.category
+       slug = product.category.name.to_s.downcase
+
+       case slug
+       when /table/
+         return "https://images.unsplash.com/photo-1505692794400-7c6050b7c7d6?q=80&w=800&auto=format&fit=crop"
+       when /textile/, /linen/, /bed/
+         return "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=800&auto=format&fit=crop"
+       when /decor/
+         return "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=800&auto=format&fit=crop"
+       when /light/
+         return "https://images.unsplash.com/photo-1540574163026-643ea20ade25?q=80&w=800&auto=format&fit=crop"
+       else
+         return "https://images.unsplash.com/photo-1549187774-b4e9b0445b6b?q=80&w=800&auto=format&fit=crop"
+       end
+     end
+
+     # 6) final safety
      "https://via.placeholder.com/200x200.png?text=No+Image"
    end
 %>
@@ -92,7 +121,7 @@
                   <td class="py-4 pr-2 font-semibold text-right align-top">
                     <span class="row-subtotal"><%= number_to_currency(subtotal) %></span>
                     <div class="mt-2">
-                      <button type="button" class="remove-item text-sm text-red-600 hover:underline" >
+                      <button type="button" class="remove-item text-sm text-red-600 hover:underline">
                         Remove
                       </button>
                     </div>
@@ -278,7 +307,6 @@
                 if (typeof data.cart_count !== 'undefined') updateBadge(data.cart_count);
                 recalcTotal();
               } else if (data === null) {
-                // non-JSON case -> reload to reflect server
                 location.reload();
               }
             });
@@ -288,13 +316,11 @@
             decBtn.addEventListener('click', async (e) => {
               const currentQty = parseInt(qtyEl.textContent || '0', 10);
               if (currentQty <= 1) {
-                // If user clicks minus on 1, treat as remove confirmation
                 if (!confirm('Remove this item from your cart?')) return;
                 decBtn.disabled = true;
                 const data = await deleteRemove(productId);
                 decBtn.disabled = false;
                 if (data && data.cart) {
-                  // remove row from DOM if quantity now 0
                   if (!data.cart[productId] || parseInt(data.cart[productId]) <= 0) {
                     row.remove();
                   } else {
@@ -308,7 +334,6 @@
                 return;
               }
 
-              // Reduce quantity by 1 via update endpoint
               const newQty = currentQty - 1;
               decBtn.disabled = true;
               const data = await patchUpdate(productId, newQty);
@@ -317,7 +342,6 @@
                 qtyEl.textContent = data.cart[productId] || newQty;
                 if (typeof data.cart_count !== 'undefined') updateBadge(data.cart_count);
                 recalcTotal();
-                // If qty became 0 remove row
                 if (!data.cart[productId] || parseInt(data.cart[productId]) <= 0) row.remove();
               } else if (data === null) {
                 location.reload();
