@@ -3,62 +3,71 @@
   <head>
     <title>LuxeCart | Premium E-Commerce</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-      <!-- FAVICONS / PWA META -->
+    <!-- FAVICONS / PWA -->
     <link rel="icon" type="image/png" sizes="192x192" href="/favicons/android-chrome-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/favicons/android-chrome-512x512.png">
     <link rel="manifest" href="/favicons/manifest.json">
     <link rel="shortcut icon" href="/favicon.ico">
     <meta name="theme-color" content="#4f46e5">
 
-    <!-- Tailwind (CDN) - OK for development -->
+    <!-- Tailwind CDN (development-friendly) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- main compiled CSS from the asset pipeline -->
+    <!-- Rails Assets -->
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-
-    <!-- application JS (include unconditionally so Turbo / Rails UJS can run) -->
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
   </head>
 
-  <!-- min-h-screen ensures footer is pushed to bottom when content is short -->
   <body class="min-h-screen flex flex-col">
+
+    <!-- Turbo permanent overlay (for loaders / modals if needed) -->
+    <div class="page-overlay" aria-hidden="true" data-turbo-permanent></div>
+
+    <!-- Flash Messages -->
     <%= render "shared/flash" %>
 
-    <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
+    <!-- NAVBAR (Turbo-permanent to avoid reload flicker) -->
+    <nav class="bg-white shadow-sm border-b sticky top-0 z-50" data-turbo-permanent>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
+
+          <!-- Brand -->
           <div class="flex items-center gap-8">
             <%= link_to root_path, class: "text-2xl font-bold text-indigo-600 tracking-tight" do %>
               LUXE<span class="text-gray-900">CART</span>
             <% end %>
           </div>
 
+          <!-- Nav Links -->
           <div class="flex items-center space-x-4">
             <%= link_to "Home", root_path, class: "text-gray-600 hover:text-indigo-600" %>
             <%= link_to "Products", products_path, class: "text-gray-600 hover:text-indigo-600" %>
             <%= link_to "Categories", categories_path, class: "text-gray-600 hover:text-indigo-600" %>
             <%= link_to "About", about_path, class: "text-gray-600 hover:text-indigo-600" %>
 
-            <%# Cart link with live badge (reads session for initial value) %>
+            <!-- Cart -->
             <%= link_to cart_path, class: "text-gray-600 hover:text-indigo-600 font-medium inline-flex items-center gap-2" do %>
               <i class="fa-solid fa-cart-shopping"></i>
               <span class="hidden sm:inline">Cart</span>
-              <span id="cart-count" class="ml-1 inline-flex items-center justify-center bg-indigo-600 text-white rounded-full px-2 py-0.5 text-xs">
+              <span id="cart-count"
+                    class="ml-1 inline-flex items-center justify-center bg-indigo-600 text-white rounded-full px-2 py-0.5 text-xs">
                 <%= (session[:cart]&.values&.map(&:to_i)&.sum) || 0 %>
               </span>
             <% end %>
 
+            <!-- Auth -->
             <% if respond_to?(:user_signed_in?) && user_signed_in? %>
               <%= button_to destroy_user_session_path,
                     method: :delete,
                     form: { class: "inline" },
-                    class: "text-gray-600 hover:text-indigo-600 focus:outline-none",
+                    class: "text-gray-600 hover:text-indigo-600",
                     data: { confirm: "Are you sure you want to sign out?" } do %>
                 Logout
               <% end %>
@@ -66,51 +75,38 @@
               <%= link_to "Login", new_user_session_path, class: "text-gray-600 hover:text-indigo-600" %>
             <% end %>
           </div>
+
         </div>
       </div>
     </nav>
 
-    <!-- Page content container -->
+    <!-- PAGE CONTENT -->
     <main class="flex-grow">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <%= yield %>
       </div>
     </main>
 
-    <!-- Responsive footer partial -->
+    <!-- FOOTER -->
     <%= render "shared/footer" %>
 
-    <!-- Add-to-Cart script (site-wide). Posts to /cart/add_item and updates the badge #cart-count -->
-      <!-- Add-to-Cart script (site-wide). Posts to /cart/add_item and updates the badge #cart-count -->
+    <!-- ADD TO CART AJAX (Turbo-safe) -->
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      document.addEventListener('DOMContentLoaded', () => {
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
 
-      function setCartCount(count) {
-        const el = document.getElementById('cart-count');
-        if (!el) return;
-        el.textContent = count;
-      }
+        const cartBadge = document.getElementById('cart-count');
 
-      function incrementCartCount(by = 1) {
-        const el = document.getElementById('cart-count');
-        if (!el) return;
-        const current = parseInt(el.textContent || '0', 10);
-        setCartCount(current + by);
-      }
+        function setCartCount(count) {
+          if (cartBadge) cartBadge.textContent = count;
+        }
 
-      function redirectToLogin() {
-        // Use Devise default or your login path
-        var loginPath = '/users/sign_in';
-        // Optional: send user back to current page after login
-        var current = window.location.pathname + window.location.search;
-        window.location.href = loginPath + '?redirect=' + encodeURIComponent(current);
-      }
+        function redirectToLogin() {
+          const current = window.location.pathname + window.location.search;
+          window.location.href = `/users/sign_in?redirect=${encodeURIComponent(current)}`;
+        }
 
-      async function postAddToCart(url, productId) {
-        try {
-          const body = new URLSearchParams({ product_id: productId }).toString();
-
+        async function addToCart(url, productId) {
           const res = await fetch(url, {
             method: 'POST',
             headers: {
@@ -119,71 +115,35 @@
               'Content-Type': 'application/x-www-form-urlencoded'
             },
             credentials: 'same-origin',
-            body: body
+            body: new URLSearchParams({ product_id: productId })
           });
 
-          console.debug('POST', url, 'product_id=', productId, 'status=', res.status);
+          const contentType = res.headers.get('content-type') || '';
 
-          // If the server redirected us (user not logged in), status will be 401/302 or HTML login page
-          const ct = res.headers.get('content-type') || '';
-          if (!res.ok && (res.status === 401 || res.status === 302 || ct.indexOf('text/html') !== -1)) {
+          if (!res.ok && (res.status === 401 || contentType.includes('text/html'))) {
             alert('First you have to login');
             redirectToLogin();
-            return { success: false, requiresLogin: true };
+            return;
           }
 
-          if (res.ok && ct.indexOf('application/json') !== -1) {
+          if (res.ok && contentType.includes('application/json')) {
             const data = await res.json();
-            console.debug('Add-to-cart response JSON:', data);
-            if (data && typeof data.cart_count !== 'undefined') {
+            if (data.cart_count !== undefined) {
               setCartCount(data.cart_count);
-              return { success: true, data };
+              cartBadge?.classList.add('ring', 'ring-indigo-300');
+              setTimeout(() => cartBadge?.classList.remove('ring', 'ring-indigo-300'), 700);
             }
           }
-
-          if (res.ok) {
-            incrementCartCount(1);
-            return { success: true };
-          }
-
-          const text = await res.text();
-          console.warn('Add-to-cart non-ok response:', res.status, text);
-          return { success: false, status: res.status, text };
-        } catch (err) {
-          console.error('Add-to-cart fetch error', err);
-          return { success: false, error: err };
         }
-      }
 
-      document.querySelectorAll('.add-to-cart-ajax').forEach(btn => {
-        btn.addEventListener('click', async function (e) {
-          e.preventDefault();
-          const url = btn.dataset.url || '/cart/add_item';
-          const pid = btn.dataset.productId || btn.dataset.product_id;
-          if (!pid) return console.warn('Missing data-product-id on add button');
-
-          btn.disabled = true;
-          btn.classList.add('opacity-70', 'cursor-wait');
-
-          const result = await postAddToCart(url, pid);
-
-          btn.disabled = false;
-          btn.classList.remove('opacity-70', 'cursor-wait');
-
-          if (!result.success && !result.requiresLogin) {
-            alert('Could not add to cart. Please check your network or server logs.');
-          } else if (result.success) {
-            const badge = document.getElementById('cart-count');
-            if (badge) {
-              badge.classList.add('ring', 'ring-indigo-300');
-              setTimeout(() => badge.classList.remove('ring', 'ring-indigo-300'), 700);
-            }
-          }
+        document.querySelectorAll('.add-to-cart-ajax').forEach(btn => {
+          btn.addEventListener('click', e => {
+            e.preventDefault();
+            addToCart(btn.dataset.url || '/cart/add_item', btn.dataset.productId);
+          });
         });
       });
-    });
     </script>
-  </body>
-</html>
+
   </body>
 </html>
