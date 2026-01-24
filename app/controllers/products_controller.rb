@@ -49,12 +49,12 @@ class ProductsController < ApplicationController
       products = products.where("name ILIKE :s OR description ILIKE :s", s: "%#{q}%")
     end
 
-    # Sorting
+    # Sorting -- FIXED: removed unit_price_decimal!
     case params[:sort]
     when 'price_asc'
-      products = products.order(Arel.sql("COALESCE(price, unit_price_decimal, 0) ASC"))
+      products = products.order(price: :asc)
     when 'price_desc'
-      products = products.order(Arel.sql("COALESCE(price, unit_price_decimal, 0) DESC"))
+      products = products.order(price: :desc)
     when 'newest'
       products = products.order(created_at: :desc)
     else
@@ -86,7 +86,6 @@ class ProductsController < ApplicationController
       end
       return
     end
-
     # normal rendering - @product is available for the view
   end
 

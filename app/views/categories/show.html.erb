@@ -1,4 +1,4 @@
-<%# Full Category show page with AJAX Add-to-Cart that updates cart badge in-place %>
+<%# Full Category show page without Add buttons (category-only listing) %>
 
 <%# --- Helpers (defined in template to avoid inline-rescue pitfalls) --- %>
 <%#
@@ -42,7 +42,7 @@
       </ol>
     </nav>
 
-    <!-- Cart link + badge -->
+    <!-- Cart link + badge (unchanged) -->
     <div class="flex items-center gap-4">
       <%= link_to cart_path, class: "inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900" do %>
         <i class="fa-solid fa-cart-shopping"></i>
@@ -54,12 +54,12 @@
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-    <!-- Left: sidebar filters -->
+    <!-- Sidebar -->
     <aside class="lg:col-span-1">
       <div class="bg-white p-6 rounded-2xl shadow-sm sticky top-20">
         <h3 class="text-lg font-bold text-gray-900 mb-2">Refine</h3>
-
         <form id="filters-form" method="get" action="">
+          <!-- Price, Brand, Sort (same as before) -->
           <div class="mb-4">
             <label class="text-sm font-medium text-gray-700">Price</label>
             <div class="flex gap-2 mt-2">
@@ -111,9 +111,8 @@
       </div>
     </aside>
 
-    <!-- Main content: hero + gallery + products -->
+    <!-- Main content: hero + gallery + products (Add buttons removed) -->
     <div class="lg:col-span-3">
-      <!-- Category hero -->
       <div class="relative bg-gradient-to-r from-white to-gray-50 rounded-2xl overflow-hidden mb-8 p-6 flex flex-col md:flex-row items-center gap-6">
         <div class="flex-1">
           <h1 class="text-3xl font-extrabold text-gray-900 mb-2"><%= @category.name %></h1>
@@ -138,10 +137,7 @@
         </div>
       </div>
 
-      <%# ---------------- Underwear gallery (uses active AJAX Add buttons) ---------------- %>
-      <% fallback_product = Product.first rescue nil %>
-      <% fallback_id = fallback_product&.id %>
-
+      <%# Underwear gallery: buttons removed so these are read-only slots %>
       <% men_images = [
         "https://m.media-amazon.com/images/I/51bed6hGfqL._AC_SL1000_.jpg",
         "https://via.placeholder.com/600x600.png?text=Men+2",
@@ -183,21 +179,19 @@
               <div class="grid grid-cols-3 gap-3">
                 <% 6.times do |i| %>
                   <% p = products[i] %>
-                  <% slot_product_id = p&.id || fallback_id %>
+                  <% image_src = nil %>
+                  <% if p %>
+                    <% if p.respond_to?(:product_images) && p.product_images.any? %>
+                      <% pi = p.product_images.first %>
+                      <% image_src ||= image_for(pi.image) if pi.respond_to?(:image) %>
+                      <% image_src ||= (pi.respond_to?(:image_url) ? pi.image_url : nil) %>
+                    <% end %>
+                    <% image_src ||= (p.respond_to?(:image_url) ? p.image_url : nil) %>
+                    <% image_src ||= image_for(p.image) if p.respond_to?(:image) %>
+                  <% end %>
+                  <% image_src ||= imgs[i] %>
 
                   <div class="flex flex-col items-center text-center">
-                    <% image_src = nil %>
-                    <% if p %>
-                      <% if p.respond_to?(:product_images) && p.product_images.any? %>
-                        <% pi = p.product_images.first %>
-                        <% image_src ||= image_for(pi.image) if pi.respond_to?(:image) %>
-                        <% image_src ||= (pi.respond_to?(:image_url) ? pi.image_url : nil) %>
-                      <% end %>
-                      <% image_src ||= (p.respond_to?(:image_url) ? p.image_url : nil) %>
-                      <% image_src ||= image_for(p.image) if p.respond_to?(:image) %>
-                    <% end %>
-                    <% image_src ||= imgs[i] %>
-
                     <% if p %>
                       <%= link_to product_path(p) do %>
                         <img src="<%= image_src %>" alt="<%= "#{subname} #{i+1}" %>" class="w-full h-32 object-cover rounded" />
@@ -221,17 +215,7 @@
                         <% end %>
                       </div>
 
-                      <div class="mt-2">
-                        <% if slot_product_id.present? %>
-                          <button type="button"
-                                  class="add-to-cart-ajax w-full inline-flex items-center justify-center px-3 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
-                                  data-url="<%= add_item_cart_path(product_id: slot_product_id) %>">
-                            <i class="fa-solid fa-cart-plus mr-2"></i> Add
-                          </button>
-                        <% else %>
-                          <button disabled class="w-full inline-flex items-center justify-center px-3 py-2 bg-gray-200 text-gray-600 rounded-md text-sm cursor-not-allowed">Add</button>
-                        <% end %>
-                      </div>
+                      <%# Add buttons removed intentionally for categories listing %>
                     </div>
                   </div>
                 <% end %>
@@ -241,7 +225,7 @@
         </div>
       </div>
 
-      <!-- Products grid (Add buttons use AJAX too) -->
+      <!-- Products grid (read-only on categories page: Add buttons removed) -->
       <div class="flex items-center justify-between mb-6">
         <div class="text-sm text-gray-600">
           <% product_count = @products.respond_to?(:total_count) ? @products.total_count : @products.size %>
@@ -268,16 +252,6 @@
                   <i class="fa-regular fa-image text-6xl"></i>
                 </div>
               <% end %>
-
-              <div class="absolute top-3 right-3 flex items-center gap-2">
-                <button class="like-button inline-flex items-center justify-center p-2 rounded-full bg-white shadow-sm like-ui"
-                        data-product-id="<%= product.id %>"
-                        data-url="<%= (like_product_path(product) rescue '#') %>"
-                        data-liked="<%= (user_signed_in? && current_user.likes.exists?(product: product)) rescue false %>"
-                        aria-pressed="<%= (user_signed_in? && current_user.likes.exists?(product: product)) rescue false %>">
-                  <i class="fa-heart <%= (user_signed_in? && current_user.likes.exists?(product: product)) ? 'fa-solid text-red-500' : 'fa-regular text-gray-600' %>"></i>
-                </button>
-              </div>
             </div>
 
             <div class="p-5">
@@ -288,11 +262,10 @@
               <div class="flex items-center justify-between">
                 <div class="text-2xl font-black text-gray-900"><%= number_to_currency(product.price) %></div>
                 <div class="flex items-center gap-2">
-                  <button type="button"
-                          class="add-to-cart-ajax inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition"
-                          data-url="<%= add_item_cart_path(product_id: product.id) %>">
-                    <i class="fa-solid fa-cart-plus mr-2"></i> Add
-                  </button>
+                  <%# Add button removed on categories page; keep product view link instead %>
+                  <%= link_to product_path(product), class: "inline-flex items-center px-4 py-2 border rounded-full text-sm text-gray-700 hover:bg-gray-50" do %>
+                    View
+                  <% end %>
                 </div>
               </div>
             </div>
@@ -302,134 +275,3 @@
     </div>
   </div>
 </div>
-
-<!-- Minimal Quick View Modal (kept for parity) -->
-<div id="quickview-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
-  <div class="bg-white rounded-xl max-w-4xl w-full mx-4 overflow-hidden">
-    <div class="flex items-start justify-between p-4 border-b">
-      <h3 class="text-lg font-bold" id="quickview-title"></h3>
-      <button id="quickview-close" class="text-gray-500 hover:text-gray-900"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div id="quickview-body" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- content injected by JS -->
-    </div>
-  </div>
-</div>
-
-<!-- AJAX Add-to-Cart JS: updates badge in-place (tries to use server cart_count JSON, otherwise increments optimistically) -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-  function setCartCount(count) {
-    const el = document.getElementById('cart-count');
-    if (!el) return;
-    el.textContent = count;
-  }
-
-  function incrementCartCount(by = 1) {
-    const el = document.getElementById('cart-count');
-    if (!el) return;
-    const current = parseInt(el.textContent || '0', 10);
-    setCartCount(current + by);
-  }
-
-  async function postAddToCart(url) {
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'X-CSRF-Token': csrf,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        credentials: 'same-origin',
-        body: JSON.stringify({})
-      });
-
-      const contentType = res.headers.get('content-type') || '';
-      if (res.ok && contentType.indexOf('application/json') !== -1) {
-        const data = await res.json();
-        if (data && typeof data.cart_count !== 'undefined') {
-          setCartCount(data.cart_count);
-          return { success: true, data };
-        }
-      }
-
-      if (res.ok) {
-        // optimistic increment
-        incrementCartCount(1);
-        return { success: true };
-      }
-
-      return { success: false, status: res.status };
-    } catch (err) {
-      console.error('Add-to-cart error', err);
-      return { success: false, error: err };
-    }
-  }
-
-  document.querySelectorAll('.add-to-cart-ajax').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      const url = btn.dataset.url;
-      if (!url) return;
-
-      btn.disabled = true;
-      btn.classList.add('opacity-70', 'cursor-wait');
-
-      const result = await postAddToCart(url);
-
-      btn.disabled = false;
-      btn.classList.remove('opacity-70', 'cursor-wait');
-
-      if (!result.success) {
-        // simple feedback; replace with nicer UI if desired
-        alert('Could not add to cart. Please try again.');
-      } else {
-        // tiny badge pulse
-        const badge = document.getElementById('cart-count');
-        if (badge) {
-          badge.classList.add('ring', 'ring-indigo-300');
-          setTimeout(() => badge.classList.remove('ring', 'ring-indigo-300'), 700);
-        }
-      }
-    });
-  });
-
-  // Quickview handlers (kept minimal)
-  document.querySelectorAll('.quickview-button').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      const productUrl = btn.dataset.productUrl || btn.getAttribute('data-product-url') || btn.dataset.productUrl;
-      if (!productUrl) return;
-      const modal = document.getElementById('quickview-modal');
-      const body = document.getElementById('quickview-body');
-      const title = document.getElementById('quickview-title');
-      body.innerHTML = '<div class="col-span-1 text-center py-12">Loading…</div>';
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-
-      try {
-        const res = await fetch(productUrl, { headers: { 'Accept': 'text/html' }, credentials: 'same-origin' });
-        if (res.ok) {
-          const html = await res.text();
-          body.innerHTML = '<div class="col-span-1">' + html + '</div>';
-          title.textContent = '';
-        } else {
-          body.innerHTML = '<div class="col-span-1 text-center py-12 text-red-600">Could not load quick view.</div>';
-        }
-      } catch (err) {
-        body.innerHTML = '<div class="col-span-1 text-center py-12 text-red-600">Error loading quick view.</div>';
-      }
-    });
-  });
-
-  document.getElementById('quickview-close')?.addEventListener('click', () => {
-    const modal = document.getElementById('quickview-modal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-    document.getElementById('quickview-body').innerHTML = '';
-  });
-});
-</script>

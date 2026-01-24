@@ -274,6 +274,122 @@
 
 
 
+
+
+
+
+
+
+
+
+  <!-- 1. "Seasonal Vibe" Immersive Banner -->
+<section class="mt-12 fade-in-up delay-5">
+  <div class="relative rounded-2xl overflow-hidden shadow-xl">
+    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1400&q=80" alt="Explore spring styles" class="w-full h-56 md:h-80 object-cover brightness-90" />
+    <div class="absolute inset-0 flex flex-col items-center justify-center text-center bg-gradient-to-t from-black/60 via-black/20 to-transparent">
+      <div class="text-white text-4xl md:text-5xl font-bold drop-shadow-lg mb-2">Feel the Spring</div>
+      <div class="text-indigo-300 text-lg md:text-xl mb-5 drop-shadow">Fresh. Airy. Effortless.</div>
+      <a href="<%= products_path(category: 'new') %>" class="inline-flex items-center gap-2 px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white rounded-lg font-semibold shadow hover:-translate-y-0.5 transition">
+        <i class="fa-solid fa-leaf"></i> Shop Spring Edit
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 2. "Mood Boards" for Inspiration -->
+<section class="mt-12 fade-in-up delay-6">
+  <h2 class="text-2xl font-bold mb-4 flex gap-2 items-center text-indigo-900"><i class="fa-solid fa-palette"></i> Explore By Mood</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-7">
+    <div class="relative group rounded-2xl overflow-hidden shadow-lg">
+      <img src="https://images.unsplash.com/photo-1506765515384-028b60a970df?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-52 group-hover:scale-105 transition" alt="Chill" />
+      <div class="absolute inset-0 bg-gradient-to-t from-gray-900/70 to-transparent flex flex-col justify-end p-5">
+        <div class="text-white font-semibold text-2xl mb-2">Chill Outfits</div>
+        <a href="<%= products_path(q:'linen') %>" class="text-pink-300 underline">Browse Linen ➜</a>
+      </div>
+    </div>
+    <div class="relative group rounded-2xl overflow-hidden shadow-lg">
+      <img src="https://images.unsplash.com/photo-1465101178521-c5249880bfc4?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-52 group-hover:scale-105 transition" alt="Bold" />
+      <div class="absolute inset-0 bg-gradient-to-t from-indigo-900/70 to-transparent flex flex-col justify-end p-5">
+        <div class="text-white font-semibold text-2xl mb-2">Bold Statements</div>
+        <a href="<%= products_path(q:'prints') %>" class="text-yellow-200 underline">Shop Prints ➜</a>
+      </div>
+    </div>
+    <div class="relative group rounded-2xl overflow-hidden shadow-lg">
+      <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-52 group-hover:scale-105 transition" alt="Minimal" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-5">
+        <div class="text-white font-semibold text-2xl mb-2">Minimal Essentials</div>
+        <a href="<%= products_path(q:'white') %>" class="text-indigo-200 underline">See Modern Classics ➜</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. "Our Promise" Brand Value Statement (visual, trustworthy, beautiful) -->
+<section class="mt-12 fade-in-up delay-7">
+  <div class="bg-white rounded-2xl shadow-xl p-8 flex flex-col md:flex-row items-center gap-8">
+    <img src="https://images.unsplash.com/photo-1454023492550-5696f8ff10e1?auto=format&fit=crop&w=200&q=80" class="rounded-full shadow-md w-24 h-24 object-cover mb-5 md:mb-0" alt="Peace-of-mind">
+    <div>
+      <div class="text-xl font-bold mb-2 text-indigo-700 flex items-center gap-2"><i class="fa-solid fa-hand-holding-heart"></i> Our LuxeCart Promise</div>
+      <div class="text-gray-700 text-base mb-2">Every item is hand-checked for quality, guaranteed to fit, and delivered in planet-friendly packaging.</div>
+      <ul class="text-gray-500 flex flex-wrap gap-6 mt-2 text-sm">
+        <li class="flex items-center gap-2"><i class="fa-solid fa-certificate text-emerald-500"></i> Authenticity assured</li>
+        <li class="flex items-center gap-2"><i class="fa-solid fa-arrow-right-arrow-left text-indigo-400"></i> 7 day easy returns</li>
+        <li class="flex items-center gap-2"><i class="fa-solid fa-leaf text-green-400"></i> Eco-conscious shipping</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 4. "Shop by Occasion" Section -->
+<section class="mt-12 fade-in-up delay-8">
+  <h2 class="text-2xl font-bold mb-4 flex gap-2 items-center text-indigo-900">
+    <i class="fa-solid fa-calendar-days"></i> Shop by Occasion
+  </h2>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-7">
+    <div class="relative group rounded-2xl overflow-hidden shadow-lg">
+      <img src="https://images.unsplash.com/photo-1465101178521-c5249880bfc4?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Party" />
+      <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-pink-900/70 to-transparent flex flex-col">
+        <div class="text-white font-semibold text-lg mb-0.5">Party & Night Out</div>
+        <a href="<%= products_path(q: 'party dress') %>" class="text-pink-200 underline text-xs">See styles ➜</a>
+      </div>
+    </div>
+    <div class="relative group rounded-2xl overflow-hidden shadow-lg">
+      <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Work" />
+      <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-indigo-900/70 to-transparent flex flex-col">
+        <div class="text-white font-semibold text-lg mb-0.5">Work & Office</div>
+        <a href="<%= products_path(q: 'formal shirt') %>" class="text-indigo-200 underline text-xs">Shop formals ➜</a>
+      </div>
+    </div>
+    <div class="relative group rounded-2xl overflow-hidden shadow-lg">
+      <img src="https://images.unsplash.com/photo-1526178613658-3ef1edd74d1d?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Vacation" />
+      <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-green-900/70 to-transparent flex flex-col">
+        <div class="text-white font-semibold text-lg mb-0.5">Vacation Ready</div>
+        <a href="<%= products_path(q: 'beach wear') %>" class="text-green-200 underline text-xs">Shop destination ➜</a>
+      </div>
+    </div>
+    <div class="relative group rounded-2xl overflow-hidden shadow-lg">
+      <img src="https://images.unsplash.com/photo-1506765515384-028b60a970df?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Casual" />
+      <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-900/70 to-transparent flex flex-col">
+        <div class="text-white font-semibold text-lg mb-0.5">Weekend Casual</div>
+        <a href="<%= products_path(q: 'casual jeans') %>" class="text-white underline text-xs">Shop casuals ➜</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
   <!-- CTA STRIP -->
   <section class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-2xl px-6 py-6 md:px-8 md:py-7 flex flex-col md:flex-row items-center justify-between gap-4 fade-in-up delay-5">
     <div>

@@ -1,5 +1,5 @@
 <%# Shared "shop" template for many categories (decor, furniture, lighting, tables, new-arrivals, sale, textiles, etc.) %>
-<%# Saves: app/views/categories/category_shop.html.erb %>
+<%# Add buttons removed on category pages (read-only listing) %>
 
 <%# --- Helpers --- %>
 <% def safe_attached?(obj)
@@ -29,59 +29,59 @@
      @category.name.to_s.parameterize
    end
 
-   # category-specific placeholder image sets (replace with your preferred image URLs)
+   # category-specific placeholder image sets
    def placeholder_images_for(slug)
      case slug
      when 'decor'
        [
-         "https://images.unsplash.com/photo-1505691723518-36a1b8e7f4c9?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1505691723518-18f8d3b2b8f3?q=80&w=800&auto=format&fit=crop"
+         "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1505691723518-18f8d3b2b8f3?auto=format&fit=crop&w=800&q=80"
        ]
      when 'furniture'
        [
-         "https://images.unsplash.com/photo-1540574163026-643ea20ade25?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1493666438817-866a91353ca9?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=800&auto=format&fit=crop"
+         "https://images.unsplash.com/photo-1540574163026-643ea20ade25?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1493666438817-866a91353ca9?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80"
        ]
      when 'lighting'
        [
-         "https://images.unsplash.com/photo-1505691723518-11a9f8a6a1df?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1524758631624-7b5d2d1b9e0a?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1524758631624-3e9a7e6e7a6c?q=80&w=800&auto=format&fit=crop"
+         "https://images.unsplash.com/photo-1505691723518-11a9f8a6a1df?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1524758631624-7b5d2d1b9e0a?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1524758631624-3e9a7e6e7a6c?auto=format&fit=crop&w=800&q=80"
        ]
      when 'tables'
        [
-         "https://images.unsplash.com/photo-1519710164239-481f0a6c0c3b?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=800&auto=format&fit=crop"
+         "https://images.unsplash.com/photo-1519710164239-481f0a6c0c3b?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=80"
        ]
      when 'new-arrivals', 'new_arrivals', 'newarrivals'
        [
-         "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1520975918479-6c0b6f0a8b7a?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1543255006-1c122d67a6d0?q=80&w=800&auto=format&fit=crop"
+         "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1520975918479-6c0b6f0a8b7a?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1543255006-1c122d67a6d0?auto=format&fit=crop&w=800&q=80"
        ]
      when 'sale'
        [
-         "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1520975918479-9a4b4f9b6c3a?q=80&w=800&auto=format&fit=crop"
+         "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1520975918479-9a4b4f9b6c3a?auto=format&fit=crop&w=800&q=80"
        ]
      when 'textiles'
        [
-         "https://images.unsplash.com/photo-1523381213953-0d0a5f2a0d1c?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1540574163026-643ea20ade25?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=800&auto=format&fit=crop"
+         "https://images.unsplash.com/photo-1523381213953-0d0a5f2a0d1c?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1540574163026-643ea20ade25?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=800&q=80"
        ]
      else
-       # shoes / men / women / children fallback
+       # fallback general set (men/women/children, etc.)
        [
-         "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1520975918479-9a4b4f9b6c3a?q=80&w=800&auto=format&fit=crop",
-         "https://images.unsplash.com/photo-1543255006-1c122d67a6d0?q=80&w=800&auto=format&fit=crop"
+         "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1520975918479-9a4b4f9b6c3a?auto=format&fit=crop&w=800&q=80",
+         "https://images.unsplash.com/photo-1543255006-1c122d67a6d0?auto=format&fit=crop&w=800&q=80"
        ]
      end
    end
@@ -117,7 +117,7 @@
       <% if @category.description.present? %>
         <p class="text-gray-600 mb-4"><%= @category.description %></p>
       <% else %>
-        <p class="text-gray-600 mb-4">Browse items in <%= @category.name %> — click Add to put them in your cart.</p>
+        <p class="text-gray-600 mb-4">Browse items in <%= @category.name %> — view product details from here.</p>
       <% end %>
       <div class="flex gap-3">
         <%= link_to "Shop all", category_path(@category), class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700" %>
@@ -133,11 +133,10 @@
     </div>
   </div>
 
-  <!-- Featured / Collections grid -->
+  <!-- Featured / Collections grid (read-only) -->
   <section class="bg-white p-4 rounded-2xl shadow-sm mb-8">
     <h2 class="text-xl font-semibold mb-4">Featured in <%= @category.name %></h2>
 
-    <%# try to show real featured products; fallback to placeholders %>
     <% featured = @category.products.active.where(featured: true).limit(8) rescue [] %>
     <% if featured.blank? %>
       <% featured = @category.products.active.limit(8) rescue [] %>
@@ -161,21 +160,12 @@
 
             <div class="font-semibold mb-1"><%= link_to p.name, product_path(p) %></div>
             <div class="text-gray-600 mb-2"><%= number_to_currency(p.price) if p.respond_to?(:price) %></div>
-
-            <div class="mt-auto">
-              <button type="button"
-                      class="add-to-cart-ajax inline-flex items-center px-3 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm w-full"
-                      data-url="/cart/add_item"
-                      data-product-id="<%= p.id %>">
-                <i class="fa-solid fa-cart-plus mr-2"></i> Add
-              </button>
-            </div>
+            <%# Add button intentionally removed for category pages %>
           </div>
         <% end %>
       </div>
-
     <% else %>
-      <%# show placeholders when no real products are present %>
+      <%# placeholders display without Add buttons %>
       <% placeholders = placeholder_images_for(category_slug) %>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <% placeholders.each_with_index do |img, idx| %>
@@ -183,28 +173,13 @@
             <img src="<%= img %>" class="w-full h-40 object-cover rounded mb-3" alt="<%= @category.name %> placeholder <%= idx+1 %>">
             <div class="font-semibold mb-1"><%= "#{@category.name} item #{idx + 1}" %></div>
             <div class="text-gray-600 mb-2">&nbsp;</div>
-
-            <%# fallback_id used if at least one product exists in DB; otherwise disabled button %>
-            <% fallback_id = Product.first&.id rescue nil %>
-            <div class="mt-auto">
-              <% if fallback_id.present? %>
-                <button type="button"
-                        class="add-to-cart-ajax inline-flex items-center px-3 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm w-full"
-                        data-url="/cart/add_item"
-                        data-product-id="<%= fallback_id %>">
-                  <i class="fa-solid fa-cart-plus mr-2"></i> Add
-                </button>
-              <% else %>
-                <button disabled class="inline-flex items-center px-3 py-2 bg-gray-200 text-gray-600 rounded-md text-sm w-full cursor-not-allowed">Add</button>
-              <% end %>
-            </div>
           </div>
         <% end %>
       </div>
     <% end %>
   </section>
 
-  <!-- Full category product grid (paged subset) -->
+  <!-- Full category product grid (read-only) -->
   <section class="bg-white p-4 rounded-2xl shadow-sm">
     <h2 class="text-xl font-semibold mb-4">All <%= @category.name %> Products</h2>
 
@@ -226,98 +201,9 @@
           <div class="font-semibold"><%= link_to p.name, product_path(p) %></div>
           <div class="text-gray-600"><%= number_to_currency(p.price) if p.respond_to?(:price) %></div>
 
-          <div class="mt-2">
-            <button type="button"
-                    class="add-to-cart-ajax inline-flex items-center px-3 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm w-full"
-                    data-url="/cart/add_item"
-                    data-product-id="<%= p.id %>">
-              <i class="fa-solid fa-cart-plus mr-2"></i> Add
-            </button>
-          </div>
+          <%# Removed Add button from category listing %>
         </div>
       <% end %>
     </div>
   </section>
 </div>
-
-<!-- Shared AJAX Add-to-Cart JS (same behavior used across category pages) -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-  function setCartCount(count) {
-    const el = document.getElementById('cart-count');
-    if (!el) return;
-    el.textContent = count;
-  }
-
-  function incrementCartCount(by = 1) {
-    const el = document.getElementById('cart-count');
-    if (!el) return;
-    const current = parseInt(el.textContent || '0', 10);
-    setCartCount(current + by);
-  }
-
-  async function postAddToCart(url, productId) {
-    try {
-      const body = new URLSearchParams({ product_id: productId }).toString();
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'X-CSRF-Token': csrf,
-          'Accept': 'application/json',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        credentials: 'same-origin',
-        body: body
-      });
-
-      const ct = res.headers.get('content-type') || '';
-      if (res.ok && ct.indexOf('application/json') !== -1) {
-        const data = await res.json();
-        if (data && typeof data.cart_count !== 'undefined') {
-          setCartCount(data.cart_count);
-          return { success: true };
-        }
-      }
-
-      if (res.ok) {
-        incrementCartCount(1);
-        return { success: true };
-      }
-
-      return { success: false, status: res.status };
-    } catch (err) {
-      console.error('Add-to-cart error', err);
-      return { success: false, error: err };
-    }
-  }
-
-  document.querySelectorAll('.add-to-cart-ajax').forEach(btn => {
-    btn.addEventListener('click', async function (e) {
-      e.preventDefault();
-      const url = btn.dataset.url;
-      const pid = btn.dataset.productId;
-      if (!url || !pid) return;
-
-      btn.disabled = true;
-      btn.classList.add('opacity-70', 'cursor-wait');
-
-      const result = await postAddToCart(url, pid);
-
-      btn.disabled = false;
-      btn.classList.remove('opacity-70', 'cursor-wait');
-
-      if (!result.success) {
-        alert('Could not add to cart. Please try again.');
-      } else {
-        const badge = document.getElementById('cart-count');
-        if (badge) {
-          badge.classList.add('ring', 'ring-indigo-300');
-          setTimeout(() => badge.classList.remove('ring', 'ring-indigo-300'), 700);
-        }
-      }
-    });
-  });
-});
-</script>

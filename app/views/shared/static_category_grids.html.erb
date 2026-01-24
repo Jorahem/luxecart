@@ -1,0 +1,94 @@
+<%# Static category grids: Men, Women, Children, Shoes, Decor, Furniture, Lighting, Tables, Textiles, Sale %>
+<%# Paste this partial where you want the static grids to appear (e.g. include in categories/show.html.erb) %>
+
+<% category_collections = {
+  "Men" => [
+    { image: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80", name: "Classic Denim Jacket", description: "A timeless denim jacket with a slim cut — perfect for layered looks.", price: 79.99 },
+    { image: "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=800&q=80", name: "Casual Chambray Shirt", description: "Soft chambray shirt, breathable and comfortable for everyday wear.", price: 39.50 },
+    { image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80", name: "Slim Fit Chinos", description: "Versatile slim chinos with just the right stretch for movement.", price: 49.00 },
+    { image: "https://images.unsplash.com/photo-1519741491592-8f28b8c7d8e7?auto=format&fit=crop&w=800&q=80", name: "Striped Polo Tee", description: "Classic striped polo in a modern soft‑knit fabric.", price: 24.99 }
+  ],
+
+  "Women" => [
+    { image: "https://images.unsplash.com/photo-1520975918479-9a4b4f9b6c3a?auto=format&fit=crop&w=800&q=80", name: "Lace Trim Briefs", description: "Soft briefs with delicate lace trim for everyday comfort.", price: 12.99 },
+    { image: "https://images.unsplash.com/photo-1520975918479-6c0b6f0a8b7a?auto=format&fit=crop&w=800&q=80", name: "Silk Slip Dress", description: "Elegant slip dress in lightweight silk for evenings out.", price: 129.00 },
+    { image: "https://images.unsplash.com/photo-1543255006-1c122d67a6d0?auto=format&fit=crop&w=800&q=80", name: "Tailored Blazer", description: "Crisp tailored blazer to finish any professional look.", price: 119.00 },
+    { image: "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=800&q=80", name: "Rib-Knit Tank", description: "Stretch rib‑knit tank, perfect for layering.", price: 22.00 }
+  ],
+
+  "Children" => [
+    { image: "https://images.unsplash.com/photo-1600180758895-3bdaa9f3a8d8?auto=format&fit=crop&w=800&q=80", name: "Playtime T‑Shirt", description: "Durable cotton tee for playtime and school.", price: 14.99 },
+    { image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80", name: "Comfy Shorts", description: "Elastic waist shorts for comfort and movement.", price: 16.50 },
+    { image: "https://images.unsplash.com/photo-1516675302207-3f53a90b19a5?auto=format&fit=crop&w=800&q=80", name: "Warm Hoodie", description: "Snuggly hoodie for cooler days.", price: 29.99 },
+    { image: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80", name: "Playful Pajamas", description: "Cute pajama set for bedtime adventures.", price: 24.00 }
+  ],
+
+  "Shoes" => [
+    { image: "https://images.unsplash.com/photo-1521120098173-3b4d7fe1e1d5?auto=format&fit=crop&w=800&q=80", name: "Minimal Leather Sneaker", description: "Timeless leather sneakers — everyday staple.", price: 89.00 },
+    { image: "https://images.unsplash.com/photo-1519741491592-8f28b8c7d8e7?auto=format&fit=crop&w=800&q=80", name: "Chukka Boot", description: "Rugged chukka with refined lines.", price: 119.00 },
+    { image: "https://images.unsplash.com/photo-1528701800489-47614b3a1e2b?auto=format&fit=crop&w=800&q=80", name: "Casual Loafer", description: "Slip-on loafer for easy weekend wear.", price: 79.00 },
+    { image: "https://images.unsplash.com/photo-1519741491592-8f28b8c7d8e7?auto=format&fit=crop&w=800&q=80", name: "Running Trainer", description: "Lightweight running shoe with responsive midsole.", price: 99.00 }
+  ],
+
+  "Decor" => [
+    { image: "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=800&q=80", name: "Designer Throw Pillow", description: "Plush throw pillow in seasonal colours.", price: 34.99 },
+    { image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80", name: "Wall Art Print", description: "70x50cm framed art print for living room.", price: 79.00 },
+    { image: "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=800&q=80", name: "Ceramic Vase", description: "Handmade ceramic vase with matte glaze.", price: 45.00 },
+    { image: "https://images.unsplash.com/photo-1505691723518-18f8d3b2b8f3?auto=format&fit=crop&w=800&q=80", name: "Decor Tray", description: "Minimal tray for coffee table organisation.", price: 29.00 }
+  ],
+
+  "Furniture" => [
+    { image: "https://images.unsplash.com/photo-1540574163026-643ea20ade25?auto=format&fit=crop&w=800&q=80", name: "Nordic Dining Chair", description: "Clean-lined dining chair with comfortable seat.", price: 129.00 },
+    { image: "https://images.unsplash.com/photo-1493666438817-866a91353ca9?auto=format&fit=crop&w=800&q=80", name: "Accent Armchair", description: "Cozy accent chair for reading corners.", price: 249.99 },
+    { image: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=800&q=80", name: "Console Table", description: "Slim console for hallways and entries.", price: 159.00 },
+    { image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80", name: "Minimal Coffee Table", description: "Low-profile coffee table with wood top.", price: 199.00 }
+  ],
+
+  "Lighting" => [
+    { image: "https://images.unsplash.com/photo-1505691723518-11a9f8a6a1df?auto=format&fit=crop&w=800&q=80", name: "Pendant Lamp", description: "Brass pendant to lift your dining area.", price: 129.00 },
+    { image: "https://images.unsplash.com/photo-1524758631624-7b5d2d1b9e0a?auto=format&fit=crop&w=800&q=80", name: "Table Lamp", description: "Soft-diffuse table lamp for bedside.", price: 69.00 },
+    { image: "https://images.unsplash.com/photo-1524758631624-3e9a7e6e7a6c?auto=format&fit=crop&w=800&q=80", name: "Floor Lamp", description: "Tall floor lamp with arc profile.", price: 179.00 },
+    { image: "https://images.unsplash.com/photo-1543255006-1c122d67a6d0?auto=format&fit=crop&w=800&q=80", name: "Wall Sconce", description: "Minimal wall sconce for ambient light.", price: 49.00 }
+  ],
+
+  "Tables" => [
+    { image: "https://images.unsplash.com/photo-1519710164239-481f0a6c0c3b?auto=format&fit=crop&w=800&q=80", name: "Dining Table", description: "Solid wood dining table, seats 6.", price: 599.00 },
+    { image: "https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=800&q=80", name: "Side Table", description: "Compact side table for small spaces.", price: 89.00 },
+    { image: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=80", name: "Round Coffee Table", description: "Round coffee table with lower shelf.", price: 199.00 }
+  ],
+
+  "Textiles" => [
+    { image: "https://images.unsplash.com/photo-1523381213953-0d0a5f2a0d1c?auto=format&fit=crop&w=800&q=80", name: "Woven Throw", description: "Cozy throw blanket in woven cotton.", price: 49.00 },
+    { image: "https://images.unsplash.com/photo-1540574163026-643ea20ade25?auto=format&fit=crop&w=800&q=80", name: "Decorative Rug", description: "Hand-loomed rug for living spaces.", price: 249.00 },
+    { image: "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=800&q=80", name: "Cushion Set", description: "Two-piece cushion set in neutral tones.", price: 39.00 }
+  ],
+
+  "Sale" => [
+    { image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80", name: "Seasonal Tee (Sale)", description: "Basic tee at a special price.", price: 9.99 },
+    { image: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80", name: "Denim Jacket (Sale)", description: "Denim jacket with a markdown price.", price: 59.99 },
+    { image: "https://images.unsplash.com/photo-1520975918479-9a4b4f9b6c3a?auto=format&fit=crop&w=800&q=80", name: "Socks Pack (Sale)", description: "Bundle of three cotton socks.", price: 7.99 }
+  ]
+} %>
+
+<% category_collections.each do |category_name, products| %>
+  <section class="bg-white p-4 rounded-2xl shadow-sm mb-8">
+    <h2 class="text-xl font-semibold mb-4"><%= category_name %> Picks</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <% products.each do |prod| %>
+        <div class="rounded-lg border p-4 flex flex-col bg-white">
+          <div class="w-full h-44 overflow-hidden rounded mb-3">
+            <img src="<%= prod[:image] %>" alt="<%= prod[:name] %>" class="w-full h-full object-cover">
+          </div>
+
+          <div class="flex-1">
+            <div class="font-semibold text-sm mb-1"><%= prod[:name] %></div>
+            <div class="text-gray-600 text-sm mb-2"><%= prod[:description] %></div>
+          </div>
+
+          <div class="mt-2 text-lg font-bold"><%= number_to_currency(prod[:price]) %></div>
+        </div>
+      <% end %>
+    </div>
+  </section>
+<% end %>

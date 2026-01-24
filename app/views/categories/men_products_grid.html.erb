@@ -1,0 +1,94 @@
+<%# Static Men products grid: images with name + description (no Add buttons) %>
+<% men_static_products = [
+  {
+    image: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80",
+    name: "Classic Denim Jacket",
+    description: "A timeless denim jacket with a slim cut — perfect for layered looks.",
+    price: 79.99
+  },
+  {
+    image: "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=800&q=80",
+    name: "Casual Chambray Shirt",
+    description: "Soft chambray shirt, breathable and comfortable for everyday wear.",
+    price: 39.50
+  },
+  {
+    image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80",
+    name: "Slim Fit Chinos",
+    description: "Versatile slim chinos with just the right stretch for movement.",
+    price: 49.00
+  },
+  {
+    image: "https://images.unsplash.com/photo-1519741491592-8f28b8c7d8e7?auto=format&fit=crop&w=800&q=80",
+    name: "Striped Polo Tee",
+    description: "Classic striped polo in a modern soft-knit fabric.",
+    price: 24.99
+  },
+  {
+    image: "https://images.unsplash.com/photo-1528701800489-47614b3a1e2b?auto=format&fit=crop&w=800&q=80",
+    name: "Leather Sneakers",
+    description: "Minimal leather sneakers — clean lines and everyday comfort.",
+    price: 89.00
+  },
+  {
+    image: "https://images.unsplash.com/photo-1541099649105-3f8a3b2a8efb?auto=format&fit=crop&w=800&q=80",
+    name: "Wool Overcoat",
+    description: "Warm wool overcoat with a tailored silhouette for colder days.",
+    price: 129.00
+  },
+  {
+    image: "https://images.unsplash.com/photo-1520975918479-9a4b4f9b6c3a?auto=format&fit=crop&w=800&q=80",
+    name: "Cotton Henley",
+    description: "Soft cotton henley — great as a base layer or casual top.",
+    price: 34.00
+  },
+  {
+    image: "https://images.unsplash.com/photo-1543255006-1c122d67a6d0?auto=format&fit=crop&w=800&q=80",
+    name: "Travel Hoodie",
+    description: "Lightweight hoodie with zip pockets for travel convenience.",
+    price: 59.99
+  },
+  {
+    image: "https://images.unsplash.com/photo-1507699622108-4be3abd695ad?auto=format&fit=crop&w=800&q=80",
+    name: "Oxford Shirt",
+    description: "Smart oxford shirt — dress it up or down with ease.",
+    price: 45.00
+  },
+  {
+    image: "https://images.unsplash.com/photo-1519741491592-8f28b8c7d8e7?auto=format&fit=crop&w=800&q=80",
+    name: "Chukka Boots",
+    description: "Rugged chukka boots with a refined profile.",
+    price: 119.00
+  },
+  {
+    image: "https://images.unsplash.com/photo-1520975918479-6c0b6f0a8b7a?auto=format&fit=crop&w=800&q=80",
+    name: "Performance Tee",
+    description: "Moisture-wicking performance tee for workouts and warm days.",
+    price: 19.99
+  },
+  {
+    image: "https://images.unsplash.com/photo-1540574163026-643ea20ade25?auto=format&fit=crop&w=800&q=80",
+    name: "Quilted Vest",
+    description: "Light quilted vest for extra mid-season warmth.",
+    price: 69.00
+  }
+] %>
+
+<section class="bg-white p-4 rounded-2xl shadow-sm">
+  <h2 class="text-xl font-semibold mb-4">Featured Men Clothing</h2>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <% men_static_products.each do |prod| %>
+      <div class="rounded-lg border p-4 flex flex-col bg-white">
+        <div class="w-full h-48 overflow-hidden rounded mb-3">
+          <img src="<%= prod[:image] %>" alt="<%= prod[:name] %>" class="w-full h-full object-cover">
+        </div>
+        <div class="flex-1">
+          <div class="font-semibold text-sm mb-1"><%= prod[:name] %></div>
+          <div class="text-gray-600 text-sm mb-2"><%= prod[:description] %></div>
+        </div>
+        <div class="mt-2 text-lg font-bold"><%= number_to_currency(prod[:price]) %></div>
+      </div>
+    <% end %>
+  </div>
+</section>
