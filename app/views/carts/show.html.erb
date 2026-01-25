@@ -194,11 +194,11 @@
             const qty = parseInt(qtyEl.textContent || '0', 10);
             const subtotal = price * qty;
             const subtotalEl = row.querySelector('.row-subtotal');
-            if (subtotalEl) subtotalEl.textContent = new Intl.NumberFormat(undefined, { style: 'currency', currency: '<%= (defined?(Money) ? Money.default_currency || "USD" : "USD") %>' }).format(subtotal);
+            if (subtotalEl) subtotalEl.textContent = new Intl.NumberFormat(undefined, { style: 'currency', currency: '<%= (defined?(Money) ? Money.default_currency || "RS" : "RS") %>' }).format(subtotal);
             total += subtotal;
           });
           const totalEl = document.getElementById('cart-total');
-          if (totalEl) totalEl.textContent = new Intl.NumberFormat(undefined, { style: 'currency', currency: '<%= (defined?(Money) ? Money.default_currency || "USD" : "USD") %>' }).format(total);
+          if (totalEl) totalEl.textContent = new Intl.NumberFormat(undefined, { style: 'currency', currency: '<%= (defined?(Money) ? Money.default_currency || "RS" : "RS") %>' }).format(total);
         }
 
         async function postAdd(productId) {

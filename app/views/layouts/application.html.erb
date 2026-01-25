@@ -128,65 +128,75 @@
     <%= render "shared/footer" %>
 
     <!-- ADD TO CART AJAX (Turbo-safe) -->
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+  <!-- Place this script block in your layout ABOVE the script block below or at the top of your JS -->
+<script>
+window.currentUserLoggedIn = <%= !!current_user ? 'true' : 'false' %>;
+</script>
 
-        const cartBadge = document.getElementById('cart-count');
-        const cartBadgeMobile = document.getElementById('cart-count-mobile');
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
 
-        function setCartCount(count) {
-          if (cartBadge) cartBadge.textContent = count;
-          if (cartBadgeMobile) cartBadgeMobile.textContent = count;
-        }
+  const cartBadge = document.getElementById('cart-count');
+  const cartBadgeMobile = document.getElementById('cart-count-mobile');
 
-        function redirectToLogin() {
-          const current = window.location.pathname + window.location.search;
-          window.location.href = `/users/sign_in?redirect=${encodeURIComponent(current)}`;
-        }
+  function setCartCount(count) {
+    if (cartBadge) cartBadge.textContent = count;
+    if (cartBadgeMobile) cartBadgeMobile.textContent = count;
+  }
 
-        async function addToCart(url, productId) {
-          const res = await fetch(url, {
-            method: 'POST',
-            headers: {
-              'X-CSRF-Token': csrf,
-              'Accept': 'application/json',
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            credentials: 'same-origin',
-            body: new URLSearchParams({ product_id: productId })
-          });
+  function redirectToLogin() {
+    const current = window.location.pathname + window.location.search;
+    window.location.href = `/users/sign_in?redirect=${encodeURIComponent(current)}`;
+  }
 
-          const contentType = res.headers.get('content-type') || '';
+  async function addToCart(url, productId) {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': csrf,
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      credentials: 'same-origin',
+      body: new URLSearchParams({ product_id: productId })
+    });
 
-          if (!res.ok && (res.status === 401 || contentType.includes('text/html'))) {
-            alert('First you have to login');
-            redirectToLogin();
-            return;
-          }
+    const contentType = res.headers.get('content-type') || '';
 
-          if (res.ok && contentType.includes('application/json')) {
-            const data = await res.json();
-            if (data.cart_count !== undefined) {
-              setCartCount(data.cart_count);
-              cartBadge?.classList.add('ring', 'ring-indigo-300');
-              cartBadgeMobile?.classList.add('ring', 'ring-indigo-300');
-              setTimeout(() => {
-                cartBadge?.classList.remove('ring', 'ring-indigo-300');
-                cartBadgeMobile?.classList.remove('ring', 'ring-indigo-300');
-              }, 700);
-            }
-          }
-        }
+    if (!res.ok && (res.status === 401 || contentType.includes('text/html'))) {
+      alert('First you have to login');
+      redirectToLogin();
+      return;
+    }
 
-        document.querySelectorAll('.add-to-cart-ajax').forEach(btn => {
-          btn.addEventListener('click', e => {
-            e.preventDefault();
-            addToCart(btn.dataset.url || '/cart/add_item', btn.dataset.productId);
-          });
-        });
-      });
-    </script>
+    if (res.ok && contentType.includes('application/json')) {
+      const data = await res.json();
+      if (data.cart_count !== undefined) {
+        setCartCount(data.cart_count);
+        cartBadge?.classList.add('ring', 'ring-indigo-300');
+        cartBadgeMobile?.classList.add('ring', 'ring-indigo-300');
+        setTimeout(() => {
+          cartBadge?.classList.remove('ring', 'ring-indigo-300');
+          cartBadgeMobile?.classList.remove('ring', 'ring-indigo-300');
+        }, 700);
+      }
+    }
+  }
+
+  document.querySelectorAll('.add-to-cart-ajax').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      if (typeof window.currentUserLoggedIn !== "undefined" && !window.currentUserLoggedIn) {
+        alert('First you have to login');
+        redirectToLogin();
+        return;
+      }
+      addToCart(btn.dataset.url || '/cart/add_item', btn.dataset.productId);
+    });
+  });
+});
+</script>
 
   </body>
 </html>

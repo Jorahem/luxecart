@@ -134,6 +134,13 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('form.add-to-cart').forEach(function (form) {
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
+      // LOGIN CHECK START
+      if (typeof window.currentUserLoggedIn !== "undefined" && !window.currentUserLoggedIn) {
+        alert('Login first');
+        window.location.href = '/users/sign_in';
+        return;
+      }
+      // LOGIN CHECK END
       var url = form.action || '/cart/add_item';
       var formData = new FormData(form);
 
@@ -178,6 +185,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     el.addEventListener('click', async function (e) {
       e.preventDefault();
+      // LOGIN CHECK START
+      if (typeof window.currentUserLoggedIn !== "undefined" && !window.currentUserLoggedIn) {
+        alert('Login first');
+        window.location.href = '/users/sign_in';
+        return;
+      }
+      // LOGIN CHECK END
 
       // Get product id from dataset (support both productId and product_id variants)
       var pid = el.dataset ? (el.dataset.productId || el.dataset.product_id) : null;
