@@ -26,6 +26,10 @@ Rails.application.routes.draw do
   resources :categories, only: [:index, :show]
   resources :brands, only: [:index, :show]
 
+
+
+
+ resource :profile, only: [:show, :update] 
   # -------------------------
   # Cart (explicit, single resource routes)
   # -------------------------

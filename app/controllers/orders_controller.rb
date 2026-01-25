@@ -34,6 +34,11 @@ class OrdersController < ApplicationController
     end
   end
 
+  # Show an individual order (fixes NoMethodError on orders/show)
+  def show
+    @order = Order.find(params[:id])
+  end
+
   # Create an order from the session cart
   def create
     # Build a new order for the current user (or guest)
@@ -94,7 +99,7 @@ class OrdersController < ApplicationController
     end
 
     respond_to do |format|
-      format.html { redirect_to order_success_path(@order), notice: "Order placed successfully." }
+      format.html { redirect_to order_path(@order), notice: "Order placed successfully." }
       format.json { render json: { success: true, order_id: @order.id } }
     end
   rescue ActiveRecord::RecordInvalid => e

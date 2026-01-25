@@ -21,6 +21,9 @@ class User < ApplicationRecord
   # Callbacks
   before_save :normalize_email
 
+  
+    has_one_attached :profile_image
+
   # Instance methods
   def full_name
     "#{first_name} #{last_name}".strip
@@ -37,4 +40,6 @@ class User < ApplicationRecord
   end
 
     has_one :cart, dependent: :destroy
+
+
 end

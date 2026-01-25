@@ -1,19 +1,71 @@
-<main class="container">
-  <h1>Order <%= @order.id %></h1>
-  <p>Thank you — your order was received.</p>
+<% require 'ostruct' %>
+<div class="min-h-[70vh] flex flex-col items-center justify-center bg-gray-50 px-2 pt-8 pb-12">
+  <div class="bg-white shadow-xl rounded-2xl max-w-lg w-full p-8 animate-fade-in-down">
+    <!-- Animated checkmark -->
+    <div class="flex flex-col items-center mb-6">
+      <div class="rounded-full bg-green-100 border-2 border-green-300 flex items-center justify-center w-16 h-16 shadow-sm animate-bounce-in">
+        <svg class="h-10 w-10 text-green-500" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+      <h1 class="text-2xl font-extrabold text-indigo-600 mt-3 mb-1 tracking-tight">Order Confirmed!</h1>
+      <p class="text-gray-500 text-sm">Thank you — your order was received.<br>
+        <span class="text-xs text-indigo-400">Order #<%= @order.id %></span>
+      </p>
+    </div>
 
-  <section>
-    <h3>Shipping</h3>
-    <p><%= @order.shipping_full_name %><br>
-      <%= @order.shipping_street %><br>
-      <%= [@order.shipping_city, @order.shipping_state, @order.shipping_postal_code].compact.join(', ') %>
-    </p>
-  </section>
+    <!-- Shipping Info -->
+    <div class="mb-6">
+      <h2 class="text-sm font-semibold text-gray-700 mb-1">Shipping To</h2>
+      <div class="bg-gray-50 rounded-lg px-3 py-2 border text-gray-700 shadow-sm">
+        <div class="font-medium"><%= @order.shipping_full_name %></div>
+        <div><%= @order.shipping_street %></div>
+        <div><%= [@order.shipping_city, @order.shipping_state, @order.shipping_postal_code].compact.join(', ') %></div>
+      </div>
+    </div>
 
-  <section>
-    <h3>Summary</h3>
-    <%= render 'checkout/order_summary', cart: OpenStruct.new(cart_items: @order.order_items.map { |oi|
-      OpenStruct.new(product: oi.product, quantity: oi.quantity, line_subtotal: oi.total_price)
-    }, subtotal: @order.subtotal, shipping_cost: @order.shipping_cost, tax_amount: @order.tax, total_price: @order.total_price) %>
-  </section>
-</main>
+    <!-- Order Summary -->
+    <div class="mb-4">
+      <h2 class="text-sm font-semibold text-gray-700 mb-1">Order Summary</h2>
+      <div class="rounded-xl bg-white border-2 border-indigo-50 shadow px-2 pt-2 pb-1 animate-fade-in">
+        <%= render 'checkout/order_summary', cart: OpenStruct.new(
+          cart_items: @order.order_items.map { |oi|
+            OpenStruct.new(product: oi.product, quantity: oi.quantity, line_subtotal: oi.total_price)
+          },
+          subtotal: @order.subtotal,
+          shipping_cost: @order.shipping_cost,
+          tax_amount: @order.tax,
+          total_price: @order.total_price
+        ) %>
+      </div>
+    </div>
+    
+    <div class="flex justify-center mt-6">
+      <a href="<%= products_path %>" class="inline-flex items-center px-5 py-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-full font-semibold shadow transition transform hover:-translate-y-0.5 animate-fade-in">
+        <i class="fa fa-arrow-left mr-2"></i>
+        Continue Shopping
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Tailwind Animations (add in <head> or a helper, but inlined here for demo) -->
+<style>
+@keyframes fade-in-down {
+  0% { opacity: 0; transform: translateY(-40px);}
+  100% { opacity: 1; transform: none;}
+}
+@keyframes fade-in {
+  0% { opacity: 0;}
+  100% { opacity: 1;}
+}
+@keyframes bounce-in {
+  0% { transform: scale(0.7);}
+  65% { transform: scale(1.15);}
+  80% { transform: scale(0.92);}
+  100% { transform: scale(1);}
+}
+.animate-fade-in-down { animation: fade-in-down 0.6s cubic-bezier(.76,.13,.27,.87) both;}
+.animate-fade-in { animation: fade-in 0.7s .16s both;}
+.animate-bounce-in { animation: bounce-in 0.7s cubic-bezier(.6,-0.36,.73,.95) both;}
+</style>

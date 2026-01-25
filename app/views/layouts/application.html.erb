@@ -25,6 +25,11 @@
     <!-- Rails Assets -->
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+
+    <!-- Make sure currentUserLoggedIn is globally available BEFORE any other JS  -->
+    <script>
+      window.currentUserLoggedIn = <%= !!current_user ? 'true' : 'false' %>;
+    </script>
   </head>
 
   <body class="min-h-screen flex flex-col">
@@ -35,7 +40,7 @@
     <!-- Flash Messages -->
     <%= render "shared/flash" %>
 
-    <!-- NAVBAR (Turbo-permanent to avoid reload flicker, now responsive) -->
+    <!-- NAVBAR (Turbo-permanent) -->
     <nav x-data="{ open: false }" class="bg-white shadow-sm border-b sticky top-0 z-50" data-turbo-permanent>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
@@ -74,6 +79,17 @@
               </span>
             <% end %>
             <% if respond_to?(:user_signed_in?) && user_signed_in? %>
+                <!-- Avatar Profile Link (Desktop) -->
+                <%= link_to profile_path, class: "relative flex items-center group ml-2" do %>
+                  <% if current_user.profile_image.attached? %>
+                    <%= image_tag current_user.profile_image.variant(resize_to_fill: [32, 32]), alt: "Profile", class: "w-8 h-8 rounded-full object-cover border-2 border-indigo-600 group-hover:scale-110 transition" %>
+                  <% else %>
+                    <span class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 border-2 border-indigo-600 group-hover:scale-110 transition">
+                      <i class="fa fa-user text-lg"></i>
+                    </span>
+                  <% end %>
+                  <span class="sr-only">Profile</span>
+                <% end %>
               <%= button_to destroy_user_session_path,
                     method: :delete,
                     form: { class: "inline" },
@@ -103,6 +119,17 @@
             </span>
           <% end %>
           <% if respond_to?(:user_signed_in?) && user_signed_in? %>
+            <!-- Avatar Profile Link (Mobile) -->
+            <%= link_to profile_path, class: "inline-flex items-center gap-2 px-3 py-2 font-medium rounded-lg hover:bg-indigo-100" do %>
+              <% if current_user.profile_image.attached? %>
+                <%= image_tag current_user.profile_image.variant(resize_to_fill: [32, 32]), alt: "Profile", class: "w-8 h-8 rounded-full object-cover border-2 border-indigo-600" %>
+              <% else %>
+                <span class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 border-2 border-indigo-600">
+                  <i class="fa fa-user text-lg"></i>
+                </span>
+              <% end %>
+              <span>Profile</span>
+            <% end %>
             <%= button_to destroy_user_session_path,
                   method: :delete,
                   form: { class: "inline" },
@@ -128,75 +155,70 @@
     <%= render "shared/footer" %>
 
     <!-- ADD TO CART AJAX (Turbo-safe) -->
-  <!-- Place this script block in your layout ABOVE the script block below or at the top of your JS -->
-<script>
-window.currentUserLoggedIn = <%= !!current_user ? 'true' : 'false' %>;
-</script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+      const cartBadge = document.getElementById('cart-count');
+      const cartBadgeMobile = document.getElementById('cart-count-mobile');
 
-  const cartBadge = document.getElementById('cart-count');
-  const cartBadgeMobile = document.getElementById('cart-count-mobile');
-
-  function setCartCount(count) {
-    if (cartBadge) cartBadge.textContent = count;
-    if (cartBadgeMobile) cartBadgeMobile.textContent = count;
-  }
-
-  function redirectToLogin() {
-    const current = window.location.pathname + window.location.search;
-    window.location.href = `/users/sign_in?redirect=${encodeURIComponent(current)}`;
-  }
-
-  async function addToCart(url, productId) {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'X-CSRF-Token': csrf,
-        'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      credentials: 'same-origin',
-      body: new URLSearchParams({ product_id: productId })
-    });
-
-    const contentType = res.headers.get('content-type') || '';
-
-    if (!res.ok && (res.status === 401 || contentType.includes('text/html'))) {
-      alert('First you have to login');
-      redirectToLogin();
-      return;
-    }
-
-    if (res.ok && contentType.includes('application/json')) {
-      const data = await res.json();
-      if (data.cart_count !== undefined) {
-        setCartCount(data.cart_count);
-        cartBadge?.classList.add('ring', 'ring-indigo-300');
-        cartBadgeMobile?.classList.add('ring', 'ring-indigo-300');
-        setTimeout(() => {
-          cartBadge?.classList.remove('ring', 'ring-indigo-300');
-          cartBadgeMobile?.classList.remove('ring', 'ring-indigo-300');
-        }, 700);
+      function setCartCount(count) {
+        if (cartBadge) cartBadge.textContent = count;
+        if (cartBadgeMobile) cartBadgeMobile.textContent = count;
       }
-    }
-  }
 
-  document.querySelectorAll('.add-to-cart-ajax').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.preventDefault();
-      if (typeof window.currentUserLoggedIn !== "undefined" && !window.currentUserLoggedIn) {
-        alert('First you have to login');
-        redirectToLogin();
-        return;
+      function redirectToLogin() {
+        const current = window.location.pathname + window.location.search;
+        window.location.href = `/users/sign_in?redirect=${encodeURIComponent(current)}`;
       }
-      addToCart(btn.dataset.url || '/cart/add_item', btn.dataset.productId);
+
+      async function addToCart(url, productId) {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-Token': csrf,
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          credentials: 'same-origin',
+          body: new URLSearchParams({ product_id: productId })
+        });
+
+        const contentType = res.headers.get('content-type') || '';
+
+        if (!res.ok && (res.status === 401 || contentType.includes('text/html'))) {
+          alert('First you have to login');
+          redirectToLogin();
+          return;
+        }
+
+        if (res.ok && contentType.includes('application/json')) {
+          const data = await res.json();
+          if (data.cart_count !== undefined) {
+            setCartCount(data.cart_count);
+            cartBadge?.classList.add('ring', 'ring-indigo-300');
+            cartBadgeMobile?.classList.add('ring', 'ring-indigo-300');
+            setTimeout(() => {
+              cartBadge?.classList.remove('ring', 'ring-indigo-300');
+              cartBadgeMobile?.classList.remove('ring', 'ring-indigo-300');
+            }, 700);
+          }
+        }
+      }
+
+      document.querySelectorAll('.add-to-cart-ajax').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.preventDefault();
+          if (typeof window.currentUserLoggedIn !== "undefined" && !window.currentUserLoggedIn) {
+            alert('First you have to login');
+            redirectToLogin();
+            return;
+          }
+          addToCart(btn.dataset.url || '/cart/add_item', btn.dataset.productId);
+        });
+      });
     });
-  });
-});
-</script>
+    </script>
 
   </body>
 </html>
