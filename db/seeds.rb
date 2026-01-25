@@ -30,7 +30,7 @@ puts "Starting seeds..."
 # NOTE: Use a normal array so multi-word names like "New Arrivals" are preserved.
 base_categories = [
   'Furniture', 'Lighting', 'Decor', 'Textiles', 'Tables',
-  'Accessories', 'Shoes', 'Underwear', 'New Arrivals', 'Sale'
+  'Accessories', 'Shoes', 'Underwear', 'New Arrivals', 'Sale','Smartwatch'
 ]
 
 base_categories.each do |name|
@@ -438,14 +438,23 @@ collections = {
 { name: "Men's Bamboo Fiber Briefs", price: 17.99, image_url: "https://everythingbamboo.com.au/cdn/shop/products/Men-Soft-Bamboo-Fibre-Pure-Color-Shorts-Boxer-Briefs-Underwear-_-everythingbamboo-1658471984.jpg?v=1658471985&width=1445", description: "Eco-friendly bamboo briefs with breathable fabric." },
 
 { name: "Men's Anti-Chafe Boxer Briefs", price: 19.99, image_url: "https://images.unsplash.com/photo-1621609764095-b32bbe35cf3a?auto=format&fit=crop&w=800&q=80", description: "Designed to reduce friction and increase comfort." },
-
 { name: "Women's Lace-Free Comfort Panty", price: 15.99, image_url: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=800&q=80", description: "Smooth, lace-free underwear for daily use." },
-
 { name: "Women's Maternity Underwear", price: 21.99, image_url: "https://www.ingridandisabel.com/cdn/shop/products/A0026UnderwearBundleBlack_Mauve_1080x.jpg?v=1665166604", description: "Extra-soft underwear designed for maternity comfort." },
-
 { name: "Kids Organic Cotton Undershirt", price: 13.99, image_url: "https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=800&q=80", description: "Gentle organic cotton undershirt for kids." },
-
 { name: "Kids Training Underwear Pack", price: 24.99, image_url: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=800&q=80", description: "Soft training underwear for growing children." }
+
+  ],
+  "Smartwatch" => [
+    {name:"Smart Fitness Watch",price:79.99,image_url:"https://img.drz.lazcdn.com/static/np/p/72f3041de192a935952b815f254e41cd.jpg_720x720q80.jpg",description:"Fitness smartwatch with heart rate and step tracking."},
+{name:"Classic Digital Smartwatch",price:69.99,image_url:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80",description:"Sleek digital smartwatch with daily activity monitoring."},
+{name:"Sport Pro Smartwatch",price:89.99,image_url:"https://images.unsplash.com/photo-1544117519-31a4b719223d?auto=format&fit=crop&w=800&q=80",description:"Rugged smartwatch designed for sports and workouts."},
+{name:"Luxury Metal Smartwatch",price:129.99,image_url:"https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=800&q=80",description:"Premium metal smartwatch with elegant design."},
+{name:"Minimal Touch Smartwatch",price:59.99,image_url:"https://s.alicdn.com/@sc04/kf/Hbfece0be560946c3afb7e211f86635d5M/H9-Simple-Sports-Health-Tracker-Bluetooth-Smart-Watch-TFT-HD-Touch-Screen-Multi-function-Heart-Rate-Monitoring-Electronic-Watch.jpg",description:"Minimal smartwatch with touch display."},
+{name:"Health Monitor Smartwatch",price:99.99,image_url:"https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=800&q=80",description:"Advanced health monitoring smartwatch."},
+{name:"Kids Smartwatch",price:49.99,image_url:"https://i0.wp.com/bestdealsnepal.com.np/wp-content/uploads/2019/08/gps-kids-watch.jpg?fit=500%2C500&ssl=1",description:"Smartwatch designed especially for kids."},
+{name:"Outdoor Adventure Smartwatch",price:149.99,image_url:"https://res.garmin.com/subcategory/WW/GYM/GYM-CARD-INSTINCT-3.png",description:"GPS-enabled smartwatch for outdoor adventures."},
+{name:"Slim Band Smartwatch",price:54.99,image_url:"https://images.mobilefun.co.uk/graphics/450pixelp/97908.jpg",description:"Slim and lightweight smartwatch band."},
+{name:"AMOLED Display Smartwatch",price:119.99,image_url:"https://img.drz.lazcdn.com/static/np/p/2b0630bd654379394adca53cebd275a4.jpg_720x720q80.jpg",description:"Smartwatch with vibrant AMOLED display."}
 
   ]
 

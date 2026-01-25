@@ -30,7 +30,7 @@
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-    <!-- Updated Sidebar filters: compact, attractive, interactive -->
+    <!-- Sidebar filters -->
     <aside class="hidden lg:block w-full max-w-[210px] mr-2">
       <div class="bg-white rounded-xl shadow-md p-4 sticky top-20 flex flex-col gap-4 transition-all" style="min-height: 230px;">
         <div class="flex items-center gap-2 mb-1">
@@ -38,39 +38,37 @@
           <span class="text-base font-bold text-indigo-700">Filters</span>
         </div>
 
-        <!-- Category list: extra compact and elegant -->
+        <!-- Category list: -->
         <div>
           <h3 class="mb-1 text-sm font-semibold text-gray-900 flex items-center gap-1">
             <i class="fa-solid fa-layer-group text-indigo-400"></i>
             Category
           </h3>
           <div class="grid grid-cols-1 gap-1">
-            <% categories = @categories.presence ||
-                [
-                  {name: "Furniture", icon: "fa-couch"},
-                  {name: "Lighting", icon: "fa-lightbulb"},
-                  {name: "Decor", icon: "fa-image"},
-                  {name: "Textiles", icon: "fa-rug"},
-                  {name: "Tables", icon: "fa-table"},
-                  {name: "Accessories", icon: "fa-gem"},
-                  {name: "Shoes", icon: "fa-shoe-prints"},
-                  {name: "Underwear", icon: "fa-child"},
-                  {name: "New Arrivals", icon: "fa-star"},
-                  {name: "Sale", icon: "fa-bolt"},
-                  {name: "Clothing", icon: "fa-shirt"},
-                  {name: "Men", icon: "fa-person"},
-                  {name: "Women", icon: "fa-person-dress"},
-                  {name: "Children", icon: "fa-child-reaching"}
-                ]
-            %>
+            <% categories = [
+              {name: "Furniture", icon: "fa-couch"},
+              {name: "Lighting", icon: "fa-lightbulb"},
+              {name: "Decor", icon: "fa-image"},
+              {name: "Textiles", icon: "fa-rug"},
+              {name: "Tables", icon: "fa-table"},
+              {name: "Accessories", icon: "fa-gem"},
+              {name: "Shoes", icon: "fa-shoe-prints"},
+              {name: "Underwear", icon: "fa-child"},
+              {name: "New Arrivals", icon: "fa-star"},
+              {name: "Sale", icon: "fa-bolt"},
+              {name: "Clothing", icon: "fa-shirt"},
+              {name: "Men", icon: "fa-person"},
+              {name: "Women", icon: "fa-person-dress"},
+              {name: "Children", icon: "fa-child-reaching"},
+              {name: "Smartwatch", icon: "fa-clock"}
+            ] %>
             <% categories.each do |c| %>
               <% cat_name = (c.is_a?(Hash) ? c[:name] : (c.respond_to?(:name) ? c.name : c.to_s)) %>
               <% cat_icon = (c.is_a?(Hash) ? c[:icon] : "fa-tags") %>
               <% cat_param = (c.try(:slug).presence || cat_name).to_s.parameterize %>
               <% active = (@selected_category&.name == cat_name || params[:category].to_s.downcase == cat_param.to_s.downcase) %>
-
               <%= link_to products_path(q: params[:q], sort: params[:sort], category: cat_param),
-                          class: "group block rounded-md px-2 py-1 bg-gray-50 hover:bg-indigo-50 shadow-sm transition border border-transparent text-xs font-medium mb-1 #{active ? 'border-indigo-400 font-bold text-indigo-700' : 'text-gray-700'}" do %>
+                  class: "group block rounded-md px-2 py-1 bg-gray-50 hover:bg-indigo-50 shadow-sm transition border border-transparent text-xs font-medium mb-1 #{active ? 'border-indigo-400 font-bold text-indigo-700' : 'text-gray-700'}" do %>
                 <div class="flex items-center gap-1">
                   <i class="fa-solid <%= cat_icon %> text-xs <%= active ? 'text-indigo-700' : 'text-indigo-400' %>"></i>
                   <span><%= cat_name %></span>
@@ -80,7 +78,7 @@
           </div>
         </div>
 
-        <!-- Clear filters button: small and easy -->
+        <!-- Clear filters button -->
         <div class="flex items-center mt-1">
           <%= link_to products_path(q: params[:q], sort: params[:sort]), class: "inline-flex items-center gap-1 px-3 py-1 rounded bg-gradient-to-r from-pink-500 via-indigo-500 to-indigo-700 text-white text-xs font-semibold justify-center hover:from-indigo-500 hover:to-pink-500 transition shadow w-full" do %>
             <i class="fa-solid fa-circle-xmark text-xs"></i>

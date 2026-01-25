@@ -1,9 +1,5 @@
 <div class="rounded-lg border p-4 bg-white flex flex-col h-full">
-  <%# product variable expected in local assigns %>
-
-
-
-    <%# SIMPLE IMAGE SETUP FOR PRODUCT CARD (BY PRODUCT NAME) %>
+  <%# Robust product image setup: first by product name, else by db, else placeholder %>
   <% card_image_url =
        case product.name
        when "Modern Floor Lamp"
@@ -26,17 +22,15 @@
          nil
        end %>
 
-  <%# Fallbacks: model fields / attachment / placeholder if no custom URL above %>
   <% unless card_image_url.present? %>
     <% if product.respond_to?(:image_url) && product.image_url.present? %>
       <% card_image_url = product.image_url %>
-    <% elsif product.respond_to?(:image) &&
-          product.image.respond_to?(:attached?) &&
-          product.image.attached? %>
+    <% elsif product.respond_to?(:image) && product.image.respond_to?(:attached?) && product.image.attached? %>
       <% card_image_url = url_for(product.image) %>
+    <% elsif product.respond_to?(:images) && product.images.respond_to?(:attached?) && product.images.attached? %>
+      <% card_image_url = url_for(product.images.first) %>
     <% end %>
   <% end %>
-
   <% card_image_url ||= "https://via.placeholder.com/400x300?text=No+Image" %>
 
   <%= link_to product_path(product), class: "block mb-3" do %>
@@ -45,32 +39,17 @@
          class="w-full h-40 object-cover rounded-md">
   <% end %>
 
-
-
-
-
-
-
-
-
-
-
-
-
   <div class="flex-1">
     <h3 class="text-sm font-semibold text-gray-900 mb-1">
       <%= link_to product.name, product_path(product), class: "hover:underline" %>
     </h3>
-
     <% if product.respond_to?(:short_description) && product.short_description.present? %>
       <p class="text-xs text-gray-500 mb-2"><%= truncate(product.short_description, length: 80) %></p>
     <% end %>
-
     <div class="text-gray-800 font-medium mb-3"><%= number_to_currency(product.try(:price) || 0) %></div>
   </div>
 
   <div class="mt-2 grid grid-cols-2 gap-2">
-    <%# Primary Add button — uses JS handler (data attributes) and falls back gracefully %>
     <%= button_tag type: :button,
                    class: "add-to-cart-ajax inline-flex items-center justify-center px-3 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm w-full",
                    data: { url: (defined?(cart_add_item_path) ? cart_add_item_path : '/cart/add_item'), product_id: product.id },
@@ -78,8 +57,6 @@
       <i class="fa-solid fa-cart-plus mr-2"></i>
       Add
     <% end %>
-
-    <%# Optional: Quick view or details link %>
     <%= link_to product_path(product), class: "inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50 w-full", title: "View details for #{product.name}" do %>
       <i class="fa-solid fa-eye mr-2"></i> View
     <% end %>
