@@ -28,6 +28,16 @@ puts "Starting seeds..."
 # 1) Basic categories & brands
 # ---------------------------
 # NOTE: Use a normal array so multi-word names like "New Arrivals" are preserved.
+
+
+# db/seeds.rb
+User.create!(
+  email: "admin@example.com",
+  password: "securepassword",
+  password_confirmation: "securepassword",
+  admin: true
+)
+
 base_categories = [
   'Furniture', 'Lighting', 'Decor', 'Textiles', 'Tables',
   'Accessories', 'Shoes', 'Underwear', 'New Arrivals', 'Sale','Smartwatch'

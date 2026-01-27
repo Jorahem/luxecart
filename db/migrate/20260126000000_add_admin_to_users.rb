@@ -1,0 +1,7 @@
+# db/migrate/20260126000000_add_admin_to_users.rb
+class AddAdminToUsers < ActiveRecord::Migration[7.0]
+  def change
+    add_column :users, :admin, :boolean, default: false, null: false
+    add_index :users, :admin
+  end
+end

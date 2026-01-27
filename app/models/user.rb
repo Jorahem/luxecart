@@ -41,5 +41,24 @@ class User < ApplicationRecord
 
     has_one :cart, dependent: :destroy
 
+    scope :admins, -> { where(admin: true) }
+  scope :customers, -> { where(admin: false) }
+  
+  def admin?
+    admin
+  end
+
+  # Optionally, to block users
+  def block!
+    update(blocked: true)
+  end
+
+  def unblock!
+    update(blocked: false)
+  end
+
+  def blocked?
+    blocked
+  end
 
 end

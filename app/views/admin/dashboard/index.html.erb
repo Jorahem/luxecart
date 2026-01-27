@@ -1,0 +1,37 @@
+<h1 class="text-3xl font-bold mb-6">Admin Dashboard</h1>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="bg-gray-700 p-4 rounded">Total Orders<br><span class="text-2xl"><%= @total_orders %></span></div>
+  <div class="bg-gray-700 p-4 rounded">Total Revenue<br><span class="text-2xl"><%= number_to_currency(@total_revenue) %></span></div>
+  <div class="bg-gray-700 p-4 rounded">Orders Today<br><span class="text-2xl"><%= @orders_today %></span></div>
+  <div class="bg-gray-700 p-4 rounded">Total Users<br><span class="text-2xl"><%= @total_users %></span></div>
+</div>
+<div class="bg-yellow-100 text-yellow-800 p-2 rounded mb-6" <% unless @low_stock_products.any? %>style="display:none"<% end %>>
+  <strong>Low Stock:</strong>
+  <%= @low_stock_products.map { |p| "#{p.name} (#{p.stock_quantity})" }.join(", ") %>
+</div>
+<h2 class="text-xl font-semibold mb-3">Recent Orders</h2>
+<table class="w-full table-auto bg-gray-800 rounded mb-8">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>User</th>
+      <th>Total</th>
+      <th>Status</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @recent_orders.each do |order| %>
+      <tr>
+        <td><%= order.id %></td>
+        <td><%= order.user&.email %></td>
+        <td><%= number_to_currency(order.total_price) %></td>
+        <td><%= order.status %></td>
+        <td><%= order.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+      </tr>
+    <% end %>
+    <% if @recent_orders.empty? %>
+      <tr><td colspan="5" class="text-center text-gray-400">No orders yet.</td></tr>
+    <% end %>
+  </tbody>
+</table>
