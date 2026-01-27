@@ -4,6 +4,9 @@ class Order < ApplicationRecord
 
   enum payment_status: { pending: 0, paid: 1, failed: 2 }, _prefix: true
 
+
+    enum status: { pending: 0, paid: 1, shipped: 2, delivered: 3 }
+
   # The DB stores the customer's name as `shipping_full_name` (snapshot fields).
   # Validate the shipping snapshot fields which are present in the schema.
   validates :shipping_full_name, :shipping_street, :shipping_city, :shipping_postal_code, presence: true

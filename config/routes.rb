@@ -2,7 +2,6 @@ Rails.application.routes.draw do
   # -------------------------
   # Authentication
   # -------------------------
-  # Devise for user authentication
   devise_for :users, controllers: { registrations: 'registrations' }
 
   # -------------------------
@@ -26,10 +25,10 @@ Rails.application.routes.draw do
   resources :categories, only: [:index, :show]
   resources :brands, only: [:index, :show]
 
-  resource :profile, only: [:show, :update] 
+  resource :profile, only: [:show, :update]
 
   # -------------------------
-  # Cart (explicit, single resource routes)
+  # Cart
   # -------------------------
   get    '/cart',                   to: 'carts#show',        as: :cart
   post   '/cart/add_item',          to: 'cart_items#create', as: :cart_add_item
@@ -74,41 +73,56 @@ Rails.application.routes.draw do
   get '/terms',   to: 'pages#terms',   as: :terms
 
   # -------------------------
-  # Admin namespace (controllers under Admin::)
-
-
+  # Admin namespace (controllers under AdminPanel::)
   namespace :admin_panel, path: '/admin', as: :admin do
-  get    'login',  to: 'sessions#new',     as: :login
-  post   'login',  to: 'sessions#create'
-  delete 'logout', to: 'sessions#destroy', as: :logout
-  root to: 'dashboard#index'
-  get 'dashboard', to: 'dashboard#index', as: :dashboard
-  ...
-end
-  # -------------------------
-  namespace :admin do
-    root "dashboard#index", as: :dashboard
+    # Admin login/logout
+    get    'login',     to: 'sessions#new',     as: :login
+    post   'login',     to: 'sessions#create'
+    delete 'logout',    to: 'sessions#destroy', as: :logout
+
+    # Admin dashboard
+    root to: 'dashboard#index'
+    get  'dashboard',   to: 'dashboard#index',  as: :dashboard
+
+    # Example admin resources:
     resources :products do
       member do
-        patch :toggle_active
+        patch :toggle_featured
       end
     end
-    resources :categories
     resources :orders do
-      collection do
-        get :export
+      member do
+        patch :update_status
+        patch :mark_as_shipped
+        patch :mark_as_delivered
       end
     end
     resources :users do
       member do
-        patch :block
-        patch :unblock
-        patch :make_admin
-        patch :revoke_admin
+        patch :toggle_admin
       end
     end
-    get "reports", to: "reports#index"
-    # Add further analytics endpoints as required (e.g. GET /admin/reports/top_products)
+    resources :payments, only: [:index, :show]
+    resources :reports, only: [:index]
+    resource  :settings, only: [:show, :update]
+    resources :categories do
+      collection do
+        post :sort
+      end
+    end
+    resources :brands
+    resources :coupons do
+      member do
+        patch :toggle_active
+      end
+    end
+    resources :reviews do
+      member do
+        patch :approve
+        patch :reject
+      end
+    end
+    resources :addresses, only: [:index, :show, :destroy]
   end
 
   # -------------------------
