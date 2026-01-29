@@ -1,0 +1,31 @@
+.button, .add-to-cart-ajax {
+  transition: background 0.18s, box-shadow 0.16s, transform 0.13s;
+  will-change: background, box-shadow, transform;
+}
+.button:hover, .add-to-cart-ajax:hover {
+  background: #4338ca; // Deeper indigo
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 4px 16px 0 rgba(38, 44, 94, 0.07);
+}
+.button:active, .add-to-cart-ajax:active { transform: scale(0.96); }
+
+
+
+#toast {
+  opacity: 0;
+  transform: translateY(30px) scale(0.96);
+  pointer-events: none;
+  transition: opacity .25s, transform .25s;
+  &.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+}
+.product-card, .fade-in {
+  animation: fadeInTop 0.58s cubic-bezier(.45,.03,.3,1.05);
+}
+@keyframes fadeInTop {
+  from { opacity:0; transform:translateY(16px) scale(.97);}
+  to   { opacity:1; transform:none;}
+}

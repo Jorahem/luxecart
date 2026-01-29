@@ -1,0 +1,82 @@
+<%# app/views/products/_product.html.erb %>
+
+<div class="rounded-lg border p-4 bg-white flex flex-col h-full product-card shadow-sm hover:shadow-lg transition-shadow duration-300">
+  <%# Setup product image URL robustly %>
+  <% card_image_url =
+       case product.name
+       when "Modern Floor Lamp"
+         "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=800&q=80"
+       when "Handwoven Rug"
+         "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=800&q=80"
+       when "Oak Coffee Table"
+         "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=800&q=80"
+       when "Ceramic Vase Set"
+         "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=800&q=80"
+       when "Minimalist Bookshelf"
+         "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=800&q=80"
+       when "Designer Throw Pillow"
+         "https://images.unsplash.com/photo-1523755231516-e43fd2e8dca5?auto=format&fit=crop&w=800&q=80"
+       when "Contemporary Wall Art"
+         "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=800&q=80"
+       when "Nordic Dining Chair"
+         "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=800&q=80"
+       else
+         nil
+       end %>
+
+  <% unless card_image_url.present? %>
+    <% if product.respond_to?(:image_url) && product.image_url.present? %>
+      <% card_image_url = product.image_url %>
+    <% elsif product.respond_to?(:image) && product.image.respond_to?(:attached?) && product.image.attached? %>
+      <% card_image_url = url_for(product.image) %>
+    <% elsif product.respond_to?(:images) && product.images.respond_to?(:attached?) && product.images.attached? %>
+      <% card_image_url = url_for(product.images.first) %>
+    <% end %>
+  <% end %>
+
+  <% card_image_url ||= "https://via.placeholder.com/400x300?text=No+Image" %>
+
+  <%= link_to product_path(product),
+              class: "block mb-3 focus:ring-2 focus:ring-indigo-300 rounded-md transition overflow-hidden group" do %>
+    <img src="<%= card_image_url %>"
+         alt="<%= h(product.name) %>"
+         loading="lazy"
+         class="w-full h-40 object-cover rounded-md group-hover:scale-105 transition-transform duration-200 ease-in-out hover:shadow-xl">
+  <% end %>
+
+  <div class="flex-1 flex flex-col">
+    <h3 class="text-sm font-semibold text-gray-900 mb-1">
+      <%= link_to product.name, product_path(product),
+                  class: "hover:underline focus:ring-2 focus:ring-indigo-300 rounded" %>
+    </h3>
+
+    <% if product.respond_to?(:short_description) && product.short_description.present? %>
+      <p class="text-xs text-gray-500 mb-2">
+        <%= truncate(product.short_description, length: 80) %>
+      </p>
+    <% end %>
+
+    <div class="text-gray-800 font-semibold mb-3 text-lg">
+      <%# Ensure price is always shown, fallback to 0 %>
+      <%= number_to_currency(product.try(:price).to_f || 0) %>
+    </div>
+  </div>
+
+  <div class="mt-2 grid grid-cols-2 gap-2">
+    <%= button_tag type: :button,
+                   class: "add-to-cart-ajax inline-flex items-center justify-center px-3 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm w-full font-medium shadow-sm transition active:scale-95",
+                   data: { url: cart_add_item_path,
+                           product_id: product.id },
+                   aria: { label: "Add #{product.name} to cart" } do %>
+      <i class="fa-solid fa-cart-plus mr-2"></i>
+      Add
+    <% end %>
+
+    <%= link_to product_path(product),
+                class: "inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm text-gray-700 hover:bg-gray-50 w-full font-medium transition shadow-sm",
+                title: "View details for #{product.name}" do %>
+      <i class="fa-solid fa-eye mr-2"></i>
+      View
+    <% end %>
+  </div>
+</div>

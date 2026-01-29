@@ -1,8 +1,9 @@
 <%# Home#index - interactive landing page with animations, images and product highlights %>
 
 <div class="space-y-12" data-page="home">
-
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <!-- HERO GALLERY -->
+  
   <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 fade-in-up">
     <div class="col-span-2 relative rounded-2xl overflow-hidden shadow-xl group">
       <div class="relative h-72 md:h-96 bg-gray-100">
@@ -227,7 +228,7 @@
   </section>
 
 
-  <!-- TRENDING STRIP -->
+  <!-- TRENDING STRIP - UPDATED WITH 360° ROTATION CARDS -->
   <section class="fade-in-up delay-4">
     <div class="flex items-center justify-between mb-3">
       <h2 class="text-lg font-semibold">Trending right now</h2>
@@ -236,7 +237,7 @@
       </span>
     </div>
 
-    <!-- Added id for JS auto-scroll; everything else same -->
+    <!-- Added id for JS auto-scroll; cards now have 360° hover animation -->
     <div id="trending-strip" class="flex gap-4 overflow-x-auto pb-2 hide-scrollbar">
       <% trending = (@trending_products || @featured_products || []).first(8) %>
 
@@ -255,258 +256,202 @@
       <% trending.each_with_index do |product, idx| %>
         <% fallback_img = fallback_trending_images[idx % fallback_trending_images.size] %>
 
-        <%= link_to product_path(product), class: "min-w-[180px] bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-3 flex flex-col" do %>
-          <div class="h-24 mb-2 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+        <%= link_to product_path(product), class: "trending-card-360 min-w-[180px] bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-3 flex flex-col" do %>
+          <div class="trending-card-360-image h-24 mb-2 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
             <% if product.respond_to?(:image) && product.image.respond_to?(:attached?) && product.image.attached? %>
               <%= image_tag url_for(product.image), alt: product.name, class: "w-full h-full object-cover" %>
             <% else %>
               <%= image_tag fallback_img, alt: "Trending product", class: "w-full h-full object-cover" %>
             <% end %>
           </div>
-          <div class="text-xs text-gray-500 mb-1 truncate"><%= product.category.try(:name) if product.respond_to?(:category) %></div>
-          <div class="text-sm font-semibold truncate"><%= product.name %></div>
+          <div class="trending-card-360-body">
+            <div class="trending-card-360-category text-xs text-gray-500 mb-1 truncate">
+              <%= product.category.try(:name) if product.respond_to?(:category) %>
+            </div>
+            <div class="trending-card-360-title text-sm font-semibold truncate"><%= product.name %></div>
+          </div>
         <% end %>
       <% end %>
     </div>
   </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
   <!-- 1. "Seasonal Vibe" Immersive Banner -->
-<section class="mt-12 fade-in-up delay-5">
-  <div class="relative rounded-2xl overflow-hidden shadow-xl">
-    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1400&q=80" alt="Explore spring styles" class="w-full h-56 md:h-80 object-cover brightness-90" />
-    <div class="absolute inset-0 flex flex-col items-center justify-center text-center bg-gradient-to-t from-black/60 via-black/20 to-transparent">
-      <div class="text-white text-4xl md:text-5xl font-bold drop-shadow-lg mb-2">Feel the Spring</div>
-      <div class="text-indigo-300 text-lg md:text-xl mb-5 drop-shadow">Fresh. Airy. Effortless.</div>
-      <a href="<%= products_path(category: 'new') %>" class="inline-flex items-center gap-2 px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white rounded-lg font-semibold shadow hover:-translate-y-0.5 transition">
-        <i class="fa-solid fa-leaf"></i> Shop Spring Edit
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- 2. "Mood Boards" for Inspiration -->
-<section class="mt-12 fade-in-up delay-6">
-  <h2 class="text-2xl font-bold mb-4 flex gap-2 items-center text-indigo-900"><i class="fa-solid fa-palette"></i> Explore By Mood</h2>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-7">
-    <div class="relative group rounded-2xl overflow-hidden shadow-lg">
-      <img src="https://images.unsplash.com/photo-1506765515384-028b60a970df?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-52 group-hover:scale-105 transition" alt="Chill" />
-      <div class="absolute inset-0 bg-gradient-to-t from-gray-900/70 to-transparent flex flex-col justify-end p-5">
-        <div class="text-white font-semibold text-2xl mb-2">Chill Outfits</div>
-        <a href="<%= products_path(q:'linen') %>" class="text-pink-300 underline">Browse Linen ➜</a>
+  <section class="mt-12 fade-in-up delay-5">
+    <div class="relative rounded-2xl overflow-hidden shadow-xl">
+      <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1400&q=80" alt="Explore spring styles" class="w-full h-56 md:h-80 object-cover brightness-90" />
+      <div class="absolute inset-0 flex flex-col items-center justify-center text-center bg-gradient-to-t from-black/60 via-black/20 to-transparent">
+        <div class="text-white text-4xl md:text-5xl font-bold drop-shadow-lg mb-2">Feel the Spring</div>
+        <div class="text-indigo-300 text-lg md:text-xl mb-5 drop-shadow">Fresh. Airy. Effortless.</div>
+        <a href="<%= products_path(category: 'new') %>" class="inline-flex items-center gap-2 px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white rounded-lg font-semibold shadow hover:-translate-y-0.5 transition">
+          <i class="fa-solid fa-leaf"></i> Shop Spring Edit
+        </a>
       </div>
     </div>
-    <div class="relative group rounded-2xl overflow-hidden shadow-lg">
-      <img src="https://images.unsplash.com/photo-1465101178521-c5249880bfc4?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-52 group-hover:scale-105 transition" alt="Bold" />
-      <div class="absolute inset-0 bg-gradient-to-t from-indigo-900/70 to-transparent flex flex-col justify-end p-5">
-        <div class="text-white font-semibold text-2xl mb-2">Bold Statements</div>
-        <a href="<%= products_path(q:'prints') %>" class="text-yellow-200 underline">Shop Prints ➜</a>
+  </section>
+
+  <!-- 2. "Mood Boards" for Inspiration -->
+  <section class="mt-12 fade-in-up delay-6">
+    <h2 class="text-2xl font-bold mb-4 flex gap-2 items-center text-indigo-900"><i class="fa-solid fa-palette"></i> Explore By Mood</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-7">
+      <div class="relative group rounded-2xl overflow-hidden shadow-lg">
+        <img src="https://images.unsplash.com/photo-1506765515384-028b60a970df?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-52 group-hover:scale-105 transition" alt="Chill" />
+        <div class="absolute inset-0 bg-gradient-to-t from-gray-900/70 to-transparent flex flex-col justify-end p-5">
+          <div class="text-white font-semibold text-2xl mb-2">Chill Outfits</div>
+          <a href="<%= products_path(q:'linen') %>" class="text-pink-300 underline">Browse Linen ➜</a>
+        </div>
+      </div>
+      <div class="relative group rounded-2xl overflow-hidden shadow-lg">
+        <img src="https://images.unsplash.com/photo-1465101178521-c5249880bfc4?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-52 group-hover:scale-105 transition" alt="Bold" />
+        <div class="absolute inset-0 bg-gradient-to-t from-indigo-900/70 to-transparent flex flex-col justify-end p-5">
+          <div class="text-white font-semibold text-2xl mb-2">Bold Statements</div>
+          <a href="<%= products_path(q:'prints') %>" class="text-yellow-200 underline">Shop Prints ➜</a>
+        </div>
+      </div>
+      <div class="relative group rounded-2xl overflow-hidden shadow-lg">
+        <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-52 group-hover:scale-105 transition" alt="Minimal" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-5">
+          <div class="text-white font-semibold text-2xl mb-2">Minimal Essentials</div>
+          <a href="<%= products_path(q:'white') %>" class="text-indigo-200 underline">See Modern Classics ➜</a>
+        </div>
       </div>
     </div>
-    <div class="relative group rounded-2xl overflow-hidden shadow-lg">
-      <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-52 group-hover:scale-105 transition" alt="Minimal" />
-      <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-5">
-        <div class="text-white font-semibold text-2xl mb-2">Minimal Essentials</div>
-        <a href="<%= products_path(q:'white') %>" class="text-indigo-200 underline">See Modern Classics ➜</a>
+  </section>
+
+  <!-- 3. "Our Promise" Brand Value Statement (visual, trustworthy, beautiful) -->
+  <section class="mt-12 fade-in-up delay-7">
+    <div class="bg-white rounded-2xl shadow-xl p-8 flex flex-col md:flex-row items-center gap-8">
+      <img src="https://images.unsplash.com/photo-1454023492550-5696f8ff10e1?auto=format&fit=crop&w=200&q=80" class="rounded-full shadow-md w-24 h-24 object-cover mb-5 md:mb-0" alt="Peace-of-mind">
+      <div>
+        <div class="text-xl font-bold mb-2 text-indigo-700 flex items-center gap-2"><i class="fa-solid fa-hand-holding-heart"></i> Our LuxeCart Promise</div>
+        <div class="text-gray-700 text-base mb-2">Every item is hand-checked for quality, guaranteed to fit, and delivered in planet-friendly packaging.</div>
+        <ul class="text-gray-500 flex flex-wrap gap-6 mt-2 text-sm">
+          <li class="flex items-center gap-2"><i class="fa-solid fa-certificate text-emerald-500"></i> Authenticity assured</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-arrow-right-arrow-left text-indigo-400"></i> 7 day easy returns</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-leaf text-green-400"></i> Eco-conscious shipping</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. "Shop by Occasion" Section -->
+  <section class="mt-12 fade-in-up delay-8">
+    <h2 class="text-2xl font-bold mb-4 flex gap-2 items-center text-indigo-900">
+      <i class="fa-solid fa-calendar-days"></i> Shop by Occasion
+    </h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-7">
+      <div class="relative group rounded-2xl overflow-hidden shadow-lg">
+        <img src="https://images.unsplash.com/photo-1465101178521-c5249880bfc4?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Party" />
+        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-pink-900/70 to-transparent flex flex-col">
+          <div class="text-white font-semibold text-lg mb-0.5">Party & Night Out</div>
+          <a href="<%= products_path(q: 'party dress') %>" class="text-pink-200 underline text-xs">See styles ➜</a>
+        </div>
+      </div>
+      <div class="relative group rounded-2xl overflow-hidden shadow-lg">
+        <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Work" />
+        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-indigo-900/70 to-transparent flex flex-col">
+          <div class="text-white font-semibold text-lg mb-0.5">Work & Office</div>
+          <a href="<%= products_path(q: 'formal shirt') %>" class="text-indigo-200 underline text-xs">Shop formals ➜</a>
+        </div>
+      </div>
+      <div class="relative group rounded-2xl overflow-hidden shadow-lg">
+        <img src="https://images.unsplash.com/photo-1526178613658-3ef1edd74d1d?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Vacation" />
+        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-green-900/70 to-transparent flex flex-col">
+          <div class="text-white font-semibold text-lg mb-0.5">Vacation Ready</div>
+          <a href="<%= products_path(q: 'beach wear') %>" class="text-green-200 underline text-xs">Shop destination ➜</a>
+        </div>
+      </div>
+      <div class="relative group rounded-2xl overflow-hidden shadow-lg">
+        <img src="https://images.unsplash.com/photo-1506765515384-028b60a970df?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Casual" />
+        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-900/70 to-transparent flex flex-col">
+          <div class="text-white font-semibold text-lg mb-0.5">Weekend Casual</div>
+          <a href="<%= products_path(q: 'casual jeans') %>" class="text-white underline text-xs">Shop casuals ➜</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-gradient-to-tr from-indigo-600 via-indigo-200 to-pink-200 py-20">
+    <div class="max-w-5xl mx-auto px-4 flex flex-col items-center text-center">
+      <span class="text-pink-600 text-sm font-bold uppercase tracking-widest">New Season Arrivals</span>
+      <h1 class="mt-3 text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
+        Feel Premium.<br>
+        <span class="text-indigo-700">Shop Luxe,</span> Save More.
+      </h1>
+      <p class="mt-6 text-lg text-gray-700 max-w-xl mx-auto">
+        Only on LuxeCart — Enjoy curated style, secure payment, eco-shipping, and 7-day returns.
+      </p>
+      <div class="mt-8 flex flex-col md:flex-row gap-4 justify-center">
+        <a href="/products" class="inline-flex items-center rounded-xl bg-indigo-600 text-white font-bold px-8 py-3 shadow-lg hover:bg-pink-600 hover:scale-105 transition text-lg">
+          <i class="fa fa-shopping-bag mr-2"></i> Explore Products
+        </a>
+        <a href="/about" class="inline-flex items-center rounded-xl bg-white text-indigo-700 font-bold px-8 py-3 shadow ring-2 ring-indigo-200 hover:bg-indigo-50 hover:scale-105 transition text-lg">
+          <i class="fa fa-list-ul mr-2"></i> Browse About
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-indigo-900 mb-5 flex items-center gap-2">
+      <span class="text-yellow-400 text-2xl">⚡</span> Today's Hot Deals
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <!-- HOT DEAL 1: Smartwatches -->
+      <div class="bg-white rounded-2xl shadow p-5 flex flex-col items-start">
+        <img src="https://image.coolblue.nl/max/1024xauto/content/07d1978ebe5abc13e1f89c18fdab7098"
+             alt="Smartwatch Deal"
+             class="rounded-xl w-full h-32 object-cover mb-3" />
+        <div class="text-lg font-bold text-indigo-800 mb-1">50% off All Smartwatches</div>
+        <div class="text-xs text-gray-500 mb-2">Today only! Top brands, free shipping, easy returns.</div>
+        <div class="text-pink-600 font-bold text-xl mb-4">From Rs. 999</div>
+        <a href="#" class="w-full inline-block px-5 py-2 bg-pink-600 hover:bg-pink-700 text-white text-center font-bold rounded-lg transition">Grab Deal</a>
+      </div>
+      <!-- HOT DEAL 2: Shoes -->
+      <div class="bg-white rounded-2xl shadow p-5 flex flex-col items-start">
+        <img src="https://assets.myntassets.com/dpr_1.5,q_30,w_400,c_limit,fl_progressive/assets/images/29553912/2024/5/17/5f90bc0f-c248-4bff-8a88-54128a77c4a61715927218769HRXbyHrithikRoshanUnisexTexturedSneakers1.jpg"
+             alt="Shoe Deal"
+             class="rounded-xl w-full h-32 object-cover mb-3" />
+        <div class="text-lg font-bold text-indigo-800 mb-1">50% off Trending Shoes</div>
+        <div class="text-xs text-gray-500 mb-2">Step up your style! New arrivals, fast shipping.</div>
+        <div class="text-pink-600 font-bold text-xl mb-4">From Rs. 1499</div>
+        <a href="#" class="w-full inline-block px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-center font-bold rounded-lg transition">Grab Deal</a>
+      </div>
+      <!-- HOT DEAL 3: Furniture -->
+      <div class="bg-white rounded-2xl shadow p-5 flex flex-col items-start">
+        <img src="https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=400&q=80"
+             alt="Furniture Deal"
+             class="rounded-xl w-full h-32 object-cover mb-3" />
+        <div class="text-lg font-bold text-indigo-800 mb-1">50% off Modern Furniture</div>
+        <div class="text-xs text-gray-500 mb-2">Make your home beautiful. Limited stock, ends today!</div>
+        <div class="text-pink-600 font-bold text-xl mb-4">From Rs. 3999</div>
+        <a href="#" class="w-full inline-block px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white text-center font-bold rounded-lg transition">Grab Deal</a>
       </div>
     </div>
   </div>
-</section>
 
-<!-- 3. "Our Promise" Brand Value Statement (visual, trustworthy, beautiful) -->
-<section class="mt-12 fade-in-up delay-7">
-  <div class="bg-white rounded-2xl shadow-xl p-8 flex flex-col md:flex-row items-center gap-8">
-    <img src="https://images.unsplash.com/photo-1454023492550-5696f8ff10e1?auto=format&fit=crop&w=200&q=80" class="rounded-full shadow-md w-24 h-24 object-cover mb-5 md:mb-0" alt="Peace-of-mind">
-    <div>
-      <div class="text-xl font-bold mb-2 text-indigo-700 flex items-center gap-2"><i class="fa-solid fa-hand-holding-heart"></i> Our LuxeCart Promise</div>
-      <div class="text-gray-700 text-base mb-2">Every item is hand-checked for quality, guaranteed to fit, and delivered in planet-friendly packaging.</div>
-      <ul class="text-gray-500 flex flex-wrap gap-6 mt-2 text-sm">
-        <li class="flex items-center gap-2"><i class="fa-solid fa-certificate text-emerald-500"></i> Authenticity assured</li>
-        <li class="flex items-center gap-2"><i class="fa-solid fa-arrow-right-arrow-left text-indigo-400"></i> 7 day easy returns</li>
-        <li class="flex items-center gap-2"><i class="fa-solid fa-leaf text-green-400"></i> Eco-conscious shipping</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- 4. "Shop by Occasion" Section -->
-<section class="mt-12 fade-in-up delay-8">
-  <h2 class="text-2xl font-bold mb-4 flex gap-2 items-center text-indigo-900">
-    <i class="fa-solid fa-calendar-days"></i> Shop by Occasion
-  </h2>
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-7">
-    <div class="relative group rounded-2xl overflow-hidden shadow-lg">
-      <img src="https://images.unsplash.com/photo-1465101178521-c5249880bfc4?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Party" />
-      <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-pink-900/70 to-transparent flex flex-col">
-        <div class="text-white font-semibold text-lg mb-0.5">Party & Night Out</div>
-        <a href="<%= products_path(q: 'party dress') %>" class="text-pink-200 underline text-xs">See styles ➜</a>
+  <section class="max-w-6xl mx-auto mb-20 px-4">
+    <h2 class="text-xl mb-7 font-black text-indigo-800 flex items-center gap-2"><i class="fa fa-heart text-pink-400"></i> What LuxeCart Customers Say</h2>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="bg-white rounded-xl shadow-xl p-6 text-center flex flex-col items-center animate-fade-in-down">
+        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="rounded-full w-16 h-16 border-4 border-pink-200 shadow -mt-12 mb-3 object-cover">
+        <blockquote class="italic text-gray-600 mb-2">“Super quick delivery, amazing quality! Definitely my new favorite store.”</blockquote>
+        <span class="font-bold text-indigo-900">Anjali S.</span>
+        <span class="text-sm text-gray-400">Delhi</span>
+      </div>
+      <div class="bg-white rounded-xl shadow-xl p-6 text-center flex flex-col items-center animate-fade-in-down" style="animation-delay:.15s;">
+        <img src="https://randomuser.me/api/portraits/men/19.jpg" alt="User" class="rounded-full w-16 h-16 border-4 border-blue-200 shadow -mt-12 mb-3 object-cover">
+        <blockquote class="italic text-gray-600 mb-2">“Return was super easy — and got my refund quickly. 5/5!”</blockquote>
+        <span class="font-bold text-indigo-900">Rahul T.</span>
+        <span class="text-sm text-gray-400">Mumbai</span>
+      </div>
+      <div class="bg-white rounded-xl shadow-xl p-6 text-center flex flex-col items-center animate-fade-in-down" style="animation-delay:.3s;">
+        <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="User" class="rounded-full w-16 h-16 border-4 border-yellow-200 shadow -mt-12 mb-3 object-cover">
+        <blockquote class="italic text-gray-600 mb-2">“Feels like shopping abroad, but in India. Love your eco-packaging!”</blockquote>
+        <span class="font-bold text-indigo-900">Isha K.</span>
+        <span class="text-sm text-gray-400">Bengaluru</span>
       </div>
     </div>
-    <div class="relative group rounded-2xl overflow-hidden shadow-lg">
-      <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Work" />
-      <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-indigo-900/70 to-transparent flex flex-col">
-        <div class="text-white font-semibold text-lg mb-0.5">Work & Office</div>
-        <a href="<%= products_path(q: 'formal shirt') %>" class="text-indigo-200 underline text-xs">Shop formals ➜</a>
-      </div>
-    </div>
-    <div class="relative group rounded-2xl overflow-hidden shadow-lg">
-      <img src="https://images.unsplash.com/photo-1526178613658-3ef1edd74d1d?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Vacation" />
-      <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-green-900/70 to-transparent flex flex-col">
-        <div class="text-white font-semibold text-lg mb-0.5">Vacation Ready</div>
-        <a href="<%= products_path(q: 'beach wear') %>" class="text-green-200 underline text-xs">Shop destination ➜</a>
-      </div>
-    </div>
-    <div class="relative group rounded-2xl overflow-hidden shadow-lg">
-      <img src="https://images.unsplash.com/photo-1506765515384-028b60a970df?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Casual" />
-      <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-900/70 to-transparent flex flex-col">
-        <div class="text-white font-semibold text-lg mb-0.5">Weekend Casual</div>
-        <a href="<%= products_path(q: 'casual jeans') %>" class="text-white underline text-xs">Shop casuals ➜</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-
-
-
-
-<section class="bg-gradient-to-tr from-indigo-600 via-indigo-200 to-pink-200 py-20">
-  <div class="max-w-5xl mx-auto px-4 flex flex-col items-center text-center">
-    <span class="text-pink-600 text-sm font-bold uppercase tracking-widest">New Season Arrivals</span>
-    <h1 class="mt-3 text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
-      Feel Premium.<br>
-      <span class="text-indigo-700">Shop Luxe,</span> Save More.
-    </h1>
-    <p class="mt-6 text-lg text-gray-700 max-w-xl mx-auto">
-      Only on LuxeCart — Enjoy curated style, secure payment, eco-shipping, and 7-day returns.
-    </p>
-    <div class="mt-8 flex flex-col md:flex-row gap-4 justify-center">
-      <a href="/products" class="inline-flex items-center rounded-xl bg-indigo-600 text-white font-bold px-8 py-3 shadow-lg hover:bg-pink-600 hover:scale-105 transition text-lg">
-        <i class="fa fa-shopping-bag mr-2"></i> Explore Products
-      </a>
-      <a href="/about" class="inline-flex items-center rounded-xl bg-white text-indigo-700 font-bold px-8 py-3 shadow ring-2 ring-indigo-200 hover:bg-indigo-50 hover:scale-105 transition text-lg">
-        <i class="fa fa-list-ul mr-2"></i> Browse About
-      </a>
-    </div>
-  </div>
-</section>
-<div class="mb-8">
-  <h2 class="text-2xl font-bold text-indigo-900 mb-5 flex items-center gap-2">
-    <span class="text-yellow-400 text-2xl">⚡</span> Today's Hot Deals
-  </h2>
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-    <!-- HOT DEAL 1: Smartwatches -->
-    <div class="bg-white rounded-2xl shadow p-5 flex flex-col items-start">
-      <img src="https://image.coolblue.nl/max/1024xauto/content/07d1978ebe5abc13e1f89c18fdab7098"
-           alt="Smartwatch Deal"
-           class="rounded-xl w-full h-32 object-cover mb-3" />
-      <div class="text-lg font-bold text-indigo-800 mb-1">50% off All Smartwatches</div>
-      <div class="text-xs text-gray-500 mb-2">Today only! Top brands, free shipping, easy returns.</div>
-      <div class="text-pink-600 font-bold text-xl mb-4">From Rs. 999</div>
-      <a href="#" class="w-full inline-block px-5 py-2 bg-pink-600 hover:bg-pink-700 text-white text-center font-bold rounded-lg transition">Grab Deal</a>
-    </div>
-    <!-- HOT DEAL 2: Shoes -->
-    <div class="bg-white rounded-2xl shadow p-5 flex flex-col items-start">
-      <img src="https://assets.myntassets.com/dpr_1.5,q_30,w_400,c_limit,fl_progressive/assets/images/29553912/2024/5/17/5f90bc0f-c248-4bff-8a88-54128a77c4a61715927218769HRXbyHrithikRoshanUnisexTexturedSneakers1.jpg"
-           alt="Shoe Deal"
-           class="rounded-xl w-full h-32 object-cover mb-3" />
-      <div class="text-lg font-bold text-indigo-800 mb-1">50% off Trending Shoes</div>
-      <div class="text-xs text-gray-500 mb-2">Step up your style! New arrivals, fast shipping.</div>
-      <div class="text-pink-600 font-bold text-xl mb-4">From Rs. 1499</div>
-      <a href="#" class="w-full inline-block px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-center font-bold rounded-lg transition">Grab Deal</a>
-    </div>
-    <!-- HOT DEAL 3: Furniture -->
-    <div class="bg-white rounded-2xl shadow p-5 flex flex-col items-start">
-      <img src="https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=400&q=80"
-           alt="Furniture Deal"
-           class="rounded-xl w-full h-32 object-cover mb-3" />
-      <div class="text-lg font-bold text-indigo-800 mb-1">50% off Modern Furniture</div>
-      <div class="text-xs text-gray-500 mb-2">Make your home beautiful. Limited stock, ends today!</div>
-      <div class="text-pink-600 font-bold text-xl mb-4">From Rs. 3999</div>
-      <a href="#" class="w-full inline-block px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white text-center font-bold rounded-lg transition">Grab Deal</a>
-    </div>
-  </div>
-</div>
-
-
-<section class="max-w-6xl mx-auto mb-20 px-4">
-  <h2 class="text-xl mb-7 font-black text-indigo-800 flex items-center gap-2"><i class="fa fa-heart text-pink-400"></i> What LuxeCart Customers Say</h2>
-  <div class="grid md:grid-cols-3 gap-8">
-    <div class="bg-white rounded-xl shadow-xl p-6 text-center flex flex-col items-center animate-fade-in-down">
-      <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="rounded-full w-16 h-16 border-4 border-pink-200 shadow -mt-12 mb-3 object-cover">
-      <blockquote class="italic text-gray-600 mb-2">“Super quick delivery, amazing quality! Definitely my new favorite store.”</blockquote>
-      <span class="font-bold text-indigo-900">Anjali S.</span>
-      <span class="text-sm text-gray-400">Delhi</span>
-    </div>
-    <div class="bg-white rounded-xl shadow-xl p-6 text-center flex flex-col items-center animate-fade-in-down" style="animation-delay:.15s;">
-      <img src="https://randomuser.me/api/portraits/men/19.jpg" alt="User" class="rounded-full w-16 h-16 border-4 border-blue-200 shadow -mt-12 mb-3 object-cover">
-      <blockquote class="italic text-gray-600 mb-2">“Return was super easy — and got my refund quickly. 5/5!”</blockquote>
-      <span class="font-bold text-indigo-900">Rahul T.</span>
-      <span class="text-sm text-gray-400">Mumbai</span>
-    </div>
-    <div class="bg-white rounded-xl shadow-xl p-6 text-center flex flex-col items-center animate-fade-in-down" style="animation-delay:.3s;">
-      <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="User" class="rounded-full w-16 h-16 border-4 border-yellow-200 shadow -mt-12 mb-3 object-cover">
-      <blockquote class="italic text-gray-600 mb-2">“Feels like shopping abroad, but in India. Love your eco-packaging!”</blockquote>
-      <span class="font-bold text-indigo-900">Isha K.</span>
-      <span class="text-sm text-gray-400">Bengaluru</span>
-    </div>
-  </div>
-</section>
-
-<!-- Animations/Extras -->
-<style>
-@keyframes fade-in-down {
-  0% { opacity: 0; transform: translateY(-40px);}
-  100% { opacity: 1; transform: none;}
-}
-@keyframes pop {
-  0% { transform: scale(0.5); opacity:0;}
-  80% { transform: scale(1.07); opacity:.9;}
-  100% { transform: scale(1); opacity:1;}
-}
-.animate-fade-in-down { animation: fade-in-down 0.7s cubic-bezier(.76,.13,.27,.87) both;}
-.animate-pop { animation: pop .7s cubic-bezier(.17,.67,.83,.65) 0.06s both;}
-.hide-scroll::-webkit-scrollbar { display: none; }
-.hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-</style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  </section>
 
   <!-- CTA STRIP -->
   <section class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-2xl px-6 py-6 md:px-8 md:py-7 flex flex-col md:flex-row items-center justify-between gap-4 fade-in-up delay-5">
@@ -532,6 +477,7 @@
       <% end %>
     </div>
   </section>
+</div>
 </div>
 
 <%# Tiny animation helper (no external library needed) %>
@@ -580,9 +526,19 @@
 </script>
 
 <style>
-  /* Hide scrollbars for horizontal strips */
-  .hide-scrollbar::-webkit-scrollbar { display: none; }
-  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  @keyframes fade-in-down {
+    0% { opacity: 0; transform: translateY(-40px);}
+    100% { opacity: 1; transform: none;}
+  }
+  @keyframes pop {
+    0% { transform: scale(0.5); opacity:0;}
+    80% { transform: scale(1.07); opacity:.9;}
+    100% { transform: scale(1); opacity:1;}
+  }
+  .animate-fade-in-down { animation: fade-in-down 0.7s cubic-bezier(.76,.13,.27,.87) both;}
+  .animate-pop { animation: pop .7s cubic-bezier(.17,.67,.83,.65) 0.06s both;}
+  .hide-scroll::-webkit-scrollbar { display: none; }
+  .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
   /* Simple delay utilities (used with fade-in-up / slide-in-right) */
   .delay-1 { transition-delay: 0.05s; }
@@ -590,4 +546,29 @@
   .delay-3 { transition-delay: 0.15s; }
   .delay-4 { transition-delay: 0.2s; }
   .delay-5 { transition-delay: 0.25s; }
+
+
+  .trending-card-360 {
+    position: relative;
+    border-radius: 1rem;
+    background: #ffffff;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    transform-origin: center center;
+    transition: transform 0.5s ease, box-shadow 0.3s ease;
+  }
+
+  
+  .trending-card-360:hover {
+    transform: rotateY(360deg) translateY(-6px);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+  }
+
+  .trending-card-360-image img {
+    transition: transform 0.6s ease;
+  }
+
+  .trending-card-360:hover .trending-card-360-image img {
+    transform: scale(1.05);
+  }
 </style>

@@ -14,9 +14,9 @@
     <link rel="shortcut icon" href="/favicon.ico">
     <meta name="theme-color" content="#4f46e5">
 
-    <!-- Tailwind CDN (development-friendly) -->
+    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js for responsive hamburger menu -->
+    <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.7/dist/cdn.min.js" defer></script>
 
     <!-- Font Awesome -->
@@ -25,22 +25,40 @@
     <!-- Rails Assets -->
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+    <%= javascript_importmap_tags %>
 
-    <!-- Make sure currentUserLoggedIn is globally available BEFORE any other JS  -->
+    <!-- Current user flag for JS -->
     <script>
       window.currentUserLoggedIn = <%= !!current_user ? 'true' : 'false' %>;
     </script>
+
+    <style>
+      .animate-fade-in { animation: fadeIn .5s cubic-bezier(.4,0,.2,1); }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-12px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .flash--hidden { opacity: 0 !important; pointer-events: none; transition: opacity .5s; }
+    </style>
   </head>
 
   <body class="min-h-screen flex flex-col">
+    <%# --- Welcome toast --- %>
+    <% if flash[:welcome] %>
+      <div
+        id="welcome-toast"
+        class="fixed top-6 right-6 z-[100] bg-gradient-to-br from-indigo-600 to-indigo-400 text-white px-10 py-6 rounded-2xl shadow-2xl text-3xl font-extrabold flex items-center gap-4 border-4 border-white opacity-0 pointer-events-none transition-all duration-500 drop-shadow-lg ring-4 ring-indigo-300/30 ring-offset-2"
+        style="opacity:0; transform: translateY(-24px); min-width: 300px; max-width: 440px"
+      >
+        <span class="inline-block text-4xl animate-bounce">👋</span>
+        <span id="welcome-message"><%= flash[:welcome] %></span>
+      </div>
+    <% end %>
 
-    <!-- Turbo permanent overlay (for loaders / modals if needed) -->
     <div class="page-overlay" aria-hidden="true" data-turbo-permanent></div>
-
-    <!-- Flash Messages -->
     <%= render "shared/flash" %>
 
-    <!-- NAVBAR (Turbo-permanent) -->
+    <%# --- NAVBAR --- %>
     <nav x-data="{ open: false }" class="bg-white shadow-sm border-b sticky top-0 z-50" data-turbo-permanent>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
@@ -52,8 +70,8 @@
             <% end %>
           </div>
 
-          <!-- Hamburger button for mobile -->
-          <button 
+          <!-- Hamburger (mobile) -->
+          <button
             @click="open = !open"
             class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden"
             aria-controls="mobile-menu"
@@ -64,12 +82,13 @@
             <svg class="h-6 w-6" x-show="open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
 
-          <!-- Nav Links - Desktop Only -->
+          <!-- Desktop nav links -->
           <div class="hidden md:flex items-center space-x-4">
             <%= link_to "Home", root_path, class: "text-gray-600 hover:text-indigo-600" %>
             <%= link_to "Products", products_path, class: "text-gray-600 hover:text-indigo-600" %>
             <%= link_to "Categories", categories_path, class: "text-gray-600 hover:text-indigo-600" %>
             <%= link_to "About", about_path, class: "text-gray-600 hover:text-indigo-600" %>
+
             <%= link_to cart_path, class: "text-gray-600 hover:text-indigo-600 font-medium inline-flex items-center gap-2" do %>
               <i class="fa-solid fa-cart-shopping"></i>
               <span class="hidden sm:inline">Cart</span>
@@ -78,33 +97,36 @@
                 <%= (session[:cart]&.values&.map(&:to_i)&.sum) || 0 %>
               </span>
             <% end %>
+
             <% if respond_to?(:user_signed_in?) && user_signed_in? %>
-                <!-- Avatar Profile Link (Desktop) -->
-                <%= link_to profile_path, class: "relative flex items-center group ml-2" do %>
-                  <% if current_user.profile_image.attached? %>
-                    <%= image_tag current_user.profile_image.variant(resize_to_fill: [32, 32]), alt: "Profile", class: "w-8 h-8 rounded-full object-cover border-2 border-indigo-600 group-hover:scale-110 transition" %>
-                  <% else %>
-                    <span class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 border-2 border-indigo-600 group-hover:scale-110 transition">
-                      <i class="fa fa-user text-lg"></i>
-                    </span>
-                  <% end %>
-                  <span class="sr-only">Profile</span>
+              <%= link_to profile_path, class: "relative flex items-center group ml-2" do %>
+                <% if current_user.profile_image.attached? %>
+                  <%= image_tag current_user.profile_image.variant(resize_to_fill: [32, 32]),
+                                alt: "Profile",
+                                class: "w-8 h-8 rounded-full object-cover border-2 border-indigo-600 group-hover:scale-110 transition" %>
+                <% else %>
+                  <span class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 border-2 border-indigo-600 group-hover:scale-110 transition">
+                    <i class="fa fa-user text-lg"></i>
+                  </span>
                 <% end %>
-                <!-- Updated Logout Button triggers modal -->
-                <a href="#" id="show-logout-modal" class="text-gray-600 hover:text-indigo-600 ml-2">Logout</a>
+                <span class="sr-only">Profile</span>
+              <% end %>
+              <a href="#" id="show-logout-modal" class="text-gray-600 hover:text-indigo-600 ml-2">Logout</a>
             <% else %>
               <%= link_to "Login", new_user_session_path, class: "text-gray-600 hover:text-indigo-600" %>
             <% end %>
           </div>
         </div>
       </div>
-      <!-- Mobile menu dropdown -->
+
+      <!-- Mobile menu -->
       <div class="md:hidden" id="mobile-menu" x-show="open" x-transition>
         <div class="px-2 pt-2 pb-3 space-y-1">
           <%= link_to "Home", root_path, class: "block text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg px-3 py-2 font-medium" %>
           <%= link_to "Products", products_path, class: "block text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg px-3 py-2 font-medium" %>
           <%= link_to "Categories", categories_path, class: "block text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg px-3 py-2 font-medium" %>
           <%= link_to "About", about_path, class: "block text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg px-3 py-2 font-medium" %>
+
           <%= link_to cart_path, class: "block text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg px-3 py-2 font-medium inline-flex items-center gap-2" do %>
             <i class="fa-solid fa-cart-shopping"></i>
             <span>Cart</span>
@@ -113,11 +135,13 @@
               <%= (session[:cart]&.values&.map(&:to_i)&.sum) || 0 %>
             </span>
           <% end %>
+
           <% if respond_to?(:user_signed_in?) && user_signed_in? %>
-            <!-- Avatar Profile Link (Mobile) -->
             <%= link_to profile_path, class: "inline-flex items-center gap-2 px-3 py-2 font-medium rounded-lg hover:bg-indigo-100" do %>
               <% if current_user.profile_image.attached? %>
-                <%= image_tag current_user.profile_image.variant(resize_to_fill: [32, 32]), alt: "Profile", class: "w-8 h-8 rounded-full object-cover border-2 border-indigo-600" %>
+                <%= image_tag current_user.profile_image.variant(resize_to_fill: [32, 32]),
+                              alt: "Profile",
+                              class: "w-8 h-8 rounded-full object-cover border-2 border-indigo-600" %>
               <% else %>
                 <span class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 border-2 border-indigo-600">
                   <i class="fa fa-user text-lg"></i>
@@ -125,8 +149,10 @@
               <% end %>
               <span>Profile</span>
             <% end %>
-            <!-- Updated Logout Button triggers modal -->
-            <a href="#" id="show-logout-modal-mobile" class="block text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg px-3 py-2 font-medium">Logout</a>
+            <a href="#" id="show-logout-modal-mobile"
+               class="block text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg px-3 py-2 font-medium">
+              Logout
+            </a>
           <% else %>
             <%= link_to "Login", new_user_session_path, class: "block text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg px-3 py-2 font-medium" %>
           <% end %>
@@ -134,7 +160,7 @@
       </div>
     </nav>
 
-    <!-- Logout Confirmation Modal -->
+    <%# --- Logout Modal --- %>
     <div id="logout-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
       <div class="bg-white p-6 rounded-lg shadow-lg text-center max-w-xs w-full">
         <div class="mb-4 text-lg font-semibold text-gray-800">Are you sure you want to logout?</div>
@@ -149,102 +175,122 @@
       </div>
     </div>
 
-    <!-- PAGE CONTENT -->
     <main class="flex-grow">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <%= yield %>
-      </div>
+      <%= yield %>
     </main>
 
-    <!-- FOOTER -->
     <%= render "shared/footer" %>
 
-    <!-- ADD TO CART AJAX (Turbo-safe) -->
+    <%# --- Add to Cart JS --- %>
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+      function attachAddToCartHandlers() {
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+        const cartBadge = document.getElementById('cart-count');
+        const cartBadgeMobile = document.getElementById('cart-count-mobile');
 
-      const cartBadge = document.getElementById('cart-count');
-      const cartBadgeMobile = document.getElementById('cart-count-mobile');
-
-      function setCartCount(count) {
-        if (cartBadge) cartBadge.textContent = count;
-        if (cartBadgeMobile) cartBadgeMobile.textContent = count;
-      }
-
-      function redirectToLogin() {
-        const current = window.location.pathname + window.location.search;
-        window.location.href = `/users/sign_in?redirect=${encodeURIComponent(current)}`;
-      }
-
-      async function addToCart(url, productId) {
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'X-CSRF-Token': csrf,
-            'Accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          credentials: 'same-origin',
-          body: new URLSearchParams({ product_id: productId })
-        });
-
-        const contentType = res.headers.get('content-type') || '';
-
-        if (!res.ok && (res.status === 401 || contentType.includes('text/html'))) {
-          alert('First you have to login');
-          redirectToLogin();
-          return;
+        function setCartCount(count) {
+          if (cartBadge) cartBadge.textContent = count;
+          if (cartBadgeMobile) cartBadgeMobile.textContent = count;
         }
 
-        if (res.ok && contentType.includes('application/json')) {
-          const data = await res.json();
-          if (data.cart_count !== undefined) {
-            setCartCount(data.cart_count);
-            cartBadge?.classList.add('ring', 'ring-indigo-300');
-            cartBadgeMobile?.classList.add('ring', 'ring-indigo-300');
-            setTimeout(() => {
-              cartBadge?.classList.remove('ring', 'ring-indigo-300');
-              cartBadgeMobile?.classList.remove('ring', 'ring-indigo-300');
-            }, 700);
-          }
+        function redirectToLogin() {
+          const current = window.location.pathname + window.location.search;
+          window.location.href = `/users/sign_in?redirect=${encodeURIComponent(current)}`;
         }
-      }
 
-      document.querySelectorAll('.add-to-cart-ajax').forEach(btn => {
-        btn.addEventListener('click', e => {
-          e.preventDefault();
-          if (typeof window.currentUserLoggedIn !== "undefined" && !window.currentUserLoggedIn) {
+        async function addToCart(url, productId) {
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'X-CSRF-Token': csrf,
+              'Accept': 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            credentials: 'same-origin',
+            body: new URLSearchParams({ product_id: productId })
+          });
+
+          const contentType = res.headers.get('content-type') || '';
+
+          if (!res.ok && (res.status === 401 || contentType.includes('text/html'))) {
             alert('First you have to login');
             redirectToLogin();
             return;
           }
-          addToCart(btn.dataset.url || '/cart/add_item', btn.dataset.productId);
+
+          if (res.ok && contentType.includes('application/json')) {
+            const data = await res.json();
+            if (data.cart_count !== undefined) {
+              setCartCount(data.cart_count);
+              cartBadge?.classList.add('ring', 'ring-indigo-300');
+              cartBadgeMobile?.classList.add('ring', 'ring-indigo-300');
+              setTimeout(() => {
+                cartBadge?.classList.remove('ring', 'ring-indigo-300');
+                cartBadgeMobile?.classList.remove('ring', 'ring-indigo-300');
+              }, 700);
+            }
+          }
+        }
+
+        document.querySelectorAll('.add-to-cart-ajax').forEach(btn => {
+          if (btn.dataset.addCartBound === 'true') return;
+          btn.dataset.addCartBound = 'true';
+
+          btn.addEventListener('click', e => {
+            e.preventDefault();
+
+            if (typeof window.currentUserLoggedIn !== "undefined" && !window.currentUserLoggedIn) {
+              alert('First you have to login');
+              redirectToLogin();
+              return;
+            }
+
+            addToCart(btn.dataset.url || '/cart/add_item', btn.dataset.productId);
+          });
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', attachAddToCartHandlers);
+      document.addEventListener('turbo:load', attachAddToCartHandlers);
+    </script>
+
+    <%# --- Logout modal JS --- %>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        function showModal() {
+          document.getElementById('logout-modal').classList.remove('hidden');
+        }
+        function hideModal() {
+          document.getElementById('logout-modal').classList.add('hidden');
+        }
+        const showLogout = document.getElementById('show-logout-modal');
+        const showLogoutMobile = document.getElementById('show-logout-modal-mobile');
+        const cancelBtn = document.getElementById('cancel-logout');
+
+        if (showLogout) showLogout.addEventListener('click', e => { e.preventDefault(); showModal(); });
+        if (showLogoutMobile) showLogoutMobile.addEventListener('click', e => { e.preventDefault(); showModal(); });
+        if (cancelBtn) cancelBtn.addEventListener('click', e => { e.preventDefault(); hideModal(); });
+
+        document.addEventListener('keydown', e => {
+          if (e.key === "Escape") hideModal();
         });
       });
-    });
     </script>
 
-    <!-- Logout Modal JS -->
+    <%# --- Welcome toast animation --- %>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      function showModal() {
-        document.getElementById('logout-modal').classList.remove('hidden');
-      }
-      function hideModal() {
-        document.getElementById('logout-modal').classList.add('hidden');
-      }
-      let showLogout = document.getElementById('show-logout-modal');
-      let showLogoutMobile = document.getElementById('show-logout-modal-mobile');
-      let cancelBtn = document.getElementById('cancel-logout');
-      if (showLogout) showLogout.addEventListener('click', function(e) { e.preventDefault(); showModal(); });
-      if (showLogoutMobile) showLogoutMobile.addEventListener('click', function(e) { e.preventDefault(); showModal(); });
-      if (cancelBtn) cancelBtn.addEventListener('click', function(e) { e.preventDefault(); hideModal(); });
-      document.addEventListener('keydown', function(e) {
-        if (e.key === "Escape") hideModal();
+      document.addEventListener("DOMContentLoaded", function() {
+        const toastDiv = document.getElementById('welcome-toast');
+        if (!toastDiv) return;
+        toastDiv.style.opacity = '1';
+        toastDiv.style.pointerEvents = 'auto';
+        toastDiv.style.transform = 'translateY(0)';
+        setTimeout(function() {
+          toastDiv.style.opacity = '0';
+          toastDiv.style.pointerEvents = 'none';
+          toastDiv.style.transform = 'translateY(-24px)';
+        }, 5000);
       });
-    });
     </script>
-
   </body>
 </html>

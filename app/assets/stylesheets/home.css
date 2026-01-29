@@ -2,3 +2,102 @@
 #toast-root > div {
   transition: transform 0.18s ease, opacity 0.18s ease;
 }
+
+/* Trending section layout */
+.trending-section {
+  padding: 40px 80px;
+}
+
+.trending-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.trending-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.trending-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background-color: #10B981; /* green dot */
+}
+
+.trending-live-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #10B981;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Horizontally scrolling list, like your screenshot */
+.trending-list {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+/* Individual trending card with 360° rotation on hover */
+.trending-card {
+  position: relative;
+  width: 220px;                 /* adjust as needed */
+  border-radius: 16px;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  transform-origin: center center;
+  transition: transform 0.5s ease, box-shadow 0.3s ease;
+}
+
+/* One‑time 360° spin on hover */
+.trending-card:hover {
+  transform: rotateY(360deg) translateY(-6px);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+}
+
+/* If you prefer continuous spin while hovering, replace the block above with:
+.trending-card:hover {
+  animation: trending-rotate-360 1.2s linear infinite;
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+}
+
+@keyframes trending-rotate-360 {
+  from {
+    transform: rotateY(0deg) translateY(-6px);
+  }
+  to {
+    transform: rotateY(360deg) translateY(-6px);
+  }
+}
+*/
+
+.trending-card-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.trending-card-body {
+  padding: 14px 18px 18px;
+}
+
+.trending-card-category {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin-bottom: 4px;
+}
+
+.trending-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}

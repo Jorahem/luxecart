@@ -1,0 +1,24 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* --- your custom styles here --- */
+
+@import "components/buttons";
+@import "components/animations";
+@import "components/cards";
+@import "products";
+@import "store";
+@import "footer";
+@import "navbar";
+@import "other-partial";
+@import "cart_checkout";
+@import "carts";
+@import "categories";
+@import "checkout";
+@import "checkout_theme";
+@import "contact";
+@import "flash";
+@import "home";
+@import "auth";
+@import "turbo";

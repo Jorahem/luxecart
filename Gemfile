@@ -67,9 +67,10 @@ gem "chartkick"
 
 
 
+# Gemfile – Add Hotwire if not present
+gem 'hotwire-rails'
 
-
-
+gem "tailwindcss-rails"
 
 
 # Use Redis adapter to run Action Cable in production

@@ -1,43 +1,38 @@
-<%# Products index - server-side search, sort and pagination (Tailwind) %>
-
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Header & controls -->
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 fade-in">
     <div>
-      <h1 class="text-3xl font-extrabold">Shop Products</h1>
-      <p class="mt-1 text-sm text-gray-500">Explore our curated selection — search, sort and add to cart.</p>
+      <h1 class="text-3xl font-extrabold tracking-tight">Shop Products</h1>
+      <p class="mt-1 text-sm text-gray-500">
+        Explore our curated selection — search, sort and add to cart seamlessly.
+      </p>
     </div>
-
     <form id="products-controls" method="get" class="flex items-center gap-3">
       <label class="relative block">
         <span class="sr-only">Search products</span>
         <input name="q" value="<%= h(params[:q]) %>" type="search" placeholder="Search products, e.g. sneakers"
-               class="pl-10 pr-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 w-64 text-sm" />
+               class="pl-10 pr-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 w-64 text-sm transition" />
         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
           <i class="fa fa-search"></i>
         </span>
       </label>
-
-      <select name="sort" onchange="this.form.submit()" class="rounded-lg border border-gray-200 py-2 px-3 text-sm">
+      <select name="sort" onchange="this.form.submit()" class="rounded-lg border border-gray-200 py-2 px-3 text-sm transition">
         <option value="" <%= params[:sort].blank? ? 'selected' : '' %>>Sort: Featured</option>
         <option value="price_asc" <%= params[:sort] == 'price_asc' ? 'selected' : '' %>>Price: Low → High</option>
         <option value="price_desc" <%= params[:sort] == 'price_desc' ? 'selected' : '' %>>Price: High → Low</option>
         <option value="newest" <%= params[:sort] == 'newest' ? 'selected' : '' %>>Newest</option>
       </select>
-
-      <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">Apply</button>
+      <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded button shadow transition hover:bg-indigo-700">Apply</button>
     </form>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
     <!-- Sidebar filters -->
-    <aside class="hidden lg:block w-full max-w-[210px] mr-2">
+    <aside class="hidden lg:block w-full max-w-[210px] mr-2 fade-in">
       <div class="bg-white rounded-xl shadow-md p-4 sticky top-20 flex flex-col gap-4 transition-all" style="min-height: 230px;">
         <div class="flex items-center gap-2 mb-1">
           <i class="fa-solid fa-sliders text-indigo-600 text-lg"></i>
           <span class="text-base font-bold text-indigo-700">Filters</span>
         </div>
-
         <!-- Category list: -->
         <div>
           <h3 class="mb-1 text-sm font-semibold text-gray-900 flex items-center gap-1">
@@ -65,8 +60,8 @@
             <% categories.each do |c| %>
               <% cat_name = (c.is_a?(Hash) ? c[:name] : (c.respond_to?(:name) ? c.name : c.to_s)) %>
               <% cat_icon = (c.is_a?(Hash) ? c[:icon] : "fa-tags") %>
-              <% cat_param = (c.try(:slug).presence || cat_name).to_s.parameterize %>
-              <% active = (@selected_category&.name == cat_name || params[:category].to_s.downcase == cat_param.to_s.downcase) %>
+              <% cat_param = cat_name.parameterize %>
+              <% active = params[:category].to_s.downcase == cat_param.to_s.downcase %>
               <%= link_to products_path(q: params[:q], sort: params[:sort], category: cat_param),
                   class: "group block rounded-md px-2 py-1 bg-gray-50 hover:bg-indigo-50 shadow-sm transition border border-transparent text-xs font-medium mb-1 #{active ? 'border-indigo-400 font-bold text-indigo-700' : 'text-gray-700'}" do %>
                 <div class="flex items-center gap-1">
@@ -77,7 +72,6 @@
             <% end %>
           </div>
         </div>
-
         <!-- Clear filters button -->
         <div class="flex items-center mt-1">
           <%= link_to products_path(q: params[:q], sort: params[:sort]), class: "inline-flex items-center gap-1 px-3 py-1 rounded bg-gradient-to-r from-pink-500 via-indigo-500 to-indigo-700 text-white text-xs font-semibold justify-center hover:from-indigo-500 hover:to-pink-500 transition shadow w-full" do %>
@@ -88,26 +82,26 @@
       </div>
     </aside>
 
-    <!-- Products list -->
-    <section class="lg:col-span-3">
-      <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <% if @products.any? %>
-          <%= render partial: 'product_card', collection: @products, as: :product %>
+    <!-- Products grid -->
+    <section class="lg:col-span-3 fade-in">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% if @products.present? && @products.any? %>
+          <%= render partial: "product", collection: @products, as: :product %>
         <% else %>
-          <div class="bg-white p-8 rounded-lg shadow text-center">
+          <div class="bg-white p-8 rounded-lg shadow text-center fade-in">
             <h3 class="font-semibold mb-2">No products found</h3>
             <p class="text-sm text-gray-500">Try a different search or check back later.</p>
           </div>
         <% end %>
       </div>
 
-      <!-- Pagination -->
       <div class="mt-6 flex justify-center">
         <% if defined?(Kaminari) && @products.respond_to?(:total_pages) && @products.total_pages > 1 %>
           <%= paginate @products, theme: 'tailwind' %>
         <% else %>
-          <!-- Fallback: Load more (no server-side pagination configured) -->
-          <button id="load-more" class="px-5 py-2 rounded-lg border border-gray-200 bg-white text-sm hover:bg-gray-50">Load more</button>
+          <button id="load-more" class="px-5 py-2 rounded-lg border border-gray-200 bg-white text-sm hover:bg-gray-50 transition">
+            Load more
+          </button>
         <% end %>
       </div>
     </section>

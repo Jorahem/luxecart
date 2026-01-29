@@ -1,22 +1,236 @@
-/*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
- *
- *= require other-partial
- *= require_tree .
- *= require_self
- */
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
+/* Custom components */
+@import "components/buttons";
+@import "components/animations";
+@import "components/cards";
+@import "products";
 
+/* Remove Bootstrap import if you are not using Bootstrap 4/5 classes */
+/* @import "bootstrap"; */
 
- @import "home";
-/* Small custom rules for footer / layout fallbacks (kept minimal because Tailwind provides the main styling) */
+/* Spinner */
+#spinner {
+  font-weight: bold;
+  font-size: 1.1rem;
+  background: rgba(255,255,255,0.7);
+  color: #353535;
+  border-radius: 4px;
+  padding: 6px 18px;
+}
 
+/* Toast */
+#toast {
+  transition: opacity 0.3s;
+  opacity: 0;
+  pointer-events: none;
+}
+#toast.active {
+  opacity: 1;
+  pointer-events: auto;
+}
 
-
+/* Footer styles */
 footer a { text-decoration: none; }
 footer a:hover { text-decoration: underline; }
+footer .text-xs,
+footer .text-sm { line-height: 1.4; }
 
-/* Accessibility: ensure footer text has comfortable contrast on small screens */
-footer .text-xs, footer .text-sm { line-height: 1.4; }
+/* ================================
+   Product show page styles
+   ================================ */
 
+.product-page {
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+.product-container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .product-container {
+    padding: 2.5rem 1.5rem 3rem;
+  }
+}
+
+.product-show.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .product-show.grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
+    align-items: start;
+    gap: 2rem;
+  }
+}
+
+.product-show .left {
+  background-color: #fff;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+}
+
+@media (min-width: 768px) {
+  .product-show .left {
+    padding: 1.25rem;
+  }
+}
+
+.product-show-image,
+.placeholder-image.large {
+  width: 100%;
+  max-height: 440px;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  display: block;
+}
+
+.placeholder-image.large {
+  background: #e5e7eb;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.product-show .right {
+  background-color: #fff;
+  border-radius: 1rem;
+  padding: 1.25rem 1.25rem 1.5rem;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .product-show .right {
+    padding: 1.5rem 1.75rem 1.75rem;
+  }
+}
+
+.product-show h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+@media (min-width: 768px) {
+  .product-show h1 {
+    font-size: 1.6rem;
+  }
+}
+
+.product-show .price {
+  margin: 0.1rem 0 0.6rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.product-show .description {
+  font-size: 0.9rem;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.product-show .add-to-cart {
+  margin-top: 1.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.product-show .qty-input {
+  width: 80px;
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  font-size: 0.9rem;
+}
+
+.product-show .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.45rem 1.2rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.product-show .btn.btn-primary {
+  background: #4f46e5;
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.35);
+}
+
+.product-show .btn.btn-primary:hover {
+  background: #4338ca;
+}
+
+.product-show .btn.btn-secondary {
+  background: #fff;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+}
+
+.product-show .btn.btn-secondary:hover {
+  background: #f3f4f6;
+}
+
+.not-found {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+  text-align: center;
+}
+
+.not-found h2 {
+  margin-bottom: 0.5rem;
+}
+
+.not-found p {
+  margin-bottom: 1rem;
+  color: #4b5563;
+}
+
+.product-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 0.3rem;
+}
+
+.product-meta-pill {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: #f3f4f6;
+}
+
+@media (max-width: 640px) {
+  .product-show .right {
+    margin-top: 0.25rem;
+  }
+}
