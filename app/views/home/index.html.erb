@@ -242,16 +242,16 @@
       <% trending = (@trending_products || @featured_products || []).first(8) %>
 
       <% # Fallback images to cycle through when a product has no attached image %>
-      <% fallback_trending_images = [
-           "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=600&q=80",  # clothes rail
-           "https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=600&q=80",  # shoes
-           "https://images.unsplash.com/photo-1528701800489-20be3c30c1d5?auto=format&fit=crop&w=600&q=80",  # product still life
-           "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80",  # accessories
-           "https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?auto=format&fit=crop&w=600&q=80",  # sneakers
-           "https://images.unsplash.com/photo-1495121553079-4c61bcce189c?auto=format&fit=crop&w=600&q=80",  # folded clothes
-           "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=80",  # models
-           "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=600&q=80"   # watch/accessory
-         ] %>
+    <% fallback_trending_images = [
+  "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=600&q=80",  # clothes rack
+  "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=600&q=80",  # shoes
+  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80",  # product still life
+  "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=600&q=80",  # accessories
+  "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80",  # sneakers
+  "https://images.unsplash.com/photo-1521335629791-ce4aec67dd47?auto=format&fit=crop&w=600&q=80",  # folded clothes
+  "https://images.unsplash.com/photo-1492447166138-50c3889fccb1?auto=format&fit=crop&w=600&q=80",  # fashion models
+  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80"   # watch/accessory
+] %>
 
       <% trending.each_with_index do |product, idx| %>
         <% fallback_img = fallback_trending_images[idx % fallback_trending_images.size] %>
@@ -289,86 +289,236 @@
     </div>
   </section>
 
-  <!-- 2. "Mood Boards" for Inspiration -->
-  <section class="mt-12 fade-in-up delay-6">
-    <h2 class="text-2xl font-bold mb-4 flex gap-2 items-center text-indigo-900"><i class="fa-solid fa-palette"></i> Explore By Mood</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-7">
-      <div class="relative group rounded-2xl overflow-hidden shadow-lg">
-        <img src="https://images.unsplash.com/photo-1506765515384-028b60a970df?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-52 group-hover:scale-105 transition" alt="Chill" />
-        <div class="absolute inset-0 bg-gradient-to-t from-gray-900/70 to-transparent flex flex-col justify-end p-5">
-          <div class="text-white font-semibold text-2xl mb-2">Chill Outfits</div>
-          <a href="<%= products_path(q:'linen') %>" class="text-pink-300 underline">Browse Linen ➜</a>
-        </div>
-      </div>
-      <div class="relative group rounded-2xl overflow-hidden shadow-lg">
-        <img src="https://images.unsplash.com/photo-1465101178521-c5249880bfc4?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-52 group-hover:scale-105 transition" alt="Bold" />
-        <div class="absolute inset-0 bg-gradient-to-t from-indigo-900/70 to-transparent flex flex-col justify-end p-5">
-          <div class="text-white font-semibold text-2xl mb-2">Bold Statements</div>
-          <a href="<%= products_path(q:'prints') %>" class="text-yellow-200 underline">Shop Prints ➜</a>
-        </div>
-      </div>
-      <div class="relative group rounded-2xl overflow-hidden shadow-lg">
-        <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-52 group-hover:scale-105 transition" alt="Minimal" />
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-5">
-          <div class="text-white font-semibold text-2xl mb-2">Minimal Essentials</div>
-          <a href="<%= products_path(q:'white') %>" class="text-indigo-200 underline">See Modern Classics ➜</a>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- 3. "Our Promise" Brand Value Statement (visual, trustworthy, beautiful) -->
-  <section class="mt-12 fade-in-up delay-7">
-    <div class="bg-white rounded-2xl shadow-xl p-8 flex flex-col md:flex-row items-center gap-8">
-      <img src="https://images.unsplash.com/photo-1454023492550-5696f8ff10e1?auto=format&fit=crop&w=200&q=80" class="rounded-full shadow-md w-24 h-24 object-cover mb-5 md:mb-0" alt="Peace-of-mind">
-      <div>
-        <div class="text-xl font-bold mb-2 text-indigo-700 flex items-center gap-2"><i class="fa-solid fa-hand-holding-heart"></i> Our LuxeCart Promise</div>
-        <div class="text-gray-700 text-base mb-2">Every item is hand-checked for quality, guaranteed to fit, and delivered in planet-friendly packaging.</div>
-        <ul class="text-gray-500 flex flex-wrap gap-6 mt-2 text-sm">
-          <li class="flex items-center gap-2"><i class="fa-solid fa-certificate text-emerald-500"></i> Authenticity assured</li>
-          <li class="flex items-center gap-2"><i class="fa-solid fa-arrow-right-arrow-left text-indigo-400"></i> 7 day easy returns</li>
-          <li class="flex items-center gap-2"><i class="fa-solid fa-leaf text-green-400"></i> Eco-conscious shipping</li>
-        </ul>
-      </div>
-    </div>
-  </section>
 
-  <!-- 4. "Shop by Occasion" Section -->
-  <section class="mt-12 fade-in-up delay-8">
-    <h2 class="text-2xl font-bold mb-4 flex gap-2 items-center text-indigo-900">
-      <i class="fa-solid fa-calendar-days"></i> Shop by Occasion
+
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-12">
+  <div class="flex items-center gap-2 mb-6">
+    <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+      <i class="fa-solid fa-palette"></i>
+    </span>
+    <h2 class="text-2xl font-extrabold tracking-tight text-gray-900">
+      Explore by Mood
     </h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-7">
-      <div class="relative group rounded-2xl overflow-hidden shadow-lg">
-        <img src="https://images.unsplash.com/photo-1465101178521-c5249880bfc4?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Party" />
-        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-pink-900/70 to-transparent flex flex-col">
-          <div class="text-white font-semibold text-lg mb-0.5">Party & Night Out</div>
-          <a href="<%= products_path(q: 'party dress') %>" class="text-pink-200 underline text-xs">See styles ➜</a>
-        </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Card 1: Chill Outfits -->
+    <div class="relative overflow-hidden rounded-3xl shadow-lg bg-gray-900 group cursor-default">
+      <div
+        class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+        style="background-image: url('https://i.pinimg.com/736x/c0/cc/50/c0cc50dd1386d139a5015530ccec2030.jpg');">
       </div>
-      <div class="relative group rounded-2xl overflow-hidden shadow-lg">
-        <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Work" />
-        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-indigo-900/70 to-transparent flex flex-col">
-          <div class="text-white font-semibold text-lg mb-0.5">Work & Office</div>
-          <a href="<%= products_path(q: 'formal shirt') %>" class="text-indigo-200 underline text-xs">Shop formals ➜</a>
-        </div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+      <div class="relative h-52 flex flex-col justify-end p-5">
+        <p class="text-xs uppercase tracking-[0.2em] text-indigo-200 mb-1">Chill Vibes</p>
+        <h3 class="text-xl font-semibold text-white mb-2">Chill Outfits</h3>
+        <p class="text-sm text-indigo-100/90">
+          Cozy knits, linen layers and relaxed fits for slow days.
+        </p>
       </div>
-      <div class="relative group rounded-2xl overflow-hidden shadow-lg">
-        <img src="https://images.unsplash.com/photo-1526178613658-3ef1edd74d1d?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Vacation" />
-        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-green-900/70 to-transparent flex flex-col">
-          <div class="text-white font-semibold text-lg mb-0.5">Vacation Ready</div>
-          <a href="<%= products_path(q: 'beach wear') %>" class="text-green-200 underline text-xs">Shop destination ➜</a>
-        </div>
+    </div>
+
+    <!-- Card 2: Bold Statements -->
+    <div class="relative overflow-hidden rounded-3xl shadow-lg bg-gradient-to-b from-indigo-100 to-indigo-500/60 group cursor-default">
+      <div
+        class="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
+        style="background-image: url('https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=1200&q=80');">
       </div>
-      <div class="relative group rounded-2xl overflow-hidden shadow-lg">
-        <img src="https://images.unsplash.com/photo-1506765515384-028b60a970df?auto=format&fit=crop&w=600&q=80" class="object-cover w-full h-48 group-hover:scale-105 transition" alt="Casual" />
-        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-900/70 to-transparent flex flex-col">
-          <div class="text-white font-semibold text-lg mb-0.5">Weekend Casual</div>
-          <a href="<%= products_path(q: 'casual jeans') %>" class="text-white underline text-xs">Shop casuals ➜</a>
+      <div class="absolute inset-0 bg-gradient-to-t from-indigo-900/70 via-indigo-700/20 to-transparent"></div>
+      <div class="relative h-52 flex flex-col justify-end p-5">
+        <p class="text-xs uppercase tracking-[0.2em] text-indigo-100 mb-1">Stand Out</p>
+        <h3 class="text-xl font-semibold text-white mb-2">Bold Statements</h3>
+        <p class="text-sm text-indigo-100/90">
+          Colour‑pop pieces and statement prints that turn heads.
+        </p>
+      </div>
+    </div>
+
+    <!-- Card 3: Minimal Essentials -->
+    <div class="relative overflow-hidden rounded-3xl shadow-lg bg-gray-900 group cursor-default">
+      <div
+        class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+        style="background-image: url('https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=1200&q=80');">
+      </div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent"></div>
+      <div class="relative h-52 flex flex-col justify-end p-5">
+        <p class="text-xs uppercase tracking-[0.2em] text-indigo-100 mb-1">Clean Lines</p>
+        <h3 class="text-xl font-semibold text-white mb-2">Minimal Essentials</h3>
+        <p class="text-sm text-indigo-100/90">
+          Timeless basics, neutral tones and everyday heroes.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+  <div
+    class="flex items-center gap-5 bg-white rounded-3xl shadow-md px-6 py-4 sm:px-8 sm:py-5
+           transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
+  >
+    <!-- Avatar / badge -->
+    <div class="relative">
+      <div
+        class="h-16 w-16 sm:h-20 sm:w-20 rounded-full overflow-hidden ring-2 ring-indigo-500/70
+               shadow-md transition-transform duration-300 ease-out group hover:scale-105"
+      >
+        <img
+          src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=400&q=80"
+          alt="LuxeCart quality badge"
+          class="h-full w-full object-cover transform transition-transform duration-500 group-hover:scale-110"
+        >
+      </div>
+      <!-- subtle glow -->
+      <div class="absolute inset-0 rounded-full blur-md bg-indigo-500/20 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    </div>
+
+    <!-- Text content -->
+    <div class="flex-1 space-y-1.5">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+          <i class="fa-solid fa-hand-holding-heart text-sm"></i>
+        </span>
+        <h3 class="text-base sm:text-lg font-semibold text-indigo-700">
+          Our LuxeCart Promise
+        </h3>
+      </div>
+
+      <p class="text-sm text-gray-700 leading-snug">
+        Every item is hand‑checked for quality, guaranteed to fit, and delivered in planet‑friendly packaging.
+      </p>
+
+      <div class="flex flex-wrap gap-4 pt-1 text-xs sm:text-[13px]">
+        <div class="inline-flex items-center gap-1.5 text-emerald-600">
+          <i class="fa-solid fa-shield-check text-[11px]"></i>
+          <span>Authenticity assured</span>
+        </div>
+        <div class="inline-flex items-center gap-1.5 text-indigo-600">
+          <i class="fa-solid fa-arrow-rotate-left text-[11px]"></i>
+          <span>7 day easy returns</span>
+        </div>
+        <div class="inline-flex items-center gap-1.5 text-emerald-600">
+          <i class="fa-solid fa-leaf text-[11px]"></i>
+          <span>Eco‑conscious shipping</span>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
+ 
+
+
+
+
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-12">
+  <div class="flex items-center gap-2 mb-6">
+    <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-pink-50 text-pink-600">
+      <i class="fa-solid fa-calendar-days"></i>
+    </span>
+    <h2 class="text-2xl font-extrabold tracking-tight text-gray-900">
+      Shop by Occasion
+    </h2>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+    <!-- Party & Night Out -->
+    <div class="relative overflow-hidden rounded-3xl shadow-lg bg-gray-900 group cursor-default">
+      <div
+        class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+        style="background-image: url('https://i.pinimg.com/1200x/ac/e5/f4/ace5f44cd3857905f343fe53a2b64b1d.jpg');">
+      </div>
+      <div class="absolute inset-0 bg-gradient-to-t from-pink-900/80 via-pink-700/40 to-transparent"></div>
+      <div class="relative h-48 flex flex-col justify-end p-4">
+        <p class="text-[11px] uppercase tracking-[0.2em] text-pink-100 mb-1">
+          Party
+        </p>
+        <h3 class="text-lg font-semibold text-white mb-1">
+          Party &amp; Night Out
+        </h3>
+        <p class="text-xs text-pink-100/90">
+          Sequins, satin and statement looks for going out.
+        </p>
+      </div>
+    </div>
+
+    <!-- Work & Office -->
+    <div class="relative overflow-hidden rounded-3xl shadow-lg bg-gray-900 group cursor-default">
+      <div
+        class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+        style="background-image: url('https://i.pinimg.com/736x/c2/dc/23/c2dc23efd8e317b8e55e28d4c64af3b9.jpg');">
+      </div>
+      <div class="absolute inset-0 bg-gradient-to-t from-indigo-900/80 via-indigo-700/40 to-transparent"></div>
+      <div class="relative h-48 flex flex-col justify-end p-4">
+        <p class="text-[11px] uppercase tracking-[0.2em] text-indigo-100 mb-1">
+          Office
+        </p>
+        <h3 class="text-lg font-semibold text-white mb-1">
+          Work &amp; Office
+        </h3>
+        <p class="text-xs text-indigo-100/90">
+          Tailored blazers, smart shirts and polished basics.
+        </p>
+      </div>
+    </div>
+
+    <!-- Vacation Ready -->
+    <div class="relative overflow-hidden rounded-3xl shadow-lg bg-gray-900 group cursor-default">
+      <div
+        class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+        style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80');">
+      </div>
+      <div class="absolute inset-0 bg-gradient-to-t from-emerald-900/80 via-emerald-700/40 to-transparent"></div>
+      <div class="relative h-48 flex flex-col justify-end p-4">
+        <p class="text-[11px] uppercase tracking-[0.2em] text-emerald-100 mb-1">
+          Vacation
+        </p>
+        <h3 class="text-lg font-semibold text-white mb-1">
+          Vacation Ready
+        </h3>
+        <p class="text-xs text-emerald-100/90">
+          Breezy dresses, linen sets and beach‑ready layers.
+        </p>
+      </div>
+    </div>
+
+    <!-- Weekend Casual -->
+    <div class="relative overflow-hidden rounded-3xl shadow-lg bg-gray-900 group cursor-default">
+      <div
+        class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+        style="background-image: url('https://i.pinimg.com/1200x/6d/8c/a4/6d8ca407235fb57945617dcdb669a53b.jpg');">
+      </div>
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-700/40 to-transparent"></div>
+      <div class="relative h-48 flex flex-col justify-end p-4">
+        <p class="text-[11px] uppercase tracking-[0.2em] text-slate-100 mb-1">
+          Weekend
+        </p>
+        <h3 class="text-lg font-semibold text-white mb-1">
+          Weekend Casual
+        </h3>
+        <p class="text-xs text-slate-100/90">
+          Easy tees, joggers and denim for off‑duty days.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   <section class="bg-gradient-to-tr from-indigo-600 via-indigo-200 to-pink-200 py-20">
     <div class="max-w-5xl mx-auto px-4 flex flex-col items-center text-center">

@@ -14,15 +14,16 @@
     <link rel="shortcut icon" href="/favicon.ico">
     <meta name="theme-color" content="#4f46e5">
 
-    <!-- Tailwind CDN -->
+    <!-- Tailwind via CDN (no local /assets/tailwindcss/* files) -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.7/dist/cdn.min.js" defer></script>
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Rails Assets -->
+    <!-- Rails Assets (application.css & application.js from the asset pipeline) -->
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
     <%= javascript_importmap_tags %>

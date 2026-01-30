@@ -14,6 +14,7 @@ urls_by_category = {
     'https://images.unsplash.com/photo-1505740106531-4243f3831b16?q=80&w=1200&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1200&auto=format&fit=crop'
   ],
+  
   'Lighting' => [
     'https://images.unsplash.com/photo-1505691723518-36a2b4d3f8f8?q=80&w=1200&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?q=80&w=1200&auto=format&fit=crop',

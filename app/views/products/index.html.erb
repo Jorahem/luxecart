@@ -26,57 +26,189 @@
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-    <!-- Sidebar filters -->
-    <aside class="hidden lg:block w-full max-w-[210px] mr-2 fade-in">
-      <div class="bg-white rounded-xl shadow-md p-4 sticky top-20 flex flex-col gap-4 transition-all" style="min-height: 230px;">
+    <!-- Sidebar filters with Clothing & Shoes accordions -->
+    <aside class="hidden lg:block w-full max-w-[230px] mr-4 fade-in">
+      <div class="bg-white rounded-2xl shadow-lg p-5 sticky top-24 flex flex-col gap-5 transition-all border border-gray-100">
+        <!-- Header -->
         <div class="flex items-center gap-2 mb-1">
-          <i class="fa-solid fa-sliders text-indigo-600 text-lg"></i>
-          <span class="text-base font-bold text-indigo-700">Filters</span>
+          <div class="h-9 w-9 rounded-full bg-indigo-50 flex items-center justify-center">
+            <i class="fa-solid fa-sliders text-indigo-600 text-base"></i>
+          </div>
+          <span class="text-lg font-semibold text-indigo-700 tracking-tight">Filters</span>
         </div>
-        <!-- Category list: -->
+
+        <!-- Category list -->
         <div>
-          <h3 class="mb-1 text-sm font-semibold text-gray-900 flex items-center gap-1">
-            <i class="fa-solid fa-layer-group text-indigo-400"></i>
-            Category
+          <h3 class="mb-2 text-sm font-semibold text-gray-900 flex items-center gap-2">
+            <span class="inline-flex h-7 w-7 rounded-full bg-indigo-50 items-center justify-center">
+              <i class="fa-solid fa-layer-group text-indigo-500 text-xs"></i>
+            </span>
+            <span class="text-sm font-semibold text-gray-900">Category</span>
           </h3>
-          <div class="grid grid-cols-1 gap-1">
+
+          <div class="flex flex-col gap-1.5">
+            <% clothing_open = %w[men women children].include?(params[:category].to_s.downcase) %>
+            <% shoes_open    = %w[men-shoes women-shoes children-shoes].include?(params[:category].to_s.downcase) %>
+
             <% categories = [
-              {name: "Furniture", icon: "fa-couch"},
-              {name: "Lighting", icon: "fa-lightbulb"},
-              {name: "Decor", icon: "fa-image"},
-              {name: "Textiles", icon: "fa-rug"},
-              {name: "Tables", icon: "fa-table"},
-              {name: "Accessories", icon: "fa-gem"},
-              {name: "Shoes", icon: "fa-shoe-prints"},
-              {name: "Underwear", icon: "fa-child"},
-              {name: "New Arrivals", icon: "fa-star"},
-              {name: "Sale", icon: "fa-bolt"},
-              {name: "Clothing", icon: "fa-shirt"},
-              {name: "Men", icon: "fa-person"},
-              {name: "Women", icon: "fa-person-dress"},
-              {name: "Children", icon: "fa-child-reaching"},
-              {name: "Smartwatch", icon: "fa-clock"}
+              {name: "Furniture",  icon: "fa-couch"},
+              {name: "Lighting",   icon: "fa-lightbulb"},
+              {name: "Decor",      icon: "fa-image"},
+              {name: "Textiles",   icon: "fa-rug"},
+              {name: "Tables",     icon: "fa-table"},
+              {name: "Shoes",      icon: "fa-shoe-prints"}, # Shoes parent
+              {name: "Accessories",icon: "fa-gem"},
+              {name: "Underwear",  icon: "fa-child"},
+              # {name: "New Arrivals", icon: "fa-star"},
+              {name: "Sale",       icon: "fa-bolt"},
+              {name: "Smartwatch", icon: "fa-clock"},
+              {name: "Clothing",   icon: "fa-shirt"}         # Clothing parent
             ] %>
+
             <% categories.each do |c| %>
-              <% cat_name = (c.is_a?(Hash) ? c[:name] : (c.respond_to?(:name) ? c.name : c.to_s)) %>
-              <% cat_icon = (c.is_a?(Hash) ? c[:icon] : "fa-tags") %>
+              <% cat_name  = c[:name] %>
+              <% cat_icon  = c[:icon] || "fa-tags" %>
               <% cat_param = cat_name.parameterize %>
+
+              <% if cat_name == "Clothing" %>
+                <!-- Clothing accordion parent -->
+                <button
+                  type="button"
+                  class="group flex items-center justify-between rounded-full px-3 py-1.5 text-xs font-semibold transition border w-full
+                         <%= clothing_open ? 'bg-white border-indigo-500 text-indigo-700 shadow-sm' : 'bg-indigo-50/80 border-transparent text-indigo-500 hover:bg-indigo-50' %>"
+                  onclick="{
+                    const panel = document.getElementById('clothing-children');
+                    const chevron = this.querySelector('[data-chevron-clothing]');
+                    panel.classList.toggle('clothing-closed');
+                    chevron.classList.toggle('rotate-180');
+                  }"
+                >
+                  <div class="flex items-center gap-2">
+                    <span class="flex h-6 w-6 items-center justify-center rounded-full bg-white/80">
+                      <i class="fa-solid <%= cat_icon %> text-[11px] text-indigo-500"></i>
+                    </span>
+                    <span>Clothing</span>
+                  </div>
+                  <span data-chevron-clothing class="transition-transform duration-200 <%= clothing_open ? 'rotate-180' : '' %>">
+                    <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                  </span>
+                </button>
+                <% next %>
+              <% end %>
+
+              <% if cat_name == "Shoes" %>
+                <!-- Shoes accordion parent -->
+                <button
+                  type="button"
+                  class="group flex items-center justify-between rounded-full px-3 py-1.5 text-xs font-semibold transition border w-full
+                         <%= shoes_open ? 'bg-white border-indigo-500 text-indigo-700 shadow-sm' : 'bg-indigo-50/80 border-transparent text-indigo-500 hover:bg-indigo-50' %>"
+                  onclick="{
+                    const panel = document.getElementById('shoes-children');
+                    const chevron = this.querySelector('[data-chevron-shoes]');
+                    panel.classList.toggle('shoes-closed');
+                    chevron.classList.toggle('rotate-180');
+                  }"
+                >
+                  <div class="flex items-center gap-2">
+                    <span class="flex h-6 w-6 items-center justify-center rounded-full bg-white/80">
+                      <i class="fa-solid <%= cat_icon %> text-[11px] text-indigo-500"></i>
+                    </span>
+                    <span>Shoes</span>
+                  </div>
+                  <span data-chevron-shoes class="transition-transform duration-200 <%= shoes_open ? 'rotate-180' : '' %>">
+                    <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                  </span>
+                </button>
+
+                <!-- Shoes submenu directly under Shoes -->
+                <div
+                  id="shoes-children"
+                  class="mt-1 flex flex-col gap-1 overflow-hidden transition-all duration-200 ease-out transform-gpu origin-top <%= shoes_open ? '' : 'shoes-closed' %>"
+                >
+                  <% shoes_children = [
+                    {label: "Men's Shoes",      slug: "men-shoes",      icon: "fa-person"},
+                    {label: "Women's Shoes",    slug: "women-shoes",    icon: "fa-person-dress"},
+                    {label: "Children's Shoes", slug: "children-shoes", icon: "fa-child-reaching"}
+                  ] %>
+
+                  <% shoes_children.each_with_index do |sc, idx| %>
+                    <% active = params[:category].to_s.downcase == sc[:slug] %>
+
+                    <% base_classes =
+                      "group flex items-center justify-between rounded-full px-3 py-1.5 text-xs font-medium transition border ml-4 " +
+                      (active ? "bg-white border-indigo-500 text-indigo-700 shadow-sm " : "bg-indigo-50/60 border-transparent text-indigo-400 hover:bg-indigo-50 hover:text-indigo-600 ") %>
+
+                    <% outline_class = (idx == shoes_children.length - 1) ? "border border-indigo-400" : "" %>
+
+                    <%= link_to products_path(q: params[:q], sort: params[:sort], category: sc[:slug]),
+                        class: base_classes + outline_class do %>
+                      <div class="flex items-center gap-2">
+                        <span class="flex h-6 w-6 items-center justify-center rounded-full bg-white/70 group-hover:bg-white transition">
+                          <i class="fa-solid <%= sc[:icon] %> text-[11px] <%= active ? 'text-indigo-600' : 'text-indigo-400 group-hover:text-indigo-500' %>"></i>
+                        </span>
+                        <span class="truncate"><%= sc[:label] %></span>
+                      </div>
+                    <% end %>
+                  <% end %>
+                </div>
+
+                <% next %>
+              <% end %>
+
               <% active = params[:category].to_s.downcase == cat_param.to_s.downcase %>
+
               <%= link_to products_path(q: params[:q], sort: params[:sort], category: cat_param),
-                  class: "group block rounded-md px-2 py-1 bg-gray-50 hover:bg-indigo-50 shadow-sm transition border border-transparent text-xs font-medium mb-1 #{active ? 'border-indigo-400 font-bold text-indigo-700' : 'text-gray-700'}" do %>
-                <div class="flex items-center gap-1">
-                  <i class="fa-solid <%= cat_icon %> text-xs <%= active ? 'text-indigo-700' : 'text-indigo-400' %>"></i>
-                  <span><%= cat_name %></span>
+                  class: "group flex items-center justify-between rounded-full px-3 py-1.5 text-xs font-medium transition border " \
+                         "#{active ? 'bg-white border-indigo-500 text-indigo-700 shadow-sm' : 'bg-indigo-50/60 border-transparent text-indigo-400 hover:bg-indigo-50 hover:text-indigo-600'}" do %>
+                <div class="flex items-center gap-2">
+                  <span class="flex h-6 w-6 items-center justify-center rounded-full bg-white/70 group-hover:bg-white transition">
+                    <i class="fa-solid <%= cat_icon %> text-[11px] <%= active ? 'text-indigo-600' : 'text-indigo-400 group-hover:text-indigo-500' %>"></i>
+                  </span>
+                  <span class="truncate"><%= cat_name %></span>
                 </div>
               <% end %>
             <% end %>
+
+            <!-- Clothing children -->
+            <div
+              id="clothing-children"
+              class="mt-1 flex flex-col gap-1 overflow-hidden transition-all duration-200 ease-out <%= clothing_open ? '' : 'clothing-closed' %>"
+            >
+              <% clothing_children = [
+                {label: "Men's Clothing",      slug: "men",      icon: "fa-person"},
+                {label: "Women's Clothing",    slug: "women",    icon: "fa-person-dress"},
+                {label: "Children's Clothing", slug: "children", icon: "fa-child-reaching"}
+              ] %>
+
+              <% clothing_children.each_with_index do |c, idx| %>
+                <% active = params[:category].to_s.downcase == c[:slug] %>
+
+                <% base_classes =
+                  "group flex items-center justify-between rounded-full px-3 py-1.5 text-xs font-medium transition border ml-4 " +
+                  (active ? "bg-white border-indigo-500 text-indigo-700 shadow-sm " : "bg-indigo-50/60 border-transparent text-indigo-400 hover:bg-indigo-50 hover:text-indigo-600 ") %>
+
+                <% outline_class = (idx == clothing_children.length - 1) ? "border border-indigo-400" : "" %>
+
+                <%= link_to products_path(q: params[:q], sort: params[:sort], category: c[:slug]),
+                    class: base_classes + outline_class do %>
+                  <div class="flex items-center gap-2">
+                    <span class="flex h-6 w-6 items-center justify-center rounded-full bg-white/70 group-hover:bg-white transition">
+                      <i class="fa-solid <%= c[:icon] %> text-[11px] <%= active ? 'text-indigo-600' : 'text-indigo-400 group-hover:text-indigo-500' %>"></i>
+                    </span>
+                    <span class="truncate"><%= c[:label] %></span>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
           </div>
         </div>
+
         <!-- Clear filters button -->
-        <div class="flex items-center mt-1">
-          <%= link_to products_path(q: params[:q], sort: params[:sort]), class: "inline-flex items-center gap-1 px-3 py-1 rounded bg-gradient-to-r from-pink-500 via-indigo-500 to-indigo-700 text-white text-xs font-semibold justify-center hover:from-indigo-500 hover:to-pink-500 transition shadow w-full" do %>
+        <div class="mt-2">
+          <%= link_to products_path(q: params[:q], sort: params[:sort]),
+              class: "inline-flex items-center justify-center gap-2 w-full px-3 py-2 rounded-full bg-gradient-to-r from-pink-500 via-indigo-500 to-indigo-600 text-white text-xs font-semibold shadow-md hover:from-indigo-500 hover:to-pink-500 transition" do %>
             <i class="fa-solid fa-circle-xmark text-xs"></i>
-            Clear
+            <span>Clear</span>
           <% end %>
         </div>
       </div>
@@ -107,3 +239,30 @@
     </section>
   </div>
 </div>
+
+<style>
+  /* Smooth accordion helper classes */
+  #clothing-children.clothing-closed {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+  }
+  #clothing-children:not(.clothing-closed) {
+    max-height: 999px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  #shoes-children.shoes-closed {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+  }
+  #shoes-children:not(.shoes-closed) {
+    max-height: 999px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
