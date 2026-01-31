@@ -51,18 +51,18 @@
             <% shoes_open    = %w[men-shoes women-shoes children-shoes].include?(params[:category].to_s.downcase) %>
 
             <% categories = [
-              {name: "Furniture",  icon: "fa-couch"},
-              {name: "Lighting",   icon: "fa-lightbulb"},
-              {name: "Decor",      icon: "fa-image"},
-              {name: "Textiles",   icon: "fa-rug"},
-              {name: "Tables",     icon: "fa-table"},
-              {name: "Shoes",      icon: "fa-shoe-prints"}, # Shoes parent
-              {name: "Accessories",icon: "fa-gem"},
-              {name: "Underwear",  icon: "fa-child"},
+              {name: "Furniture",       icon: "fa-couch"},
+              {name: "Lighting",        icon: "fa-lightbulb"},
+              {name: "Beauty Product",  icon: "fa-image"},   # was "Decor"
+              {name: "Textiles",        icon: "fa-rug"},
+              {name: "Tables",          icon: "fa-table"},
+              {name: "Shoes",           icon: "fa-shoe-prints"}, # Shoes parent
+              {name: "Accessories",     icon: "fa-gem"},
+              {name: "Underwear",       icon: "fa-child"},
               # {name: "New Arrivals", icon: "fa-star"},
-              {name: "Sale",       icon: "fa-bolt"},
-              {name: "Smartwatch", icon: "fa-clock"},
-              {name: "Clothing",   icon: "fa-shirt"}         # Clothing parent
+              {name: "Sale",            icon: "fa-bolt"},
+              {name: "Smartwatch",      icon: "fa-clock"},
+              {name: "Clothing",        icon: "fa-shirt"}         # Clothing parent
             ] %>
 
             <% categories.each do |c| %>

@@ -44,10 +44,6 @@ PRODUCT_UPDATES = {
     name:  "Oak Coffee Table",
     image: "https://funky-chunky-furniture.co.uk/cdn/shop/products/salters-oak-coffee-table-33777-1-p.jpg?v=1643646322"
   },
-  5 => {
-    name:  "Ceramic Vase Set",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9bINwLC6UkuTxtCmyTdWJ0v3OWdRSReZO6Q&s"
-  },
   6 => {
     name:  "Luxe Bed Linen",
     image: "https://sowlhome.com/cdn/shop/files/sowl_athens_bed_set_organic_100_cotton_percale_linen_beige_white_duvet_cover_240_220_pillow_cases_50_75_product.jpg?v=1715346346&width=1700"

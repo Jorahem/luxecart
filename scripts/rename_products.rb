@@ -42,8 +42,6 @@ NEW_NAMES = {
   # 15 => "Oak Coffee Table"
 
   33=> "Royal Dining Table",
-  34 => "Biiilu",
-  35 => "Hem jora"
 }
 
 if NEW_NAMES.any?

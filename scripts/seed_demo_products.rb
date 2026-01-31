@@ -20,13 +20,13 @@ puts "Categories and Brands created."
 products_data = [
   { name: 'Luxe Velvet Chair', description: 'Plush velvet lounge chair with solid wood legs.', price: 249.99, image: 'https://images.unsplash.com/photo-1549187774-b4e9b0445b6b?q=80&w=1200&auto=format&fit=crop', category: 'Furniture', brand: 'LuxeHome' },
   { name: 'Modern Floor Lamp', description: 'Sleek metal floor lamp with dimmable LED.', price: 89.50, image: 'https://images.unsplash.com/photo-1540574163026-643ea20ade25?q=80&w=1200&auto=format&fit=crop', category: 'Lighting', brand: 'NordicDesign' },
-  { name: 'Handwoven Rug', description: 'Handwoven area rug with geometric patterns.', price: 199.95, image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1200&auto=format&fit=crop', category: 'Decor', brand: 'StudioCraft' },
+  { name: 'Face Wash', description: 'Handwoven area rug with geometric patterns.', price: 199.95, image: 'https://joypersonalcare.com/cdn/shop/files/Papaya.jpg?v=1745230548&width=1445', category: 'Decor', brand: 'StudioCraft' },
   { name: 'Oak Coffee Table', description: 'Solid oak coffee table with minimalist finish.', price: 159.00, image: 'https://images.unsplash.com/photo-1505691723518-36a2bbf07e4d?q=80&w=1200&auto=format&fit=crop', category: 'Tables', brand: 'ModernHouse' },
-  { name: 'Ceramic Vase Set', description: 'Artisan ceramic vases in three sizes.', price: 49.99, image: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop', category: 'Decor', brand: 'StudioCraft' },
+  { name: 'SIGHTLING Foundation', description: 'Artisan ceramic vases in three sizes.', price: 49.99, image: 'https://m.media-amazon.com/images/I/813R5JwTGYL._SL1500_.jpg', category: 'Decor', brand: 'StudioCraft' },
   { name: 'Luxe Bed Linen', description: 'Egyptian cotton bed linen for luxurious sleep.', price: 129.00, image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop', category: 'Textiles', brand: 'LuxeHome' },
   { name: 'Minimalist Bookshelf', description: 'Floating bookshelf with clean lines.', price: 179.99, image: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop', category: 'Furniture', brand: 'NordicDesign' },
   { name: 'Designer Throw Pillow', description: 'Soft throw pillow with handcrafted cover.', price: 29.99, image: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop', category: 'Textiles', brand: 'StudioCraft' },
-  { name: 'Contemporary Wall Art', description: 'Framed print with abstract composition.', price: 89.00, image: 'https://images.unsplash.com/photo-1505691723518-36a2bbf07e4d?q=80&w=1200&auto=format&fit=crop', category: 'Decor', brand: 'ModernHouse' },
+  { name: 'Hyaluronic Sunscreen', description: 'Framed print with abstract composition.', price: 89.00, image: 'https://www.healme.com.np/storage/Product/PR-1682167853-3795015.webp', category: 'Decor', brand: 'ModernHouse' },
   { name: 'Nordic Dining Chair', description: 'Comfortable dining chair with tapered legs.', price: 99.00, image: 'https://images.unsplash.com/photo-1549187774-b4e9b0445b6b?q=80&w=1200&auto=format&fit=crop', category: 'Furniture', brand: 'NordicDesign' }
 ]
 

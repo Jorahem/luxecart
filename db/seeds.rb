@@ -37,7 +37,7 @@ User.find_or_create_by!(email: "admin@example.com") do |u|
 end
 
 base_categories = [
-  'Furniture', 'Lighting', 'Decor', 'Textiles', 'Tables',
+  'Furniture', 'Lighting', 'Beauty Product', 'Textiles', 'Tables',
   'Accessories', 'Shoes', 'Underwear', 'New Arrivals', 'Sale', 'Smartwatch'
 ]
 
@@ -85,14 +85,7 @@ products_data = [
     category: 'Lighting',
     brand: 'NordicDesign'
   },
-  {
-    name: 'Handwoven Rug',
-    description: 'Handwoven area rug with geometric patterns.',
-    price: 199.95,
-    image: 'https://cdn.shopify.com/s/files/1/1159/3118/files/holiday24_ashlar-handwoven-rug-tawny_detail_silo-_1x1_jw.jpg?v=1736296960',
-    category: 'Decor',
-    brand: 'StudioCraft'
-  },
+  
   {
     name: 'Oak Coffee Table',
     description: 'Solid oak coffee table with minimalist finish.',
@@ -101,14 +94,7 @@ products_data = [
     category: 'Tables',
     brand: 'ModernHouse'
   },
-  {
-    name: 'Ceramic Vase Set',
-    description: 'Artisan ceramic vases in three sizes.',
-    price: 49.99,
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9bINwLC6UkuTxtCmyTdWJ0v3OWdRSReZO6Q&s',
-    category: 'Decor',
-    brand: 'StudioCraft'
-  },
+
   {
     name: 'Luxe Bed Linen',
     description: 'Egyptian cotton bed linen for luxurious sleep.',
@@ -120,8 +106,8 @@ products_data = [
   {
     name: 'Minimalist Bookshelf',
     description: 'Floating bookshelf with clean lines.',
-    price: 179.99,
-    image: 'https://theminimalistvegan.com/wp-content/uploads/2024/01/Best-Minimalist-Bookshelf-Design-Ideas.jpg',
+    price: 9000.99,
+    image: 'https://m.media-amazon.com/images/I/61zeBdkbs1L._AC_UF1000,1000_QL80_.jpg',
     category: 'Furniture',
     brand: 'NordicDesign'
   },
@@ -133,19 +119,12 @@ products_data = [
     category: 'Textiles',
     brand: 'StudioCraft'
   },
-  {
-    name: 'Contemporary Wall Art',
-    description: 'Framed print with abstract composition.',
-    price: 89.00,
-    image: 'https://ak1.ostkcdn.com/images/products/is/images/direct/ecb2a34deb10a54f12119f2adbf487d9d5444041/Designart-%22White-And-Blue-Feather-Spiral-II%22-Abstract-Geometric-Blue-Wall-Decor---Modern-Entryway-Framed-Wall-Art.jpg',
-    category: 'Decor',
-    brand: 'ModernHouse'
-  },
+  
   {
     name: 'Nordic Dining Chair',
     description: 'Comfortable dining chair with tapered legs.',
-    price: 99.00,
-    image: 'https://image.made-in-china.com/365f3j00gpQoAnWECjcV/Nordic-Wooden-Dining-Chair-Cushion-Genuine-Fabric-Dinning-Chair.webp',
+    price: 2000.00,
+    image: 'https://cdn.media.amplience.net/i/boconcept/4a70c005-07a3-4dbf-9d3d-b16f0064bd0b?locale=*&w=3020&fmt=auto&upscale=false&sm=c&qlt=100&h=4016&poi=0.4346297%2C0.51765305%2C0.125%2C0.083333336&scaleFit=poi',
     category: 'Furniture',
     brand: 'NordicDesign'
   }
@@ -164,9 +143,9 @@ sample_images_by_category = {
     'https://images.unsplash.com/photo-1505691723518-36a5ac3be353?q=80&w=1200&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?q=80&w=1200&auto=format&fit=crop'
   ],
-  'Decor' => [
-    'https://images.unsplash.com/photo-1493666438817-866a91353ca9?q=80&w=1200&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop'
+  'Beauty Product' => [
+    'https://images.unsplash.com/photo-1612810432637-96f64dc8ccb6?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?auto=format&fit=crop&w=1200&q=80'
   ],
   'Textiles' => [
     'https://images.unsplash.com/photo-1520975681500-99f9e6a7b3b8?q=80&w=1200&auto=format&fit=crop',
@@ -378,53 +357,64 @@ collections = {
     { name: "Kids Velcro Shoes", price: 29.99, image_url: "https://images.unsplash.com/photo-1514986888952-8cd320577b68?auto=format&fit=crop&w=900&q=80", description: "Easy‑on velcro shoes designed for little feet." }
   ],
 
- "Decor" => [
-  {
-    name: "Handwoven Rug",
-    price: 199.95,
-    image_url: "https://cdn.shopify.com/s/files/1/1159/3118/files/holiday24_ashlar-handwoven-rug-tawny_detail_silo-_1x1_jw.jpg?v=1736296960",
-    description: "Handwoven area rug with geometric patterns."
-  },
-  {
-    name: "Ceramic Vase Set",
-    price: 49.99,
-    image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9bINwLC6UkuTxtCmyTdWJ0v3OWdRSReZO6Q&s",
-    description: "Artisan ceramic vases in three sizes."
-  },
-  {
-    name: "Contemporary Wall Art",
-    price: 89.00,
-    image_url: "https://ak1.ostkcdn.com/images/products/is/images/direct/ecb2a34deb10a54f12119f2adbf487d9d5444041/Designart-%22White-And-Blue-Feather-Spiral-II%22-Abstract-Geometric-Blue-Wall-Decor---Modern-Entryway-Framed-Wall-Art.jpg",
-    description: "Framed print with abstract composition."
-  },
-  # existing decor items...
+
+
+"Beauty Product" => [
+  { name: "Face Wash", price: 199.95, image_url: "https://joypersonalcare.com/cdn/shop/files/Papaya.jpg?v=1745230548&width=1445", description: "Hydrating skin-care bundle for daily glow." },
+  { name: "SIGHTLING Foundation", price: 490.99, image_url: "https://m.media-amazon.com/images/I/813R5JwTGYL._SL1500_.jpg", description: "Gentle cleansing foam ideal for everyday use." },
+  { name: "Hyaluronic Sunscreen", price: 750.00, image_url: "https://www.healme.com.np/storage/Product/PR-1682167853-3795015.webp", description: "Premium face cream that nourishes and protects skin." },
+  { name: "Nourishing Body Lotion", description: "Rich body lotion for deep nourishment and softness.", price: 49.99, image: "https://cdn.shopify.com/s/files/1/0245/5023/products/4RollerballswithLotion.jpg?v=1573514690", category: "Beauty Product", brand: "StudioCraft" },
+  { name: "Hydrating Face Serum", description: "Lightweight serum that boosts hydration and glow.", price: 199.95, image: "https://img.drz.lazcdn.com/static/np/p/bdc9d69f6a46243a3e2cd4cfb0f331c2.jpg_720x720q80.jpg", category: "Beauty Product", brand: "StudioCraft" },
+  { name: "Radiant Skin Care Set", description: "Complete facial care kit for radiant, healthy skin.", price: 89.00, image: "https://www.kiehls.com/on/demandware.static/-/Sites-kiehls_us-Library/default/dwd25e8c88/images/articles/get-radiant-skin/article-thumbnail_get-radiant-skin.jpg", category: "Beauty Product", brand: "ModernHouse" },
+  { name: "Vitamin C Face Cream", description: "Brightening face cream that evens skin tone and boosts glow.", price: 129.99, image: "https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?auto=format&fit=crop&w=800&q=80", category: "Beauty Product", brand: "GlowCare" },
+  { name: "Aloe Vera Gel", description: "Soothing aloe vera gel for skin hydration and repair.", price: 89.50, image: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=800&q=80", category: "Beauty Product", brand: "NaturePure" },
+  { name: "Charcoal Face Mask", description: "Deep cleansing mask to remove dirt and excess oil.", price: 149.00, image: "https://rukminim2.flixcart.com/image/300/300/xif0q/face-pack/e/c/a/100-charcoal-peel-off-mask-for-men-100gm-detoxifies-skin-deep-original-imahb2j4f4kygby8.jpeg", category: "Beauty Product", brand: "SkinLab" },
+  { name: "Rose Water Toner", description: "Refreshing toner that tightens pores and hydrates skin.", price: 130, image: "https://www.zawinamorocco.com/cdn/shop/files/FRESHROSETONER2.0-2_6899acb5-00b2-4bdb-a4fb-25ec8cc8c1c5.png?v=1762783496&width=3840", category: "Beauty Product", brand: "HerbalEssence" },
+  { name: "Anti-Aging Night Cream", description: "Repairs skin overnight and reduces fine lines.", price: 299.99, image: "https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?auto=format&fit=crop&w=800&q=80", category: "Beauty Product", brand: "YouthGlow" },
+  { name: "Coffee Body Scrub", description: "Exfoliating scrub that removes dead skin and smoothens body.", price: 159.00, image: "https://www.remembher.in/cdn/shop/files/website_photos_9_1200x1200.jpg?v=1733929927", category: "Beauty Product", brand: "EarthCare" },
+  { name: "Lip Care Balm", description: "Moisturizing lip balm for soft and healthy lips.", price: 100.00, image: "https://www.nepmeds.com.np/public/files/FEB2914FD50E87C-strawberry-lip-care.webp", category: "Beauty Product", brand: "SoftLips" },
+  { name: "Herbal Hair Serum", description: "Strengthens hair roots and adds natural shine.", price: 179.00, image: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=800&q=80", category: "Beauty Product", brand: "HairBloom" },
+  { name: "Makeup Removal Cleanser", description: "Gentle cleanser that removes makeup without drying skin.", price: 199.00, image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=800&q=80", category: "Beauty Product", brand: "PureSkin" },
+  { name: "Under Eye Repair Cream", description: "Reduces dark circles and puffiness around eyes.", price: 249.99, image: "https://www.epharmacy.com.np/content/images/thumbs/61b5c380c70315faaad69db4_cerave-eye-repair-cream-142gm.jpeg", category: "Beauty Product", brand: "EyeCare+" }
 ],
 
-  "Furniture" => [
-  {
-    name: "Luxe Velvet Chair",
-    price: 249.99,
-    image_url: "https://i5.walmartimages.com/seo/Baxton-Studio-Cosette-Glam-and-Luxe-Light-Pink-Velvet-Fabric-Upholstered-Brushed-Gold-Finished-Seashell-Shaped-Accent-Chair_738dabea-3730-47ea-909e-302eb8b0dc58.71eec7ddca6b8f7c68a83e84608d2738.jpeg",
-    description: "Plush velvet lounge chair with solid wood legs."
-  },
-  {
-    name: "Nordic Dining Chair",
-    price: 129.00,
-    image_url: "https://image.made-in-china.com/365f3j00gpQoAnWECjcV/Nordic-Wooden-Dining-Chair-Cushion-Genuine-Fabric-Dinning-Chair.webp",
-    description: "Clean-lined dining chair with comfortable seat."
-  },
-  {
-    name: "Accent Armchair",
-    price: 249.99,
-    image_url: "https://images.unsplash.com/photo-1493666438817-866a91353ca9?auto=format&fit=crop&w=800&q=80",
-    description: "Cozy accent chair for reading corners."
-  }
+  
+
+"Furniture" => [
+  { name: "Luxe Velvet Chair", price: 249.99, image_url: "https://i5.walmartimages.com/seo/Baxton-Studio-Cosette-Glam-and-Luxe-Light-Pink-Velvet-Fabric-Upholstered-Brushed-Gold-Finished-Seashell-Shaped-Accent-Chair_738dabea-3730-47ea-909e-302eb8b0dc58.71eec7ddca6b8f7c68a83e84608d2738.jpeg", description: "Plush velvet lounge chair with solid wood legs." },
+  { name: "Nordic Dining Chair", price: 3000.00, image_url: "", description: "Clean-lined dining chair with comfortable seat." },
+  { name: "Accent Armchair", price: 7000.99, image_url: "https://cdn.laredoute.com/cdn-cgi/image/width=500,height=500,fit=pad,dpr=1/products/9/2/3/9238191b52f0e5af5d279e0348d335f0.jpg", description: "Cozy accent chair for reading corners." },
+  { name: "Modern Sofa Set", price: 70000.99, image_url: "https://sofahubkathmandu.com/uploads/product/012.webp", description: "Contemporary 3-seater sofa with padded cushions." },
+  { name: "Wooden Coffee Table", price: 10000.00, image_url: "https://funky-chunky-furniture.co.uk/cdn/shop/files/Sandyford_Scandi_Coffee_Tablesquare_2040x2040.jpg?v=1692266394", description: "Solid wood coffee table with smooth finish." },
+  { name: "Minimalist Bed Frame", price: 12000.99, image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxaZDAn-i1L-VTFBwpefUG_BXEqUHJPWNnCg&s", description: "Clean, low-profile wooden bed frame." },
+  { name: "Scandinavian Bookshelf", price: 14000.99, image_url: "https://i.etsystatic.com/15145452/r/il/aa48c8/1458065277/il_fullxfull.1458065277_rhov.jpg", description: "Open shelving with a modern look." },
+  { name: "Leather Recliner", price: 35000.99, image_url: "https://images-cdn.ubuy.co.in/65845d74f64cd817c02e28e7-meritlife-real-leather-power-lift-chair.jpg", description: "Comfortable leather recliner with armrests." },
+  { name: "Extendable Dining Table", price: 25000.00, image_url: "https://fwhomestores.co.uk/cdn/shop/files/brooklyn-extendable-cross-leg-dining-table-140cm-180cm-extendable-dining-table-brooklyn-649444.jpg", description: "Large dining table with extension for guests." },
+  { name: "Rattan Lounge Chair", price: 199.99, image_url: "https://modernwicker.com/cdn/shop/products/8601-Palm-Harbor-Chair--Medium-1__30446.1552945438.1280.1280.jpg?v=1741092894", description: "Handwoven rattan chair with comfortable cushion." },
+  { name: "Classic Wooden Desk", price: 269.00, image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbY8zYMHnEphIqSdJgtWKpRFRL4QdbyyK8zQ&s", description: "Study desk with simple yet elegant design." },
+  { name: "Tufted Ottoman", price: 1100.99, image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6t3S3gxWu5yIlY4vg80Hwf-ePwZMvfoeA0w&s", description: "Versatile tufted ottoman for seating or storage." },
+  { name: "Metal Frame Side Table", price: 8000.00, image_url: "https://m.media-amazon.com/images/I/81k5u5ClguL._AC_UF894,1000_QL80_.jpg", description: "Industrial style side table for living rooms." }
 ],
 
-  "Lighting" => [
-    { name: "Pendant Lamp", price: 129.00, image_url: "https://images.unsplash.com/photo-1505691723518-11a9f8a6a1df?auto=format&fit=crop&w=800&q=80", description: "Brass pendant to lift your dining area." },
-    { name: "Table Lamp", price: 69.00, image_url: "https://images.unsplash.com/photo-1524758631624-7b5d2d1b9e0a?auto=format&fit=crop&w=800&q=80", description: "Soft-diffuse table lamp for bedside." }
-  ],
+
+
+
+
+"Lighting" => [
+  { name: "Pendant Lamp", price: 129.00, image_url: "https://www.lamps.eu/media/product/143886/1000x1000/calapa-pendant-light-h3640777-0.jpg", description: "Brass pendant to lift your dining area." },
+  { name: "Table Lamp", price: 69.00, image_url: "https://u-mercari-images.mercdn.net/photos/m65270423377_1.jpg", description: "Soft-diffuse table lamp for bedside." },
+  { name: "Floor Standing Lamp", price: 189.99, image_url: "https://www.livingandhome.co.uk/cdn/shop/products/FI0482-1916.jpg?v=1747660747", description: "Elegant floor lamp to brighten living rooms." },
+  { name: "Modern Chandelier", price: 349.00, image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuUeGylGTw-YIPsmMfujjEuKeA_Cl5cIy-Gw&s", description: "Stylish chandelier with multiple light arms." },
+  { name: "Wall Sconce Light", price: 79.50, image_url: "https://m.media-amazon.com/images/I/61onjuf7GXS._AC_SL1000_.jpg", description: "Minimalist wall sconce for hallways." },
+  { name: "LED Strip Light", price: 49.99, image_url: "https://media.eservicesnepal.com/sixkey.com.np/uploads/2022/02/DSC_0658-min.jpg", description: "Flexible LED strip for accent lighting." },
+  { name: "Ceiling Flush Light", price: 129.00, image_url: "https://www.ledmyplace.com/cdn/shop/articles/the-most-popular-flush-mount-lighting-styles-to-know-935381_1100x.jpg?v=1734859868", description: "Compact flush mount ceiling LED." },
+  { name: "Crystal Table Lamp", price: 159.99, image_url: "https://www.murano-glass-chandeliers.com/5629-large_default/bellotti-venetian-crystal-table-lamp.jpg", description: "Elegant crystal table lamp for nightstands." },
+  { name: "Solar Garden Lights (Set)", price: 69.00, image_url: "https://images.thdstatic.com/productImages/37e1bcdb-6498-4b3f-9f20-c5162641c554/svn/decorative-garden-stakes-z0bwdb1c65-c3_600.jpg", description: "Outdoor solar lights for pathways." },
+  { name: "Retro Edison Bulb Set", price: 39.99, image_url: "https://www.thesolarcentre.co.uk/images/products/secondary/1440.jpg", description: "Vintage style filament bulbs." },
+  { name: "Bedside Reading Light", price: 89.50, image_url: "https://giftstomorrow.co.uk/wp-content/uploads/2020/06/Lily-1.jpg", description: "Clip-on reading lamp for beds." },
+  { name: "Decorative Lantern", price: 79.99, image_url: "https://m.media-amazon.com/images/I/71Ryq1Rbi3L._AC_UF894,1000_QL80_.jpg", description: "Garden lantern with candle-style light." }
+],
+
 
   "Accessories" => [
     { name:"Women’s Leather Handbag",price:49.99,image_url:"https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80",description:"Stylish leather handbag perfect for everyday use."},
@@ -457,10 +447,16 @@ collections = {
     { name: "Cotton Button-Up Shirt", price: 33.99, image_url: "https://images.unsplash.com/photo-1520975916090-3105956dac38?auto=format&fit=crop&w=800&q=80", description: "Modern cotton shirt, easy for work and leisure." }
   ],
 
-  "Tables" => [
-    { name: "Dining Table", price: 599.00, image_url: "https://images.unsplash.com/photo-1519710164239-481f0a6c0c3b?auto=format&fit=crop&w=800&q=80", description: "Solid wood dining table, seats 6." },
-    { name: "Side Table", price: 89.00, image_url: "https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=800&q=80", description: "Compact side table for small spaces." }
-  ],
+"Tables" => [
+  { name: "Industrial Coffee Table", price: 25000.99, image_url: "https://m.media-amazon.com/images/I/81cFwtoevEL._AC_UF894,1000_QL80_.jpg", description: "Industrial-style coffee table with metal legs." },
+  { name: "Glass Top Dining Table", price: 7000.00, image_url: "https://5.imimg.com/data5/SELLER/Default/2024/3/403657709/NW/TG/FL/190297177/6-seater-dining-table.jpg", description: "Elegant glass top dining table for modern homes." },
+  { name: "Minimal Work Table", price: 2000.99, image_url: "https://i.pinimg.com/736x/c4/d6/4d/c4d64df226a471f12f43a921e11df02e.jpg", description: "Minimalist work table for office or study." },
+  { name: "Rustic Wooden Table", price: 4000.00, image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-uWABmg-jqJF2nZknqpELv2722qvR5sYyaQ&s", description: "Rustic wooden table with natural finish." },
+  { name: "Outdoor Patio Table", price: 3000.00, image_url: "https://m.media-amazon.com/images/I/81lj0JLXHHL._AC_UF894,1000_QL80_.jpg", description: "Weather-resistant table for outdoor spaces." },
+  { name: "Kids Study Table", price: 14000.99, image_url: "https://baybee.co.in/cdn/shop/files/71BrURIR8WL._SL1500_1400x.jpg?v=1735993578", description: "Compact and colorful study table for kids." },
+  { name: "Luxury Marble Table", price: 9990.00, image_url: "https://m.media-amazon.com/images/I/612BYKwAeML._AC_UF894,1000_QL80_.jpg", description: "Premium marble table for luxury interiors." }
+],
+
 
   "Textiles" => [
     { name: "Woven Throw", price: 49.00, image_url: "https://i.pinimg.com/1200x/27/ce/0b/27ce0b6fb0ee2706a3513dace10f4c66.jpg", description: "Cozy throw blanket in woven cotton." },
@@ -470,44 +466,15 @@ collections = {
     { name: "Linen Throw Blanket", price: 39.99, image_url: "https://i.pinimg.com/736x/7d/15/d5/7d15d5014351bcc5a1bb802bcbea0175.jpg", description: "Lightweight linen throw to layer over sofas or beds." }
   ],
 
-  "Sale" => [
-    {
-      name: "Basic Tee – 30% Off",
-      price: 9.99,
-      image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80",
-      description: "Soft cotton t‑shirt with a 30% seasonal discount."
-    },
-    {
-      name: "Denim Jacket – 50% Off",
-      price: 59.99,
-      image_url: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80",
-      description: "Classic denim jacket now at 50% off."
-    },
-    {
-      name: "Women’s White Sneakers – 40% Off",
-      price: 49.99,
-      image_url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80",
-      description: "Clean white sneakers with 40% off."
-    },
-    {
-      name: "Kids Hoodie – 60% Off",
-      price: 19.99,
-      image_url: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=900&q=80",
-      description: "Warm kids hoodie with a massive 60% discount."
-    },
-    {
-      name: "Decorative Wall Art – 35% Off",
-      price: 54.99,
-      image_url: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=900&q=80",
-      description: "Modern wall art print at 35% off."
-    },
-    {
-      name: "Accent Armchair – 45% Off",
-      price: 139.99,
-      image_url: "https://images.unsplash.com/photo-1493666438817-866a91353ca9?auto=format&fit=crop&w=900&q=80",
-      description: "Cozy armchair with 45% discount."
-    }
-  ],
+"Sale" => [
+  { name: "Basic Tee – 30% Off", price: 9.99, image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80", description: "Soft cotton t-shirt with a 30% seasonal discount." },
+  { name: "Denim Jacket – 50% Off", price: 59.99, image_url: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80", description: "Classic denim jacket now at 50% off." },
+  { name: "Women’s White Sneakers – 40% Off", price: 49.99, image_url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80", description: "Clean white sneakers with 40% off." },
+  { name: "Kids Hoodie – 60% Off", price: 19.99, image_url: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=900&q=80", description: "Warm kids hoodie with a massive 60% discount." },
+  { name: "Decorative Wall Art – 35% Off", price: 54.99, image_url: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=900&q=80", description: "Modern wall art print at 35% off." },
+  { name: "Accent Armchair – 45% Off", price: 139.99, image_url: "https://images.unsplash.com/photo-1493666438817-866a91353ca9?auto=format&fit=crop&w=900&q=80", description: "Cozy armchair with 45% discount." }
+],
+
 
   "Underwear" => [
     { name: "Seasonal Tee (Sale)", price: 9.99, image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80", description: "Basic tee at a special price." },
