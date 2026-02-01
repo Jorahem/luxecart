@@ -1,10 +1,17 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <%# ------------------------------------------------------------
+      Categories index (premium UI)
+      - Uses product image if available (same fallback style as product cards)
+      - Otherwise uses category-based high-quality internet images
+      - "Decor" displayed as "Beauty Product" (UI-only)
+      - NOTE: uses lambdas (no method defs in templates)
+     ------------------------------------------------------------ %>
+
   <div class="flex items-center justify-between mb-8">
     <h1 class="text-3xl font-extrabold text-gray-900">Categories</h1>
 
     <div class="flex items-center gap-4">
       <%= link_to 'View All Products', products_path, class: 'text-indigo-600 hover:underline' %>
-      <%# Optional: quick search for categories %>
       <form action="<%= categories_path %>" method="get" class="flex items-center">
         <input type="search" name="q" value="<%= params[:q] %>" placeholder="Search categories" class="px-3 py-2 border border-gray-200 rounded-md text-sm" />
         <button class="ml-2 px-3 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Search</button>
@@ -12,7 +19,6 @@
     </div>
   </div>
 
-  <%# Optional top-level banner / CTA %>
   <div class="mb-8 bg-gradient-to-r from-white to-gray-50 rounded-2xl p-6 flex items-center justify-between gap-6">
     <div>
       <h2 class="text-xl font-bold text-gray-900">Discover curated collections</h2>
@@ -23,29 +29,152 @@
     </div>
   </div>
 
+  <%# --- Helpers: product image fallback (no product_images) --- %>
+  <% image_url_for_product_card = lambda do |product|
+       next nil unless product
+
+       # Same name-based mappings as products/_product.html.erb (so "same images" when those are used)
+       begin
+         if product.respond_to?(:name) && product.name.present?
+           url =
+             case product.name
+             when "Modern Floor Lamp"
+               "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1200&q=80"
+             when "Handwoven Rug"
+               "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=80"
+             when "Oak Coffee Table"
+               "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1200&q=80"
+             when "Ceramic Vase Set"
+               "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=1200&q=80"
+             when "Minimalist Bookshelf"
+               "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=1200&q=80"
+             when "Designer Throw Pillow"
+               "https://images.unsplash.com/photo-1523755231516-e43fd2e8dca5?auto=format&fit=crop&w=1200&q=80"
+             when "Contemporary Wall Art"
+               "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1200&q=80"
+             when "Nordic Dining Chair"
+               "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1200&q=80"
+             else
+               nil
+             end
+
+           next url if url.present?
+         end
+       rescue StandardError
+       end
+
+       # Standard fallbacks like product cards
+       begin
+         next product.image_url if product.respond_to?(:image_url) && product.image_url.present?
+       rescue StandardError
+       end
+
+       begin
+         if product.respond_to?(:image) && product.image.respond_to?(:attached?) && product.image.attached?
+           next url_for(product.image)
+         end
+       rescue StandardError
+       end
+
+       begin
+         if product.respond_to?(:images) && product.images.respond_to?(:attached?) && product.images.attached?
+           first_img = product.images.respond_to?(:first) ? product.images.first : nil
+           next(url_for(first_img)) if first_img
+         end
+       rescue StandardError
+       end
+
+       nil
+     end %>
+
+  <%# --- Category fallback images (internet) --- %>
+  <% fallback_image_for_category = lambda do |name|
+       key = name.to_s.downcase.strip
+       key = "beauty product" if key == "decor" || key == "beauty product"
+
+       case key
+       when /shoe/
+         "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1400&q=80"
+       when /cloth|men|women|child|apparel/
+         "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=1400&q=80"
+       when /beauty|cosmetic/
+         "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1400&q=80"
+       when /accessor/
+         "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=1400&q=80"
+       when /furniture/
+         "https://images.unsplash.com/photo-1549488344-cbb6c34cf08b?auto=format&fit=crop&w=1400&q=80"
+       when /lighting/
+         "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=1400&q=80"
+       when /table/
+         "https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1400&q=80"
+       when /watch/
+         "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1400&q=80"
+       when /textile/
+         "https://images.unsplash.com/photo-1520975682031-ae3b7c34586c?auto=format&fit=crop&w=1400&q=80"
+       when /underwear/
+         "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=1400&q=80"
+       when /new/
+         "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1400&q=80"
+       when /sale/
+         "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=1400&q=80"
+       else
+         "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=1400&q=80"
+       end
+     end %>
+
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
     <% @categories.each do |category| %>
-      <div class="group block bg-white rounded-2xl shadow-sm hover:shadow-lg overflow-hidden border border-gray-100">
-        <div class="p-6 text-center">
-          <%= link_to category_path(category), class: 'block' do %>
-            <div class="flex items-center justify-center h-20 mb-4">
-              <i class="fa-solid fa-layer-group text-3xl text-indigo-600"></i>
+      <% display_name = (category.name.to_s.strip.downcase == "decor") ? "Beauty Product" : category.name %>
+
+      <%# get a product from this category (if any) to match product page images %>
+      <% product =
+           begin
+             rel = category.respond_to?(:products) ? category.products : []
+             rel = rel.respond_to?(:active) ? rel.active : rel
+             rel = rel.respond_to?(:order) ? rel.order(:name) : rel
+             rel.respond_to?(:first) ? rel.first : Array(rel).first
+           rescue StandardError
+             nil
+           end
+      %>
+
+      <% hero = image_url_for_product_card.call(product) %>
+      <% hero ||= fallback_image_for_category.call(display_name) %>
+
+      <div class="group rounded-2xl overflow-hidden border border-gray-100 bg-white shadow-sm hover:shadow-xl transition">
+        <%= link_to category_path(category), class: "block" do %>
+          <div class="relative h-44 bg-gray-100 overflow-hidden">
+            <img src="<%= hero %>"
+                 alt="<%= h(display_name) %>"
+                 loading="lazy"
+                 class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
+
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"></div>
+
+            <div class="absolute bottom-3 left-4 right-4">
+              <div class="flex items-center justify-between gap-3">
+                <h3 class="text-lg font-extrabold text-white drop-shadow"><%= display_name %></h3>
+                <span class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white ring-1 ring-white/20 backdrop-blur">
+                  Explore <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </span>
+              </div>
             </div>
+          </div>
+        <% end %>
 
-            <h3 class="text-lg font-semibold text-gray-900"><%= category.name %></h3>
-
-            <% if category.description.present? %>
-              <p class="mt-2 text-sm text-gray-500"><%= truncate(category.description, length: 80) %></p>
-            <% end %>
+        <div class="p-5 text-center">
+          <% if category.description.present? %>
+            <p class="text-sm text-gray-600"><%= truncate(category.description, length: 80) %></p>
+          <% else %>
+            <p class="text-sm text-gray-500">Browse products in this category.</p>
           <% end %>
         </div>
 
-        <%# Subcategories list (only show active subcategories if available) %>
         <% subcats = (category.respond_to?(:subcategories) ? category.subcategories : []) %>
         <% subcats = subcats.respond_to?(:active) ? subcats.active : subcats %>
         <% if subcats.any? %>
-          <div class="px-6 pb-6">
-            <div class="mt-3 text-sm text-gray-600 font-medium">Subcategories</div>
+          <div class="px-5 pb-5">
+            <div class="text-sm text-gray-600 font-medium">Subcategories</div>
             <ul class="mt-2 flex flex-wrap gap-2 justify-center">
               <% subcats.each do |sub| %>
                 <li>
@@ -59,7 +188,6 @@
     <% end %>
   </div>
 
-  <%# If there are no categories, helpful fallback %>
   <% if @categories.empty? %>
     <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm text-center text-gray-600">
       No categories found. You can add categories in the Rails console or via seeds.

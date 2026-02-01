@@ -16,7 +16,11 @@
       <li class="<%= nav_active_class(categories_path) %>"><%= link_to 'Categories', categories_path %></li>
       <li class="<%= nav_active_class(about_path) %>"><%= link_to 'About', about_path %></li>
       <li class="<%= nav_active_class(returns_path) %>"><%= link_to 'Returns', returns_path %></li>
-      <li class="contact-link <%= nav_active_class(contact_path) %>"><%= link_to 'Contact', contact_path %></li>
+
+      <!-- Contact added -->
+      <li class="contact-link <%= nav_active_class(contact_path) %>">
+        <%= link_to 'Contact', contact_path %>
+      </li>
     </ul>
 
     <div class="nav-actions">
