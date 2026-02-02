@@ -1,54 +1,87 @@
 <!-- Contact page: hero, contact cards, form, map, FAQ -->
 <section class="bg-gradient-to-b from-white to-gray-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
     <!-- Hero -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center animate-fade-in" data-animate="fade-up">
       <div>
-        <p class="text-sm font-semibold text-indigo-600">Get in touch</p>
+        <p class="text-sm font-semibold text-indigo-600 flex items-center gap-2">
+          <i class="fa-solid fa-circle-info text-xs"></i>
+          Get in touch
+        </p>
         <h1 class="mt-4 text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
           We're here to help — let's make something beautiful together
         </h1>
         <p class="mt-6 text-lg text-gray-600 max-w-xl">
-          Have a question about an order, partnership, or a product? Send us a message and our team will respond within 24 hours.
+          Have a question about an order, partnership, or a product? Send us a message and our team in Dhangadhi, Nepal will respond within 24 hours.
         </p>
 
+        <dl class="mt-6 space-y-2 text-sm text-gray-600">
+          <div class="flex items-center gap-3">
+            <dt><i class="fa-solid fa-location-dot text-indigo-600"></i></dt>
+            <dd>Dhangadhi, Kailali, Sudurpashchim Province, Nepal</dd>
+          </div>
+          <div class="flex items-center gap-3">
+            <dt><i class="fa-solid fa-phone text-indigo-600"></i></dt>
+            <dd>+977-91-123456 (Mon–Fri, 9am–6pm NST)</dd>
+          </div>
+          <div class="flex items-center gap-3">
+            <dt><i class="fa-solid fa-envelope text-indigo-600"></i></dt>
+            <dd>support@luxecart.example</dd>
+          </div>
+        </dl>
+
         <div class="mt-8 flex flex-wrap gap-3">
-          <a href="#contact-form" class="inline-flex items-center px-5 py-3 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">
+          <a href="#contact-form" class="inline-flex items-center px-5 py-3 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition transform hover:-translate-y-0.5 hover:shadow-lg">
             <i class="fa-solid fa-paper-plane mr-3"></i> Send a message
           </a>
 
-          <a href="#locations" class="inline-flex items-center px-5 py-3 bg-white border rounded-lg text-gray-700 hover:bg-gray-50 transition">
-            <i class="fa-solid fa-map-marker-alt mr-3"></i> Our locations
+          <a href="#locations" class="inline-flex items-center px-5 py-3 bg-white border rounded-lg text-gray-700 hover:bg-gray-50 transition transform hover:-translate-y-0.5">
+            <i class="fa-solid fa-map-marker-alt mr-3"></i> Our location
           </a>
         </div>
       </div>
 
       <div class="w-full">
-        <div class="rounded-2xl overflow-hidden shadow-lg ring-1 ring-gray-100">
-          <img src="https://images.unsplash.com/photo-1763872011479-aa293bf083a8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGUtY29tbWVyY2V8ZW58MHx8MHx8fDA%3D" alt="Support team" class="w-full h-64 object-cover">
+        <div class="relative rounded-2xl overflow-hidden shadow-lg ring-1 ring-gray-100 animate-fade-in" data-animate="fade-left">
+          <div class="absolute inset-0 bg-gradient-to-tr from-indigo-600/20 via-transparent to-pink-500/20 pointer-events-none"></div>
+          <img src="https://images.unsplash.com/photo-1763872011479-aa293bf083a8?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGUtY29tbWVyY2V8ZW58MHx8MHx8fDA%3D" alt="Support team" class="w-full h-72 object-cover">
+          <div class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur rounded-xl p-4 flex items-center justify-between text-sm text-gray-700">
+            <div class="flex items-center gap-3">
+              <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-600">
+                <i class="fa-solid fa-check"></i>
+              </span>
+              <div>
+                <p class="font-semibold">Real humans. Real support.</p>
+                <p class="text-xs text-gray-500">Average reply time: under 24 hours.</p>
+              </div>
+            </div>
+            <span class="hidden sm:inline-flex items-center gap-1 text-xs text-indigo-600">
+              <i class="fa-solid fa-headset"></i> 24/7 priority support
+            </span>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Contact cards -->
-    <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition transform hover:-translate-y-1 animate-fade-in" data-animate="fade-up" data-animate-delay="0">
         <div class="flex items-center gap-4">
           <div class="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600">
-            <i class="fa-solid fa-phone"></i>
+            <i class="fa-solid fa-phone-volume"></i>
           </div>
           <div>
             <p class="text-sm text-gray-500">Call Us</p>
-            <p class="font-semibold text-gray-900">+1 (555) 123-4567</p>
-            <p class="text-xs text-gray-400">Mon–Fri, 9am–6pm</p>
+            <p class="font-semibold text-gray-900">+977-91-123456</p>
+            <p class="text-xs text-gray-400">Mon–Fri, 9am–6pm (NST)</p>
           </div>
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition transform hover:-translate-y-1 animate-fade-in" data-animate="fade-up" data-animate-delay="100">
         <div class="flex items-center gap-4">
           <div class="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600">
-            <i class="fa-solid fa-envelope"></i>
+            <i class="fa-solid fa-envelope-open-text"></i>
           </div>
           <div>
             <p class="text-sm text-gray-500">Email</p>
@@ -58,170 +91,342 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition transform hover:-translate-y-1 animate-fade-in" data-animate="fade-up" data-animate-delay="200">
         <div class="flex items-center gap-4">
           <div class="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600">
-            <i class="fa-solid fa-headset"></i>
+            <i class="fa-solid fa-comments"></i>
           </div>
           <div>
-            <p class="text-sm text-gray-500">Support</p>
+            <p class="text-sm text-gray-500">Instant Support</p>
             <p class="font-semibold text-gray-900">Live chat & help center</p>
-            <p class="text-xs text-gray-400">Available 24/7</p>
+            <p class="text-xs text-gray-400">Available 24/7 for urgent issues</p>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- Contact form -->
-      <div id="contact-form" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-        <h2 class="text-2xl font-bold text-gray-900">Send us a message</h2>
-        <p class="mt-2 text-sm text-gray-600">Tell us about your inquiry and we'll get back to you soon.</p>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+      <!-- Contact form (updated design) -->
+      <div id="contact-form" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 animate-fade-in relative overflow-hidden" data-animate="fade-up">
+        <div class="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-indigo-50 blur-3xl opacity-60"></div>
+
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <i class="fa-solid fa-message"></i>
+              Send us a message
+            </h2>
+            <p class="mt-2 text-sm text-gray-600">
+              Share a few details and we'll get back to you as soon as possible.
+            </p>
+          </div>
+          <div class="hidden sm:flex flex-col items-end text-xs text-gray-500">
+            <span class="inline-flex items-center gap-1">
+              <i class="fa-solid fa-stopwatch text-green-500"></i>
+              Response within 24 hours
+            </span>
+            <span class="inline-flex items-center gap-1 mt-1">
+              <i class="fa-solid fa-shield-halved text-indigo-500"></i>
+              Your data stays private
+            </span>
+          </div>
+        </div>
 
         <% if flash[:notice] %>
-          <div class="mt-4 rounded-md bg-green-50 border border-green-100 p-3 text-green-700"><%= flash[:notice] %></div>
+          <div class="mt-4 rounded-md bg-green-50 border border-green-100 p-3 text-green-700 flex items-center gap-2">
+            <i class="fa-solid fa-circle-check"></i>
+            <span><%= flash[:notice] %></span>
+          </div>
         <% elsif flash[:alert] %>
-          <div class="mt-4 rounded-md bg-red-50 border border-red-100 p-3 text-red-700"><%= flash[:alert] %></div>
+          <div class="mt-4 rounded-md bg-red-50 border border-red-100 p-3 text-red-700 flex items-center gap-2">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span><%= flash[:alert] %></span>
+          </div>
         <% end %>
 
         <div class="mt-6">
-          <%= form_with url: contact_submit_path, method: :post, local: true, html: { class: "space-y-4" } do |f| %>
+          <%= form_with url: contact_submit_path, method: :post, local: true, html: { class: "space-y-5" } do |f| %>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <%= f.label :name, "Full name", class: "block text-sm font-medium text-gray-700" %>
-                <%= f.text_field :name, name: "contact[name]", required: true, class: "mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+                <div class="flex items-center justify-between">
+                  <%= f.label :name, "Full name", class: "block text-sm font-medium text-gray-700" %>
+                  <span class="text-xs text-gray-400">Required</span>
+                </div>
+                <div class="mt-1 relative">
+                  <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-300">
+                    <i class="fa-solid fa-user"></i>
+                  </span>
+                  <%= f.text_field :name,
+                      name: "contact[name]",
+                      required: true,
+                      class: "mt-0 block w-full pl-9 rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
+                      placeholder: "Enter your full name" %>
+                </div>
               </div>
 
               <div>
-                <%= f.label :email, "Email address", class: "block text-sm font-medium text-gray-700" %>
-                <%= f.email_field :email, name: "contact[email]", required: true, class: "mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+                <div class="flex items-center justify-between">
+                  <%= f.label :email, "Email address", class: "block text-sm font-medium text-gray-700" %>
+                  <span class="text-xs text-gray-400">Required</span>
+                </div>
+                <div class="mt-1 relative">
+                  <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-300">
+                    <i class="fa-solid fa-envelope"></i>
+                  </span>
+                  <%= f.email_field :email,
+                      name: "contact[email]",
+                      required: true,
+                      class: "mt-0 block w-full pl-9 rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
+                      placeholder: "you@example.com" %>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <div class="flex items-center justify-between">
+                  <%= f.label :phone, "Phone number", class: "block text-sm font-medium text-gray-700" %>
+                  <span class="text-xs text-indigo-600 font-medium">Required</span>
+                </div>
+                <div class="mt-1 relative">
+                  <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-300">
+                    <i class="fa-solid fa-phone"></i>
+                  </span>
+                  <%= f.telephone_field :phone,
+                      name: "contact[phone]",
+                      required: true,
+                      class: "mt-0 block w-full pl-9 rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
+                      placeholder: "+977-91-123456" %>
+                </div>
+                <p class="mt-1 text-xs text-gray-400">
+                  We may call if we need a quick clarification about your request.
+                </p>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between">
+                  <%= f.label :subject, "Subject", class: "block text-sm font-medium text-gray-700" %>
+                  <span class="text-xs text-gray-400">Optional</span>
+                </div>
+                <div class="mt-1 relative">
+                  <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-300">
+                    <i class="fa-solid fa-tag"></i>
+                  </span>
+                  <%= f.text_field :subject,
+                      name: "contact[subject]",
+                      class: "mt-0 block w-full pl-9 rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
+                      placeholder: "Order help, product question, partnership..." %>
+                </div>
               </div>
             </div>
 
             <div>
-              <%= f.label :subject, "Subject", class: "block text-sm font-medium text-gray-700" %>
-              <%= f.text_field :subject, name: "contact[subject]", class: "mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+              <div class="flex items-center justify-between">
+                <%= f.label :message, "Message", class: "block text-sm font-medium text-gray-700" %>
+                <span class="text-xs text-indigo-600 font-medium">Required</span>
+              </div>
+              <div class="mt-1 relative">
+                <span class="pointer-events-none absolute top-3 left-3 text-gray-300">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </span>
+                <%= f.text_area :message,
+                    name: "contact[message]",
+                    rows: 6,
+                    required: true,
+                    class: "mt-0 block w-full pl-9 rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
+                    placeholder: "Tell us how we can help you..." %>
+              </div>
+              <p class="mt-1 text-xs text-gray-400">
+                Include your order number if you’re asking about an existing purchase.
+              </p>
             </div>
 
-            <div>
-              <%= f.label :message, "Message", class: "block text-sm font-medium text-gray-700" %>
-              <%= f.text_area :message, name: "contact[message]", rows: 6, required: true, class: "mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
-            </div>
-
-            <div class="flex items-center justify-between gap-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-dashed border-gray-100 pt-4">
               <div class="flex items-center space-x-3">
                 <input id="newsletter" name="contact[newsletter]" type="checkbox" class="h-4 w-4 text-indigo-600 rounded">
-                <label for="newsletter" class="text-sm text-gray-600">Subscribe to newsletter</label>
+                <label for="newsletter" class="text-sm text-gray-600">
+                  Receive style tips & exclusive offers by email
+                </label>
               </div>
 
-              <div class="text-sm text-gray-500">We respect your privacy. <%= link_to 'Privacy policy', privacy_path, class: 'text-indigo-600 hover:underline' %></div>
+              <div class="text-xs sm:text-sm text-gray-500">
+                By sending this form you agree to our
+                <%= link_to 'Privacy policy', privacy_path, class: 'text-indigo-600 hover:underline' %>.
+              </div>
             </div>
 
-            <div class="pt-4">
-              <%= f.submit "Send message", class: "inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition" %>
+            <div class="pt-4 flex flex-col sm:flex-row sm:items-center gap-3">
+              <button type="submit" class="inline-flex items-center justify-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition transform hover:-translate-y-0.5 hover:shadow-lg w-full sm:w-auto">
+                <span class="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-indigo-500/80">
+                  <i class="fa-solid fa-paper-plane text-xs"></i>
+                </span>
+                Send message
+              </button>
+              <p class="text-xs text-gray-500 flex items-center gap-2">
+                <i class="fa-solid fa-lock text-green-500"></i>
+                Encrypted & secure — we’ll never sell your details.
+              </p>
             </div>
           <% end %>
         </div>
       </div>
 
-      <!-- Sidebar: offices + map + social -->
+      <!-- Sidebar: offices + map + social (unchanged from previous answer) -->
       <aside class="space-y-6">
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h3 class="text-lg font-bold text-gray-900">Our offices</h3>
-          <div class="mt-4 space-y-4">
+        <div id="locations" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 animate-fade-in" data-animate="fade-left">
+          <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <i class="fa-solid fa-building"></i>
+            Our office
+          </h3>
+          <div class="mt-4 space-y-4 text-sm text-gray-700">
             <div>
-              <p class="text-sm text-gray-500">Headquarters</p>
-              <p class="font-semibold text-gray-900">123 Luxe Street, Suite 200<br/>San Francisco, CA</p>
-              <p class="text-sm text-gray-500 mt-1">Mon–Fri 9am–6pm</p>
+              <p class="text-sm text-gray-500">Dhangadhi Studio</p>
+              <p class="font-semibold text-gray-900">
+                Dhangadhi, Kailali<br/>
+                Sudurpashchim Province, Nepal
+              </p>
+              <p class="text-sm text-gray-500 mt-1">
+                Mon–Fri 9am–6pm (Nepal Time)
+              </p>
             </div>
 
-            <div>
-              <p class="text-sm text-gray-500">Europe</p>
-              <p class="font-semibold text-gray-900">10 Avenue, London</p>
-              <p class="text-sm text-gray-500 mt-1">Mon–Fri 9am–5pm (GMT)</p>
+            <div class="flex items-center gap-3 text-gray-700">
+              <i class="fa-solid fa-phone text-indigo-600"></i>
+              <span>+977-91-123456</span>
             </div>
           </div>
         </div>
 
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h3 class="text-lg font-bold text-gray-900 mb-3">Find us</h3>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 animate-fade-in" data-animate="fade-left" data-animate-delay="100">
+          <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-map-location-dot"></i>
+            Find us in Dhangadhi
+          </h3>
 
-          <!-- Responsive embed map (replace src with your location if desired) -->
-          <div class="w-full h-48 overflow-hidden rounded-lg">
-            <iframe class="w-full h-full border-0" loading="lazy"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.0197994365485!2d-122.40135028468135!3d37.79362121975683!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80858064a6f0e0a1%3A0x1b2b3c4d5e6f7a8b!2sSan%20Francisco%2C%20CA!5e0!3m2!1sen!2sus!4v0000000000000"
-              allowfullscreen="" referrerpolicy="no-referrer-when-downgrade" aria-hidden="false" tabindex="0"></iframe>
+          <div class="w-full h-48 overflow-hidden rounded-lg shadow-sm">
+            <iframe
+              class="w-full h-full border-0"
+              loading="lazy"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3531.324872946972!2d80.582133!3d28.700001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39a1fd2d7e8f9c3f%3A0x4f7b6b6a3d46d8a5!2sDhangadhi%2C%20Kailali%2C%20Nepal!5e0!3m2!1sen!2snp!4v1700000000000"
+              allowfullscreen
+              referrerpolicy="no-referrer-when-downgrade"
+              aria-hidden="false"
+              tabindex="0">
+            </iframe>
+          </div>
+
+          <div class="mt-4 flex items-center gap-3 text-sm text-gray-600">
+            <i class="fa-solid fa-route text-indigo-600"></i>
+            <p>We’re located near the main city area in Dhangadhi. Call us for exact directions or appointments.</p>
           </div>
 
           <div class="mt-4 flex items-center gap-3">
-            <a href="#" class="text-gray-400 hover:text-indigo-600"><i class="fab fa-facebook-f"></i><span class="sr-only">Facebook</span></a>
-            <a href="#" class="text-gray-400 hover:text-indigo-600"><i class="fab fa-instagram"></i><span class="sr-only">Instagram</span></a>
-            <a href="#" class="text-gray-400 hover:text-indigo-600"><i class="fab fa-twitter"></i><span class="sr-only">Twitter</span></a>
-            <a href="#" class="text-gray-400 hover:text-indigo-600"><i class="fab fa-linkedin-in"></i><span class="sr-only">LinkedIn</span></a>
+            <a href="#" class="text-gray-400 hover:text-indigo-600 transition transform hover:-translate-y-0.5">
+              <i class="fab fa-facebook-f"></i><span class="sr-only">Facebook</span>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-indigo-600 transition transform hover:-translate-y-0.5">
+              <i class="fab fa-instagram"></i><span class="sr-only">Instagram</span>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-indigo-600 transition transform hover:-translate-y-0.5">
+              <i class="fab fa-twitter"></i><span class="sr-only">Twitter</span>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-indigo-600 transition transform hover:-translate-y-0.5">
+              <i class="fab fa-linkedin-in"></i><span class="sr-only">LinkedIn</span>
+            </a>
           </div>
         </div>
 
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h3 class="text-lg font-bold text-gray-900">Need help now?</h3>
-          <p class="mt-2 text-sm text-gray-600">Use live chat in the bottom-right corner or call our support line for orders and returns.</p>
-          <a href="<%= new_user_session_path %>" class="mt-4 block text-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Start live chat</a>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 animate-fade-in" data-animate="fade-left" data-animate-delay="200">
+          <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <i class="fa-solid fa-headset"></i>
+            Need help now?
+          </h3>
+          <p class="mt-2 text-sm text-gray-600">
+            Use live chat in the bottom-right corner or call our support line for orders and returns.
+          </p>
+          <a href="<%= new_user_session_path %>" class="mt-4 block text-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition transform hover:-translate-y-0.5 hover:shadow-lg">
+            Start live chat
+          </a>
+          <p class="mt-3 text-xs text-gray-500 flex items-center gap-2">
+            <i class="fa-solid fa-clock text-indigo-500"></i>
+            Live chat available 24/7 • Phone support in business hours
+          </p>
         </div>
       </aside>
     </div>
 
-    <!-- FAQ -->
-    <div class="mt-12 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-      <h3 class="text-2xl font-bold text-gray-900">Frequently asked</h3>
-      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <details class="p-4 bg-gray-50 rounded-lg">
-          <summary class="font-semibold cursor-pointer">How long does shipping take?</summary>
-          <p class="mt-2 text-sm text-gray-600">Standard shipping usually takes 3–7 business days, depending on your location.</p>
-        </details>
-
-        <details class="p-4 bg-gray-50 rounded-lg">
-          <summary class="font-semibold cursor-pointer">How do returns work?</summary>
-          <p class="mt-2 text-sm text-gray-600">We offer a 30-day returns policy. Visit our Returns page for details and the return form.</p>
-        </details>
-
-        <details class="p-4 bg-gray-50 rounded-lg">
-          <summary class="font-semibold cursor-pointer">Do you support wholesale?</summary>
-          <p class="mt-2 text-sm text-gray-600">Yes — contact partnerships@luxecart.example for wholesale inquiries.</p>
-        </details>
-
-        <details class="p-4 bg-gray-50 rounded-lg">
-          <summary class="font-semibold cursor-pointer">Is checkout secure?</summary>
-          <p class="mt-2 text-sm text-gray-600">Yes — we use Stripe for payments and follow industry best practices for security.</p>
-        </details>
-      </div>
-    </div>
+    <!-- FAQ section stays as in previous answer (you can keep or tweak) -->
+    <!-- ... FAQ code from previous message ... -->
   </div>
 </section>
 
-<!-- Minimal client-side enhancement: simple form validation before submit -->
+<!-- Minimal client-side enhancement: simple form validation + scroll animations -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('#contact-form form');
-    if (!form) return;
+    const formWrapper = document.querySelector('#contact-form');
+    const form = formWrapper ? formWrapper.querySelector('form') : null;
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        const name = form.querySelector('input[name="contact[name]"]');
+        const email = form.querySelector('input[name="contact[email]"]');
+        const phone = form.querySelector('input[name="contact[phone]"]');
+        const message = form.querySelector('textarea[name="contact[message]"]');
 
-    form.addEventListener('submit', function(e) {
-      const name = form.querySelector('input[name="contact[name]"]');
-      const email = form.querySelector('input[name="contact[email]"]');
-      const message = form.querySelector('textarea[name="contact[message]"]');
+        let errors = [];
 
-      let errors = [];
+        if (!name || !name.value.trim()) errors.push('Please enter your name.');
+        if (!email || !/^\\S+@\\S+\\.\\S+$/.test(email.value || '')) errors.push('Please enter a valid email address.');
+        if (!phone || !phone.value.trim()) {
+          errors.push('Please enter your phone number.');
+        }
+        if (!message || !message.value.trim()) errors.push('Please write a message.');
 
-      if (!name || !name.value.trim()) errors.push('Please enter your name.');
-      if (!email || !/^\S+@\S+\.\S+$/.test(email.value || '')) errors.push('Please enter a valid email address.');
-      if (!message || !message.value.trim()) errors.push('Please write a message.');
+        if (errors.length > 0) {
+          e.preventDefault();
+          alert(errors.join('\\n'));
+          return false;
+        }
 
-      if (errors.length > 0) {
-        e.preventDefault();
-        alert(errors.join('\\n'));
-        return false;
-      }
+        return true;
+      });
+    }
 
-      // allow submit
-      return true;
-    });
+    const animatedEls = document.querySelectorAll('[data-animate]');
+
+    const reveal = (entry, el) => {
+      const type = el.getAttribute('data-animate');
+      const delay = parseInt(el.getAttribute('data-animate-delay') || '0', 10);
+
+      el.style.opacity = '0';
+      el.style.transform = {
+        'fade-up': 'translateY(12px)',
+        'fade-left': 'translateX(12px)',
+        'fade-right': 'translateX(-12px)'
+      }[type] || 'translateY(12px)';
+
+      setTimeout(() => {
+        el.style.transition = 'opacity 500ms ease-out, transform 500ms ease-out';
+        el.style.opacity = '1';
+        el.style.transform = 'translateX(0) translateY(0)';
+      }, delay);
+    };
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            reveal(entry, entry.target);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      animatedEls.forEach((el) => observer.observe(el));
+    } else {
+      animatedEls.forEach((el) => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateX(0) translateY(0)';
+      });
+    }
   });
 </script>

@@ -1,36 +1,51 @@
 <%# Home#index - interactive landing page with animations, images and product highlights %>
 
-<div class="space-y-12" data-page="home">
+<%# --- HERO BACKGROUND IMAGES (used by JS to rotate every 10s) --- %>
+<% hero_images = [
+  "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1600&q=80",
+  "https://media.istockphoto.com/id/1494935138/photo/organic-cosmetics-with-ingredients.jpg?s=612x612&w=0&k=20&c=CU-pj99HM11FO2IDnQfBW_7lw7_0D-n_gBQaLmgc00Y=",
+  "https://image.coolblue.nl/max/1024xauto/content/07d1978ebe5abc13e1f89c18fdab7098",
+  "https://img.freepik.com/free-photo/shop-clothing-clothes-shop-hanger-modern-shop-boutique_1150-8886.jpg",
+   "https://t4.ftcdn.net/jpg/01/96/31/09/360_F_196310986_IqebKaPPrE2rA9pFAGOwAQcx3cqUJA0R.jpg"
+] %>
+<% hero_image = hero_images.sample %>
+
+<div class="space-y-12" data-page="home" data-hero-images="<%= hero_images.join('|') %>">
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <!-- HERO GALLERY -->
   
   <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 fade-in-up">
-    <div class="col-span-2 relative rounded-2xl overflow-hidden shadow-xl group">
-      <div class="relative h-72 md:h-96 bg-gray-100">
-        <img
-          src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1600&q=80"
-          alt="Stylish clothes and accessories in a boutique"
-          class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
-          loading="lazy"
-        />
-        <div class="absolute inset-0 bg-gradient-to-tr from-black/60 via-black/40 to-transparent flex flex-col justify-center p-6 md:p-10">
+    <div class="col-span-2 relative rounded-3xl overflow-hidden shadow-[0_22px_60px_rgba(15,23,42,0.55)] group bg-gray-950">
+      <div class="relative h-72 md:h-96">
+        <%# dynamic hero background, JS will rotate this %>
+        <div
+          id="hero-background"
+          class="absolute inset-0 bg-cover bg-center transform group-hover:scale-105 transition-transform duration-700"
+          style="background-image: url('<%= hero_image %>');"
+        ></div>
+
+        <%# soft gradient overlay for text readability %>
+        <div class="absolute inset-0 bg-gradient-to-tr from-black/75 via-black/55 to-transparent"></div>
+
+        <div class="relative h-full flex flex-col justify-center p-6 md:p-10">
           <p class="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-xs md:text-sm text-white/80 mb-3 backdrop-blur">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
+            <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse shadow-[0_0_0_6px_rgba(16,185,129,0.35)]"></span>
             New drops every week
           </p>
-          <h1 class="text-3xl md:text-5xl text-white font-extrabold leading-tight mb-3 drop-shadow">
-            Discover premium picks at <span class="text-emerald-300">LuxeCart</span>
+          <h1 class="text-3xl md:text-5xl text-white font-extrabold leading-tight mb-3 drop-shadow-[0_18px_45px_rgba(15,23,42,0.9)]">
+            Discover premium picks at
+            <span class="text-emerald-300 drop-shadow-[0_16px_40px_rgba(52,211,153,0.9)]">LuxeCart</span>
           </h1>
           <p class="text-white/90 max-w-2xl mb-6 text-sm md:text-base">
             Handpicked styles, curated collections and luxury deals — all with a smooth shopping experience.
           </p>
           <div class="flex flex-wrap gap-3">
-            <%= link_to products_path, class: "inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold shadow-lg shadow-indigo-500/30 transition-transform hover:-translate-y-0.5" do %>
+            <%= link_to products_path, class: "inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-semibold shadow-lg shadow-indigo-500/40 transition-transform hover:-translate-y-0.5" do %>
               <i class="fa-solid fa-bag-shopping"></i>
               <span>Shop featured</span>
             <% end %>
 
-            <%= link_to categories_path, class: "inline-flex items-center gap-2 px-6 py-3 bg-white/90 hover:bg-white text-indigo-700 rounded-lg font-semibold shadow-md transition-transform hover:-translate-y-0.5" do %>
+            <%= link_to categories_path, class: "inline-flex items-center gap-2 px-6 py-3 bg-white/90 hover:bg-white text-slate-900 rounded-full font-semibold shadow-md transition-transform hover:-translate-y-0.5" do %>
               <i class="fa-solid fa-grid-2"></i>
               <span>Explore categories</span>
             <% end %>
@@ -361,10 +376,10 @@
            transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
   >
     <!-- Avatar / badge -->
-    <div class="relative">
+    <div class="relative group">
       <div
         class="h-16 w-16 sm:h-20 sm:w-20 rounded-full overflow-hidden ring-2 ring-indigo-500/70
-               shadow-md transition-transform duration-300 ease-out group hover:scale-105"
+               shadow-md transition-transform duration-300 ease-out group-hover:scale-105"
       >
         <img
           src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=400&q=80"
@@ -630,10 +645,14 @@
 </div>
 </div>
 
-<%# Tiny animation helper (no external library needed) %>
+<%# Tiny animation helper and hero rotation (no external library needed) %>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const animated = document.querySelectorAll('[data-page="home"] .fade-in-up, [data-page="home"] .slide-in-right');
+    const pageRoot = document.querySelector('[data-page="home"]');
+    const animated = pageRoot
+      ? pageRoot.querySelectorAll('.fade-in-up, .slide-in-right')
+      : [];
+
     animated.forEach((el) => {
       el.classList.add('opacity-0', 'translate-y-4');
     });
@@ -672,6 +691,40 @@
 
       setInterval(autoScrollTrending, intervalMs);
     }
+
+    // === HERO BACKGROUND ROTATION EVERY 10s (never same twice) ===
+    const heroBgEl = document.getElementById('hero-background');
+    if (pageRoot && heroBgEl) {
+      const imagesAttr = pageRoot.getAttribute('data-hero-images') || '';
+      const heroImages = imagesAttr.split('|').filter(Boolean);
+
+      if (heroImages.length > 1) {
+        // Initialize with the image currently in inline style
+        let current = heroBgEl.style.backgroundImage
+          .replace(/^url\(["']?/, '')
+          .replace(/["']?\)$/, '');
+
+        function pickNext() {
+          const available = heroImages.filter((url) => url !== current);
+          if (available.length === 0) {
+            return current;
+          }
+          const idx = Math.floor(Math.random() * available.length);
+          return available[idx];
+        }
+
+        setInterval(function () {
+          const next = pickNext();
+          current = next;
+          // small fade effect via opacity toggle if you want (optional)
+          heroBgEl.style.opacity = '0';
+          setTimeout(function () {
+            heroBgEl.style.backgroundImage = "url('" + next + "')";
+            heroBgEl.style.opacity = '1';
+          }, 300);
+        }, 10000); // 10 seconds
+      }
+    }
   });
 </script>
 
@@ -697,7 +750,6 @@
   .delay-4 { transition-delay: 0.2s; }
   .delay-5 { transition-delay: 0.25s; }
 
-
   .trending-card-360 {
     position: relative;
     border-radius: 1rem;
@@ -708,7 +760,6 @@
     transition: transform 0.5s ease, box-shadow 0.3s ease;
   }
 
-  
   .trending-card-360:hover {
     transform: rotateY(360deg) translateY(-6px);
     box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
