@@ -1,181 +1,623 @@
 <!-- About page for LuxeCart -->
-<section class="bg-gradient-to-r from-white to-gray-50">
+<section class="bg-gradient-to-r from-white via-gray-50 to-slate-100 min-h-screen">
+
   <!-- Hero -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-      <div>
-        <p class="text-sm text-indigo-600 font-semibold">New at LuxeCart</p>
-        <h1 class="mt-4 text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
-          Elevating online shopping with premium design &amp; thoughtful service
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+      <div class="animate-on-scroll opacity-0 translate-y-6 transition-all duration-700 ease-out">
+        <span class="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-semibold text-indigo-600 tracking-wide uppercase shadow-sm">
+          <i class="fas fa-gem mr-2 text-indigo-500"></i>
+          Built with Ruby on Rails • Modern E‑commerce
+        </span>
+
+        <h1 class="mt-5 text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
+          LuxeCart: A premium shopping experience for modern brands
         </h1>
-        <p class="mt-6 text-lg text-gray-600 max-w-2xl">
-          LuxeCart is a modern e-commerce experience built for beautiful products and seamless checkout.
-          We combine curated collections, fast delivery and secure payments to help customers discover and love your brand.
+
+        <p class="mt-5 text-lg text-gray-600 max-w-2xl">
+          LuxeCart is a Ruby on Rails–powered e‑commerce platform focused on speed, clarity and trust.
+          From discovering products to completing secure checkout, every interaction is crafted to feel simple,
+          polished and delightful for your customers.
         </p>
 
-        <div class="mt-8 flex flex-wrap gap-4">
-          <%= link_to "Shop Now", products_path, class: "inline-flex items-center px-5 py-3 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition" %>
-          <%= link_to "Browse Categories", categories_path, class: "inline-flex items-center px-5 py-3 bg-white border rounded-lg text-gray-700 hover:bg-gray-50 transition" %>
+        <dl class="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100 hover:-translate-y-1 hover:shadow-md transition-transform duration-300">
+            <dt class="text-[11px] font-semibold text-gray-500 uppercase tracking-wide flex items-center gap-1">
+              <i class="fas fa-bolt text-amber-400 text-xs"></i> Average load time
+            </dt>
+            <dd class="mt-1 text-xl font-bold text-gray-900">Sub‑second</dd>
+          </div>
+          <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100 hover:-translate-y-1 hover:shadow-md transition-transform duration-300">
+            <dt class="text-[11px] font-semibold text-gray-500 uppercase tracking-wide flex items-center gap-1">
+              <i class="fas fa-lock text-emerald-500 text-xs"></i> Checkout
+            </dt>
+            <dd class="mt-1 text-xl font-bold text-gray-900">Secure &amp; simple</dd>
+          </div>
+          <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100 hover:-translate-y-1 hover:shadow-md transition-transform duration-300">
+            <dt class="text-[11px] font-semibold text-gray-500 uppercase tracking-wide flex items-center gap-1">
+              <i class="fas fa-heart text-rose-500 text-xs"></i> Focus
+            </dt>
+            <dd class="mt-1 text-xl font-bold text-gray-900">Customer delight</dd>
+          </div>
+        </dl>
+
+        <div class="mt-8 flex flex-wrap gap-4 items-center">
+          <%= link_to "Start shopping", products_path,
+                class: "inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition transform hover:-translate-y-0.5 hover:shadow-lg" %>
+
+          <%= link_to "Explore categories", categories_path,
+                class: "inline-flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-lg text-gray-800 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition transform hover:-translate-y-0.5 hover:shadow-lg" %>
+
+          <a href="#contact" class="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-800 font-medium group">
+            Talk to us
+            <i class="fas fa-arrow-right ml-2 text-xs transform transition-transform group-hover:translate-x-1"></i>
+          </a>
         </div>
       </div>
 
       <div class="flex justify-center lg:justify-end">
-        <div class="w-full max-w-md rounded-xl overflow-hidden shadow-lg ring-1 ring-gray-100">
-          <img src="https://sourcecode.mx/wp-content/uploads/2025/03/diseno-e-commerce.webp" alt="Sofa" class="w-full h-64 object-cover">
+        <div class="relative w-full max-w-md animate-on-scroll opacity-0 translate-y-6 transition-all duration-700 delay-100 ease-out">
+          <div class="absolute -inset-3 bg-gradient-to-tr from-indigo-200 via-purple-200 to-pink-200 rounded-3xl blur-xl opacity-70 animate-pulse-slow"></div>
+          <div class="relative bg-white rounded-3xl overflow-hidden shadow-xl ring-1 ring-gray-100 transform transition-transform duration-500 hover:-translate-y-2 hover:rotate-1">
+            <img src="https://sourcecode.mx/wp-content/uploads/2025/03/diseno-e-commerce.webp"
+                 alt="Elegant online shopping experience" class="w-full h-72 object-cover">
+            <div class="p-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between text-sm">
+              <div>
+                <p class="font-semibold text-gray-900 flex items-center gap-2">
+                  <i class="fas fa-store text-indigo-500"></i> LuxeCart Storefront
+                </p>
+                <p class="text-gray-500 text-xs">Designed for conversion &amp; trust.</p>
+              </div>
+              <div class="flex -space-x-2">
+                <span class="inline-flex h-8 w-8 rounded-full bg-indigo-100 items-center justify-center text-[11px] font-semibold text-indigo-700 border border-white">
+                  UI
+                </span>
+                <span class="inline-flex h-8 w-8 rounded-full bg-emerald-100 items-center justify-center text-[11px] font-semibold text-emerald-700 border border-white">
+                  UX
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hidden sm:block absolute -bottom-8 -left-4 bg-white rounded-2xl shadow-lg px-4 py-3 border border-gray-100 animate-bounce-subtle">
+            <p class="text-xs font-semibold text-gray-700 flex items-center gap-2">
+              <i class="fas fa-mobile-alt text-indigo-500"></i>
+              Optimized for mobile first
+            </p>
+            <p class="mt-1 text-[11px] text-gray-500">
+              Responsive layouts, fast navigation and frictionless checkout on any screen.
+            </p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Mission -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <div class="bg-white rounded-lg shadow-sm p-8">
-      <h2 class="text-2xl font-bold text-gray-900">Our mission</h2>
-      <p class="mt-4 text-gray-600">
-        We exist to connect people with beautifully designed products while making the shopping experience delightful, secure and simple.
-        From curated collections to a fast checkout, every step is designed to increase conversion while preserving brand aesthetics.
-      </p>
+  <!-- Mission & Vision -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="bg-white rounded-2xl shadow-sm p-8 border border-gray-100 animate-on-scroll opacity-0 translate-y-6 transition-all duration-700 ease-out">
+        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+            <i class="fas fa-bullseye"></i>
+          </span>
+          Our mission
+        </h2>
+        <p class="mt-4 text-gray-600">
+          LuxeCart exists to make online shopping feel intuitive, trustworthy and memorable —
+          both for customers and for the brands that serve them.
+        </p>
+        <p class="mt-4 text-gray-600">
+          We combine clean UI, clear product storytelling, fast performance and secure payments
+          so that small and growing brands can offer a premium shopping journey without needing
+          a large engineering team.
+        </p>
+
+        <ul class="mt-5 space-y-2 text-sm text-gray-700">
+          <li class="flex items-start gap-2">
+            <span class="mt-1 h-5 w-5 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs shadow-sm">
+              <i class="fas fa-check"></i>
+            </span>
+            <span>Focus on conversion and clarity at every step.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="mt-1 h-5 w-5 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs shadow-sm">
+              <i class="fas fa-check"></i>
+            </span>
+            <span>Respect the customer’s time with fast interactions and simple flows.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="mt-1 h-5 w-5 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs shadow-sm">
+              <i class="fas fa-check"></i>
+            </span>
+            <span>Give merchants easy tools to manage products, orders and customers.</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- How LuxeCart Works -->
+      <div class="bg-slate-900 rounded-2xl p-8 text-slate-50 relative overflow-hidden animate-on-scroll opacity-0 translate-y-6 transition-all duration-700 delay-100 ease-out">
+        <div class="absolute inset-0 bg-gradient-to-tr from-indigo-700/40 via-slate-900 to-slate-900 pointer-events-none"></div>
+        <div class="relative">
+          <h2 class="text-2xl font-bold flex items-center gap-2">
+            <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 text-indigo-300">
+              <i class="fas fa-route"></i>
+            </span>
+            How LuxeCart works
+          </h2>
+          <p class="mt-3 text-sm text-slate-200">
+            A simple, opinionated flow designed around real shoppers.
+          </p>
+
+          <ol class="mt-5 space-y-4 text-sm">
+            <li class="flex items-start gap-3 animate-on-scroll opacity-0 translate-x-4 transition-all duration-700 delay-150 ease-out">
+              <span class="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-500 font-semibold text-xs shadow">
+                1
+              </span>
+              <div>
+                <p class="font-semibold">Discover curated collections</p>
+                <p class="text-slate-200 mt-1">
+                  Category pages highlight best‑selling and new arrivals with clean cards and clear pricing.
+                </p>
+              </div>
+            </li>
+            <li class="flex items-start gap-3 animate-on-scroll opacity-0 translate-x-4 transition-all duration-700 delay-250 ease-out">
+              <span class="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-500 font-semibold text-xs shadow">
+                2
+              </span>
+              <div>
+                <p class="font-semibold">Evaluate the product</p>
+                <p class="text-slate-200 mt-1">
+                  Detailed product pages with imagery, specs and stock status help customers feel confident before adding to cart.
+                </p>
+              </div>
+            </li>
+            <li class="flex items-start gap-3 animate-on-scroll opacity-0 translate-x-4 transition-all duration-700 delay-350 ease-out">
+              <span class="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-500 font-semibold text-xs shadow">
+                3
+              </span>
+              <div>
+                <p class="font-semibold">Checkout with confidence</p>
+                <p class="text-slate-200 mt-1">
+                  A focused checkout with secure payments and clear order summary minimizes friction and drop‑offs.
+                </p>
+              </div>
+            </li>
+          </ol>
+
+          <p class="mt-6 text-xs text-slate-300 flex items-center gap-2">
+            <i class="fas fa-server text-slate-400"></i>
+            Under the hood, LuxeCart is a Ruby on Rails app with a focus on performance, security and maintainable code.
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Features -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <h3 class="text-xl font-bold text-gray-900 mb-6">What makes LuxeCart different</h3>
+  <!-- Differentiators / Features -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+          <i class="fas fa-star"></i>
+        </span>
+        Why brands choose LuxeCart
+      </h3>
+      <p class="text-sm text-gray-500 max-w-md">
+        Thoughtful defaults out of the box: performance, security and user‑centric design.
+      </p>
+    </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="bg-white p-6 rounded-lg shadow text-center">
-        <div class="text-indigo-600 text-3xl"><i class="fas fa-shipping-fast" aria-hidden="true"></i></div>
-        <h4 class="mt-4 font-semibold text-gray-900">Fast Shipping</h4>
-        <p class="mt-2 text-gray-500 text-sm">Speedy fulfillment and reliable tracking to delight your customers.</p>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-2 hover:-rotate-1 transition-all duration-300 group animate-on-scroll opacity-0 translate-y-4">
+        <div class="text-indigo-600 text-3xl group-hover:scale-110 transform transition-transform">
+          <i class="fas fa-shipping-fast" aria-hidden="true"></i>
+        </div>
+        <h4 class="mt-4 font-semibold text-gray-900">Fast shipping flows</h4>
+        <p class="mt-2 text-gray-500 text-sm">
+          Clear delivery options, transparent costs and order tracking help build trust and reduce support tickets.
+        </p>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow text-center">
-        <div class="text-indigo-600 text-3xl"><i class="fas fa-shield-alt" aria-hidden="true"></i></div>
-        <h4 class="mt-4 font-semibold text-gray-900">Secure Checkout</h4>
-        <p class="mt-2 text-gray-500 text-sm">Stripe integration and industry-standard encryption for peace of mind.</p>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-2 hover:rotate-1 transition-all duration-300 group animate-on-scroll opacity-0 translate-y-4 delay-100">
+        <div class="text-indigo-600 text-3xl group-hover:scale-110 transform transition-transform">
+          <i class="fas fa-shield-alt" aria-hidden="true"></i>
+        </div>
+        <h4 class="mt-4 font-semibold text-gray-900">Secure checkout</h4>
+        <p class="mt-2 text-gray-500 text-sm">
+          Integrations with modern payment providers, encryption best practices and clear error handling.
+        </p>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow text-center">
-        <div class="text-indigo-600 text-3xl"><i class="fas fa-sync-alt" aria-hidden="true"></i></div>
-        <h4 class="mt-4 font-semibold text-gray-900">Easy Returns</h4>
-        <p class="mt-2 text-gray-500 text-sm">Hassle-free returns and clear policy support for your customers.</p>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-2 hover:-rotate-1 transition-all duration-300 group animate-on-scroll opacity-0 translate-y-4 delay-200">
+        <div class="text-indigo-600 text-3xl group-hover:scale-110 transform transition-transform">
+          <i class="fas fa-sync-alt" aria-hidden="true"></i>
+        </div>
+        <h4 class="mt-4 font-semibold text-gray-900">Easy returns</h4>
+        <p class="mt-2 text-gray-500 text-sm">
+          Simple, guided return policies so customers feel comfortable trying your products.
+        </p>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow text-center">
-        <div class="text-indigo-600 text-3xl"><i class="fas fa-headset" aria-hidden="true"></i></div>
-        <h4 class="mt-4 font-semibold text-gray-900">24/7 Support</h4>
-        <p class="mt-2 text-gray-500 text-sm">Help when customers need it — live chat and email support.</p>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-2 hover:rotate-1 transition-all duration-300 group animate-on-scroll opacity-0 translate-y-4 delay-300">
+        <div class="text-indigo-600 text-3xl group-hover:scale-110 transform transition-transform">
+          <i class="fas fa-headset" aria-hidden="true"></i>
+        </div>
+        <h4 class="mt-4 font-semibold text-gray-900">Support built‑in</h4>
+        <p class="mt-2 text-gray-500 text-sm">
+          Contact paths are easy to find, and order details are structured to help your team respond quickly.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech stack & Timeline -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Tech stack -->
+      <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm animate-on-scroll opacity-0 translate-y-6 transition-all duration-700 ease-out">
+        <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-slate-100">
+            <i class="fas fa-code"></i>
+          </span>
+          Built for developers, too
+        </h3>
+        <p class="mt-3 text-sm text-gray-600">
+          LuxeCart is a Ruby on Rails application with a focus on clean architecture and maintainable code.
+        </p>
+
+        <dl class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <div class="rounded-lg bg-gray-50 p-4 flex flex-col gap-1 hover:bg-gray-100 transition-colors">
+            <dt class="text-gray-500 flex items-center gap-1">
+              <i class="fas fa-terminal text-gray-400"></i> Core language
+            </dt>
+            <dd class="font-semibold text-gray-900">Ruby on Rails</dd>
+          </div>
+          <div class="rounded-lg bg-gray-50 p-4 flex flex-col gap-1 hover:bg-gray-100 transition-colors">
+            <dt class="text-gray-500 flex items-center gap-1">
+              <i class="fas fa-cubes text-gray-400"></i> Infrastructure
+            </dt>
+            <dd class="font-semibold text-gray-900">Dockerized environment</dd>
+          </div>
+          <div class="rounded-lg bg-gray-50 p-4 flex flex-col gap-1 hover:bg-gray-100 transition-colors">
+            <dt class="text-gray-500 flex items-center gap-1">
+              <i class="fas fa-palette text-gray-400"></i> Styling
+            </dt>
+            <dd class="font-semibold text-gray-900">Utility‑first CSS</dd>
+          </div>
+          <div class="rounded-lg bg-gray-50 p-4 flex flex-col gap-1 hover:bg-gray-100 transition-colors">
+            <dt class="text-gray-500 flex items-center gap-1">
+              <i class="fas fa-lock text-gray-400"></i> Security
+            </dt>
+            <dd class="font-semibold text-gray-900">Modern auth &amp; payments</dd>
+          </div>
+        </dl>
+
+        <p class="mt-5 text-xs text-gray-500 flex items-center gap-1">
+          <i class="fas fa-info-circle"></i>
+          This stack makes it easy to iterate quickly, test features and deploy a reliable experience.
+        </p>
+      </div>
+
+      <!-- Timeline -->
+      <div class="bg-slate-50 border border-slate-100 rounded-2xl p-8 animate-on-scroll opacity-0 translate-y-6 transition-all duration-700 delay-100 ease-out">
+        <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
+            <i class="fas fa-stream"></i>
+          </span>
+          Our journey so far
+        </h3>
+        <p class="mt-3 text-sm text-gray-600">
+          LuxeCart is continuously evolving. Here is how the platform has grown.
+        </p>
+
+        <ol class="mt-6 relative border-l border-slate-200 pl-4 space-y-5 text-sm">
+          <li class="relative animate-on-scroll opacity-0 translate-x-4 transition-all duration-700 delay-150 ease-out">
+            <span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-indigo-500 border-2 border-white shadow"></span>
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Phase 1</p>
+            <p class="font-semibold text-slate-900">Core storefront &amp; checkout</p>
+            <p class="mt-1 text-slate-600">
+              Implemented product catalog, cart, and secure checkout to create a solid buying experience.
+            </p>
+          </li>
+          <li class="relative animate-on-scroll opacity-0 translate-x-4 transition-all duration-700 delay-250 ease-out">
+            <span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-indigo-500 border-2 border-white shadow"></span>
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Phase 2</p>
+            <p class="font-semibold text-slate-900">Customer‑centric UX</p>
+            <p class="mt-1 text-slate-600">
+              Improved navigation, product discovery, and responsive design for all devices.
+            </p>
+          </li>
+          <li class="relative animate-on-scroll opacity-0 translate-x-4 transition-all duration-700 delay-350 ease-out">
+            <span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white shadow"></span>
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Phase 3 (in progress)</p>
+            <p class="font-semibold text-slate-900">Analytics &amp; personalization</p>
+            <p class="mt-1 text-slate-600">
+              Working toward recommendations, insights and smarter merchandising tools for merchants.
+            </p>
+          </li>
+        </ol>
       </div>
     </div>
   </div>
 
   <!-- Team & Gallery -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <div class="space-y-6">
-      <h3 class="text-2xl font-bold text-gray-900">Meet the team</h3>
-      <p class="text-gray-600">Small, focused team of product, design, and engineering experts dedicated to creating beautiful shopping experiences.</p>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="space-y-6 animate-on-scroll opacity-0 translate-y-6 transition-all duration-700 ease-out">
+      <h3 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-rose-50 text-rose-500">
+          <i class="fas fa-users"></i>
+        </span>
+        The team behind LuxeCart
+      </h3>
+      <p class="text-gray-600 text-sm">
+        LuxeCart is crafted by a small, focused team of developers and designers who care deeply
+        about elegant code and great user experiences.
+      </p>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="flex items-center gap-4 bg-white rounded-lg p-4 shadow">
-          <img class="w-16 h-16 rounded-full object-cover" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop&ixlib=rb-4.0.3&s=3b3c5b1a2b" alt="Team member">
+        <div class="flex items-center gap-4 bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+          <img class="w-16 h-16 rounded-full object-cover"
+               src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop&ixlib=rb-4.0.3"
+               alt="Team member">
           <div>
             <div class="font-semibold text-gray-900">Ava Smith</div>
-            <div class="text-xs text-gray-500">Founder &amp; CEO</div>
+            <div class="text-xs text-gray-500">Founder &amp; Product Lead</div>
+            <p class="mt-1 text-xs text-gray-500">
+              Focused on building flows that feel effortless and clear.
+            </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-4 bg-white rounded-lg p-4 shadow">
-          <img class="w-16 h-16 rounded-full object-cover" src="https://images.mubicdn.net/images/cast_member/2184/cache-2992-1547409411/image-w856.jpg" alt="Team member">
+        <div class="flex items-center gap-4 bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+          <img class="w-16 h-16 rounded-full object-cover"
+               src="https://images.mubicdn.net/images/cast_member/2184/cache-2992-1547409411/image-w856.jpg"
+               alt="Team member">
           <div>
             <div class="font-semibold text-gray-900">Liam Johnson</div>
-            <div class="text-xs text-gray-500">Head of Product</div>
+            <div class="text-xs text-gray-500">Lead Engineer</div>
+            <p class="mt-1 text-xs text-gray-500">
+              Ensuring code quality, performance and a stable infrastructure.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-4 text-xs text-gray-500 mt-2">
+        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-900 text-slate-100">
+          <i class="fas fa-code text-xs"></i>
+          Ruby on Rails
+        </span>
+        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-600">
+          <i class="fas fa-boxes text-xs"></i>
+          E‑commerce
+        </span>
+        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-indigo-50 text-indigo-600">
+          <i class="fas fa-lock text-xs"></i>
+          Security‑first
+        </span>
+      </div>
+    </div>
+
+    <div class="animate-on-scroll opacity-0 translate-y-6 transition-all duration-700 delay-100 ease-out">
+      <h3 class="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-indigo-50 text-indigo-500">
+          <i class="fas fa-images"></i>
+        </span>
+        A look inside LuxeCart
+      </h3>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="relative group">
+          <img class="w-full h-36 object-cover rounded-xl shadow-sm transform transition-transform duration-300 group-hover:-translate-y-2 group-hover:shadow-lg"
+               src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3"
+               alt="Workspace 1">
+          <div class="absolute inset-0 rounded-xl bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-medium transition-opacity">
+            Product design reviews
+          </div>
+        </div>
+        <div class="relative group">
+          <img class="w-full h-36 object-cover rounded-xl shadow-sm transform transition-transform duration-300 group-hover:-translate-y-2 group-hover:shadow-lg"
+               src="https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3"
+               alt="Workspace 2">
+          <div class="absolute inset-0 rounded-xl bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-medium transition-opacity">
+            UX &amp; interaction planning
+          </div>
+        </div>
+        <div class="relative group">
+          <img class="w-full h-36 object-cover rounded-xl shadow-sm transform transition-transform duration-300 group-hover:-translate-y-2 group-hover:shadow-lg"
+               src="https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3"
+               alt="Workspace 3">
+          <div class="absolute inset-0 rounded-xl bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-medium transition-opacity">
+            Frontend implementation
+          </div>
+        </div>
+        <div class="relative group">
+          <img class="w-full h-36 object-cover rounded-xl shadow-sm transform transition-transform duration-300 group-hover:-translate-y-2 group-hover:shadow-lg"
+               src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3"
+               alt="Workspace 4">
+          <div class="absolute inset-0 rounded-xl bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-medium transition-opacity">
+            Performance &amp; testing
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div>
-      <h3 class="text-2xl font-bold text-gray-900 mb-4">Gallery</h3>
-      <div class="grid grid-cols-2 gap-3">
-        <img class="w-full h-36 object-cover rounded-lg" src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=5b8c3f74f1" alt="">
-        <img class="w-full h-36 object-cover rounded-lg" src="https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=1b6d6c9e" alt="">
-        <img class="w-full h-36 object-cover rounded-lg" src="https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=7d8a3b2c" alt="">
-        <img class="w-full h-36 object-cover rounded-lg" src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=b4c3c6f0" alt="">
+  <!-- Trust badges -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl px-6 py-6 flex flex-wrap items-center justify-between gap-6 shadow-lg animate-on-scroll opacity-0 translate-y-6 transition-all duration-700 ease-out">
+      <div class="flex items-center gap-3 text-sm text-slate-50">
+        <span class="inline-flex h-9 w-9 rounded-full bg-emerald-500/20 items-center justify-center">
+          <i class="fas fa-shield-alt text-emerald-400 text-sm"></i>
+        </span>
+        <div>
+          <p class="font-semibold text-white">Secure by design</p>
+          <p class="text-xs text-slate-300">Modern best practices for authentication, authorization and payments.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 text-sm text-slate-50">
+        <span class="inline-flex h-9 w-9 rounded-full bg-indigo-500/20 items-center justify-center">
+          <i class="fas fa-mobile-alt text-indigo-300 text-sm"></i>
+        </span>
+        <div>
+          <p class="font-semibold text-white">Mobile‑first experience</p>
+          <p class="text-xs text-slate-300">Optimized layouts for every device size.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 text-sm text-slate-50">
+        <span class="inline-flex h-9 w-9 rounded-full bg-amber-500/20 items-center justify-center">
+          <i class="fas fa-tachometer-alt text-amber-300 text-sm"></i>
+        </span>
+        <div>
+          <p class="font-semibold text-white">Performance‑focused</p>
+          <p class="text-xs text-slate-300">Fast responses and clean interactions.</p>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- FAQ + Contact form -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
       <!-- FAQ -->
-      <div>
-        <h3 class="text-2xl font-bold text-gray-900">Frequently asked questions</h3>
+      <div class="animate-on-scroll opacity-0 translate-y-6 transition-all duration-700 ease-out">
+        <h3 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+            <i class="fas fa-question-circle"></i>
+          </span>
+          Frequently asked questions
+        </h3>
+        <p class="mt-2 text-sm text-gray-600">
+          Answers to some of the most common questions about shopping with LuxeCart.
+        </p>
+
         <div class="mt-6 space-y-4">
-          <div class="border rounded-lg">
+          <div class="border rounded-xl overflow-hidden bg-white shadow-sm faq-item">
             <button type="button" class="w-full text-left faq-question px-4 py-3 flex justify-between items-center">
-              <span class="font-medium text-gray-800">How does returns work?</span>
-              <span class="text-gray-400 faq-toggle"><i class="fas fa-chevron-down"></i></span>
+              <span class="font-medium text-gray-800 flex items-center gap-2">
+                <i class="fas fa-undo-alt text-indigo-500 text-xs"></i> How do returns work?
+              </span>
+              <span class="text-gray-400 faq-toggle">
+                <i class="fas fa-chevron-down"></i>
+              </span>
             </button>
-            <div class="faq-answer px-4 pb-4 hidden text-gray-600">
-              We offer a 30-day return policy on most items. See our Returns page for details.
+            <div class="faq-answer px-4 pb-4 hidden text-gray-600 text-sm">
+              We offer a 30‑day return window on most items as long as they are unused and in original packaging.
+              For step‑by‑step instructions, visit the Returns section in your order details page.
             </div>
           </div>
 
-          <div class="border rounded-lg">
+          <div class="border rounded-xl overflow-hidden bg-white shadow-sm faq-item">
             <button type="button" class="w-full text-left faq-question px-4 py-3 flex justify-between items-center">
-              <span class="font-medium text-gray-800">Is checkout secure?</span>
-              <span class="text-gray-400 faq-toggle"><i class="fas fa-chevron-down"></i></span>
+              <span class="font-medium text-gray-800 flex items-center gap-2">
+                <i class="fas fa-lock text-emerald-500 text-xs"></i> Is checkout secure?
+              </span>
+              <span class="text-gray-400 faq-toggle">
+                <i class="fas fa-chevron-down"></i>
+              </span>
             </button>
-            <div class="faq-answer px-4 pb-4 hidden text-gray-600">
-              Yes — payments are handled via Stripe with modern encryption and tokenization.
+            <div class="faq-answer px-4 pb-4 hidden text-gray-600 text-sm">
+              Yes. Payments are processed through trusted payment providers with industry‑standard encryption.
+              We never store raw card details on our servers.
             </div>
           </div>
 
-          <div class="border rounded-lg">
+          <div class="border rounded-xl overflow-hidden bg-white shadow-sm faq-item">
             <button type="button" class="w-full text-left faq-question px-4 py-3 flex justify-between items-center">
-              <span class="font-medium text-gray-800">Do you ship internationally?</span>
-              <span class="text-gray-400 faq-toggle"><i class="fas fa-chevron-down"></i></span>
+              <span class="font-medium text-gray-800 flex items-center gap-2">
+                <i class="fas fa-globe-asia text-sky-500 text-xs"></i> Do you ship internationally?
+              </span>
+              <span class="text-gray-400 faq-toggle">
+                <i class="fas fa-chevron-down"></i>
+              </span>
             </button>
-            <div class="faq-answer px-4 pb-4 hidden text-gray-600">
-              We ship to many countries — check the shipping options at checkout. Rates may vary.
+            <div class="faq-answer px-4 pb-4 hidden text-gray-600 text-sm">
+              We support shipping to many countries and regions. Available options, delivery times and costs are
+              shown clearly at checkout based on your address.
+            </div>
+          </div>
+
+          <div class="border rounded-xl overflow-hidden bg-white shadow-sm faq-item">
+            <button type="button" class="w-full text-left faq-question px-4 py-3 flex justify-between items-center">
+              <span class="font-medium text-gray-800 flex items-center gap-2">
+                <i class="fas fa-shipping-fast text-indigo-500 text-xs"></i> Can I track my order?
+              </span>
+              <span class="text-gray-400 faq-toggle">
+                <i class="fas fa-chevron-down"></i>
+              </span>
+            </button>
+            <div class="faq-answer px-4 pb-4 hidden text-gray-600 text-sm">
+              Absolutely. Once your order ships, you’ll receive a tracking link via email and you can
+              also find it in the Orders section of your account.
             </div>
           </div>
         </div>
       </div>
 
       <!-- Contact form -->
-      <div>
-        <h3 class="text-2xl font-bold text-gray-900">Contact us</h3>
-        <p class="mt-2 text-gray-600">Have a question about orders, partnerships, or product sourcing? Use the form below.</p>
+      <div id="contact" class="animate-on-scroll opacity-0 translate-y-6 transition-all duration-700 delay-150 ease-out">
+        <h3 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
+            <i class="fas fa-envelope-open-text"></i>
+          </span>
+          Contact us
+        </h3>
+        <p class="mt-2 text-sm text-gray-600">
+          Have a question about your order, partnerships, or using LuxeCart for your brand? We’d love to hear from you.
+        </p>
 
         <% if flash[:notice] %>
-          <div class="mt-4 rounded-md bg-green-50 border border-green-100 p-3 text-green-700"><%= flash[:notice] %></div>
+          <div class="mt-4 rounded-md bg-green-50 border border-green-100 p-3 text-green-700 text-sm animate-on-scroll opacity-0 translate-y-2 transition-all duration-500">
+            <%= flash[:notice] %>
+          </div>
         <% elsif flash[:alert] %>
-          <div class="mt-4 rounded-md bg-red-50 border border-red-100 p-3 text-red-700"><%= flash[:alert] %></div>
+          <div class="mt-4 rounded-md bg-red-50 border border-red-100 p-3 text-red-700 text-sm animate-on-scroll opacity-0 translate-y-2 transition-all duration-500">
+            <%= flash[:alert] %>
+          </div>
         <% end %>
 
-        <div class="mt-6 bg-white p-6 rounded-lg shadow">
+        <div class="mt-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <%= form_with url: contact_submit_path, method: :post, local: true do |f| %>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <%= f.label :name, "Your name", class: "block text-sm font-medium text-gray-700" %>
-                <%= f.text_field :name, name: "contact[name]", class: "mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", required: true %>
+                <%= f.text_field :name, name: "contact[name]",
+                      class: "mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm",
+                      required: true %>
               </div>
 
               <div>
                 <%= f.label :email, "Email address", class: "block text-sm font-medium text-gray-700" %>
-                <%= f.email_field :email, name: "contact[email]", class: "mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", required: true %>
+                <%= f.email_field :email, name: "contact[email]",
+                      class: "mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm",
+                      required: true %>
               </div>
             </div>
 
             <div class="mt-4">
-              <%= f.label :message, "Message", class: "block text-sm font-medium text-gray-700" %>
-              <%= f.text_area :message, name: "contact[message]", rows: 5, class: "mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", required: true %>
+              <%= f.label :subject, "Subject", class: "block text-sm font-medium text-gray-700" %>
+              <%= f.text_field :subject, name: "contact[subject]",
+                    class: "mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm",
+                    placeholder: "Order help, partnership, feedback, etc.",
+                    required: false %>
             </div>
 
             <div class="mt-4">
-              <%= f.submit "Send message", class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition" %>
+              <%= f.label :message, "Message", class: "block text-sm font-medium text-gray-700" %>
+              <%= f.text_area :message, name: "contact[message]", rows: 5,
+                    class: "mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm",
+                    required: true %>
+            </div>
+
+            <div class="mt-4 flex items-center justify-between">
+              <p class="text-xs text-gray-500 flex items-center gap-1">
+                <i class="fas fa-clock text-gray-400"></i>
+                We aim to respond within one business day.
+              </p>
+              <%= f.submit "Send message",
+                    class: "inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition transform hover:-translate-y-0.5 hover:shadow-md" %>
             </div>
           <% end %>
         </div>
@@ -184,19 +626,25 @@
   </div>
 </section>
 
-<!-- Small JavaScript for FAQ accordion -->
+<!-- Small JavaScript for FAQ accordion & scroll animations -->
 <script>
   document.addEventListener("DOMContentLoaded", function() {
+    // FAQ accordion
     document.querySelectorAll('.faq-question').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        var container = this.closest('.border');
+        var container = this.closest('.faq-item');
         var answer = container.querySelector('.faq-answer');
         var toggleIcon = container.querySelector('.faq-toggle i');
 
         if (answer.classList.contains('hidden')) {
           // close any open answers (optional)
-          document.querySelectorAll('.faq-answer').forEach(function(a) { a.classList.add('hidden'); });
-          document.querySelectorAll('.faq-toggle i').forEach(function(i) { i.classList.remove('fa-chevron-up'); i.classList.add('fa-chevron-down'); });
+          document.querySelectorAll('.faq-answer').forEach(function(a) {
+            a.classList.add('hidden');
+          });
+          document.querySelectorAll('.faq-toggle i').forEach(function(i) {
+            i.classList.remove('fa-chevron-up');
+            i.classList.add('fa-chevron-down');
+          });
 
           answer.classList.remove('hidden');
           toggleIcon.classList.remove('fa-chevron-down');
@@ -208,5 +656,57 @@
         }
       });
     });
+
+    // Scroll-in animations
+    var animatedElements = document.querySelectorAll('.animate-on-scroll');
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.remove('opacity-0', 'translate-y-6', 'translate-y-4', 'translate-x-4');
+            entry.target.classList.add('opacity-100', 'translate-y-0', 'translate-x-0');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.2 });
+
+      animatedElements.forEach(function(el) {
+        observer.observe(el);
+      });
+    } else {
+      // Fallback: just show everything
+      animatedElements.forEach(function(el) {
+        el.classList.remove('opacity-0', 'translate-y-6', 'translate-y-4', 'translate-x-4');
+      });
+    }
   });
 </script>
+
+<style>
+  /* Extra subtle animations without needing full Tailwind plugins */
+
+  .animate-pulse-slow {
+    animation: pulse-slow 5s infinite;
+  }
+
+  .animate-bounce-subtle {
+    animation: bounce-subtle 3.5s infinite;
+  }
+
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.03); }
+  }
+
+  @keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+
+  /* Improve transition smoothness on small devices */
+  @media (max-width: 640px) {
+    .animate-on-scroll {
+      transition-duration: 500ms;
+    }
+  }
+</style>
