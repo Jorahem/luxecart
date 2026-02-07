@@ -11,6 +11,7 @@ class ProfilesController < ApplicationController
     if @user.update(user_params)
       redirect_to profile_path, notice: 'Profile updated!'
     else
+      @recent_orders = @user.orders.order(created_at: :desc).limit(10)
       render :show, status: :unprocessable_entity
     end
   end
@@ -18,7 +19,6 @@ class ProfilesController < ApplicationController
   private
 
   def user_params
-    # Permit all fields you want to allow updates for
     params.require(:user).permit(:first_name, :last_name, :profile_image)
   end
 end

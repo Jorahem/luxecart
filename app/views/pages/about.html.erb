@@ -302,7 +302,8 @@
       <!-- Timeline -->
       <div class="bg-slate-50 border border-slate-100 rounded-2xl p-8 animate-on-scroll opacity-0 translate-y-6 transition-all duration-700 delay-100 ease-out">
         <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-          <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
+          <span class="inline-flex h-9 w-9 items
+-center justify-center rounded-full bg-indigo-100 text-indigo-600">
             <i class="fas fa-stream"></i>
           </span>
           Our journey so far
@@ -628,7 +629,7 @@
 
 <!-- Small JavaScript for FAQ accordion & scroll animations -->
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+  function initAboutPageInteractions() {
     // FAQ accordion
     document.querySelectorAll('.faq-question').forEach(function(btn) {
       btn.addEventListener('click', function() {
@@ -679,7 +680,13 @@
         el.classList.remove('opacity-0', 'translate-y-6', 'translate-y-4', 'translate-x-4');
       });
     }
-  });
+  }
+
+  // Run on normal load
+  document.addEventListener("DOMContentLoaded", initAboutPageInteractions);
+
+  // Run again on Turbo navigation (important for Rails 7 / Turbo)
+  document.addEventListener("turbo:load", initAboutPageInteractions);
 </script>
 
 <style>

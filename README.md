@@ -202,6 +202,8 @@ Conceptually: this is the **domain model foundation** that can back both storefr
 
 If you want, I can now turn this into an actual `README.md` content block (with sections, badges, getting‑started steps, etc.) tailored to your repo.
 
+
+
 admin password 
 Email: admin@example.com
 Password: securepassword
