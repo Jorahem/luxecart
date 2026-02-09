@@ -4,8 +4,19 @@ class Order < ApplicationRecord
 
   enum payment_status: { pending: 0, paid: 1, failed: 2 }, _prefix: true
 
-
-    enum status: { pending: 0, paid: 1, shipped: 2, delivered: 3 }
+  # Status flow for tracking:
+  # NOTE: Your controllers already use `status: :processing` (CheckoutController),
+  # so we must include it to avoid breaking updates.
+  # Keep `paid` too so any existing code that references it won't crash.
+  enum status: {
+    pending: 0,     # order created
+    paid: 1,        # kept for backward-compatibility
+    processing: 2,  # preparing the order
+    shipped: 3,     # handed to courier
+    delivered: 4,   # delivered to address
+    received: 5,    # customer confirmed received
+    cancelled: 6    # optional
+  }
 
   # The DB stores the customer's name as `shipping_full_name` (snapshot fields).
   # Validate the shipping snapshot fields which are present in the schema.
@@ -18,6 +29,21 @@ class Order < ApplicationRecord
   # Prefer the snapshot shipping_full_name, otherwise fall back to the user's full_name if available.
   def full_name
     shipping_full_name.presence || user&.full_name
+  end
+
+  # --- Tracking helpers (safe additions, won't affect old code) ---
+
+  # Used for a "timeline" UI: pending -> paid -> processing -> shipped -> delivered -> received
+  def tracking_steps
+    %w[pending paid processing shipped delivered received]
+  end
+
+  def status_step_index
+    tracking_steps.index(status.to_s) || 0
+  end
+
+  def can_mark_received?
+    delivered? && !received?
   end
 
   private

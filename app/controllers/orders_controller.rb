@@ -34,9 +34,38 @@ class OrdersController < ApplicationController
     end
   end
 
-  # Show an individual order (fixes NoMethodError on orders/show)
+  # List current user's orders (your routes include :index)
+  def index
+    @orders = current_user.orders.order(created_at: :desc)
+  end
+
+  # Show an individual order
   def show
     @order = Order.find(params[:id])
+
+    # Basic authorization: user can only view their own order
+    if @order.user_id.present? && @order.user_id != current_user.id
+      redirect_to root_path, alert: "Not authorized." and return
+    end
+  end
+
+  # Customer marks an order as received (tracking final step)
+  # Requires route: patch /orders/:id/mark_received
+  def mark_received
+    @order = Order.find(params[:id])
+
+    if @order.user_id.present? && @order.user_id != current_user.id
+      redirect_to root_path, alert: "Not authorized." and return
+    end
+
+    if @order.respond_to?(:can_mark_received?) ? @order.can_mark_received? : (@order.status.to_s == "delivered")
+      @order.update!(status: :received)
+      redirect_to order_path(@order), notice: "Thanks! Order marked as received."
+    else
+      redirect_to order_path(@order), alert: "This order cannot be marked as received yet."
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_to order_path(@order), alert: e.message
   end
 
   # Create an order from the session cart
@@ -91,6 +120,10 @@ class OrdersController < ApplicationController
     @order.tax            = tax
     @order.total_price    = total
     @order.payment_method = params.dig(:order, :payment_method)
+
+    # Make sure a new order starts in a valid tracking state
+    # (Does not override status if already set somewhere else)
+    @order.status ||= :pending if @order.respond_to?(:status) && @order.status.blank?
 
     Order.transaction do
       @order.save!

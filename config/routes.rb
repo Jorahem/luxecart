@@ -127,6 +127,28 @@ Rails.application.routes.draw do
     resources :addresses, only: [:index, :show, :destroy]
   end
 
+
+  # Orders (customer/checkout)
+resources :orders, only: [:index, :new, :create, :show] do
+  member do
+    patch :cancel
+    patch :mark_received
+  end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   # -------------------------
   # Health check
   # -------------------------

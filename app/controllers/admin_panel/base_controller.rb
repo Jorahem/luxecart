@@ -1,4 +1,4 @@
-module Admin
+module AdminPanel
   class BaseController < ApplicationController
     before_action :authenticate_user!
     before_action :authenticate_admin!
@@ -6,6 +6,7 @@ module Admin
     private
 
     def authenticate_admin!
+      # Use the boolean column directly (works even if admin? is private/not defined)
       is_admin =
         if current_user.respond_to?(:admin)
           !!current_user.admin
