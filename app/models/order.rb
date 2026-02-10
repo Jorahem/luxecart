@@ -18,6 +18,27 @@ class Order < ApplicationRecord
     cancelled: 6    # optional
   }
 
+  # -----------------------------
+  # Tracking History (NEW)
+  # -----------------------------
+  has_many :order_tracking_events, dependent: :destroy
+
+  # Log first tracking event on order create
+  after_create :log_initial_tracking_event
+
+  # Log new tracking event whenever status changes
+  after_update :log_tracking_event_if_status_changed
+
+  # Create a tracking event safely
+  def add_tracking_event!(status:, message: nil, location: nil, happened_at: Time.current)
+    order_tracking_events.create!(
+      status: status.to_s,
+      message: message,
+      location: location,
+      happened_at: happened_at
+    )
+  end
+
   # The DB stores the customer's name as `shipping_full_name` (snapshot fields).
   # Validate the shipping snapshot fields which are present in the schema.
   validates :shipping_full_name, :shipping_street, :shipping_city, :shipping_postal_code, presence: true
@@ -47,6 +68,46 @@ class Order < ApplicationRecord
   end
 
   private
+
+  # Create first event for newly created orders
+  def log_initial_tracking_event
+    add_tracking_event!(
+      status: status.to_s,
+      message: "Order placed",
+      happened_at: created_at || Time.current
+    )
+  rescue => e
+    Rails.logger.error "[Order#log_initial_tracking_event] #{e.class}: #{e.message}"
+    true
+  end
+
+  # Create an event when status changes
+  def log_tracking_event_if_status_changed
+    return unless saved_change_to_status?
+
+    new_status = status.to_s
+
+    msg =
+      case new_status
+      when "pending" then "Order placed"
+      when "paid" then "Payment confirmed"
+      when "processing" then "Order is being processed"
+      when "shipped" then "Order shipped"
+      when "delivered" then "Order delivered"
+      when "received" then "Customer marked order as received"
+      when "cancelled" then "Order cancelled"
+      else "Status updated to #{new_status}"
+      end
+
+    add_tracking_event!(
+      status: new_status,
+      message: msg,
+      happened_at: Time.current
+    )
+  rescue => e
+    Rails.logger.error "[Order#log_tracking_event_if_status_changed] #{e.class}: #{e.message}"
+    true
+  end
 
   # Generates a reasonably human-friendly and unique order number.
   # Format example: ORD20260117-4f3c9a8b

@@ -65,4 +65,35 @@ class CartsController < ApplicationController
     cart = session[:cart] || {}
     render json: { cart: cart, cart_count: cart.values.map(&:to_i).sum }, status: :ok
   end
+
+
+
+   def show
+    cart = session[:cart] || {}
+    Rails.logger.debug "[CartsController#show] session[:cart]=#{cart.inspect}"
+
+    product_ids = cart.keys.map(&:to_i)
+    products_by_id = Product.where(id: product_ids).index_by(&:id)
+
+    @items = cart.map do |pid_str, qty|
+      pid = pid_str.to_i
+      product = products_by_id[pid]
+      if product
+        { product: product, quantity: qty.to_i }
+      else
+        { product: nil, product_id: pid, quantity: qty.to_i }
+      end
+    end
+
+    # NEW: last/current order for signed-in user
+    @last_order =
+      if respond_to?(:user_signed_in?) && user_signed_in?
+        current_user.orders.order(created_at: :desc).first
+      end
+  end
+
+  @last_order =
+  if respond_to?(:user_signed_in?) && user_signed_in?
+    current_user.orders.order(created_at: :desc).first
+  end
 end

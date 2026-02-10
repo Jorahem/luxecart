@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_02_09_000000) do
+ActiveRecord::Schema[7.1].define(version: 2026_02_10_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -179,6 +179,18 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_09_000000) do
     t.index ["product_id"], name: "index_order_items_on_product_id"
   end
 
+  create_table "order_tracking_events", force: :cascade do |t|
+    t.bigint "order_id", null: false
+    t.string "status", null: false
+    t.string "location"
+    t.text "message"
+    t.datetime "happened_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id", "happened_at"], name: "index_order_tracking_events_on_order_id_and_happened_at"
+    t.index ["order_id"], name: "index_order_tracking_events_on_order_id"
+  end
+
   create_table "orders", force: :cascade do |t|
     t.string "order_number", null: false
     t.bigint "user_id", null: false
@@ -317,6 +329,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_09_000000) do
   add_foreign_key "carts", "users"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
+  add_foreign_key "order_tracking_events", "orders"
   add_foreign_key "orders", "users"
   add_foreign_key "products", "brands"
   add_foreign_key "products", "categories"

@@ -8,12 +8,11 @@
   <%= csp_meta_tag %>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" />
-  <!-- Tailwind CSS from CDN (kept same as your old file) -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-gray-900 text-white min-h-screen">
-  <!-- Admin Header (different from frontend navbar) -->
+  <!-- Admin Header -->
   <header class="border-b border-gray-800 bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -45,7 +44,7 @@
     </div>
   </header>
 
-  <!-- ✅ Sidebar removed: the page is now full width -->
+  <!-- ✅ Sidebar removed: full width main content -->
   <main class="p-6">
     <% flash.each do |k,v| %>
       <div class="mb-4 px-4 py-3 rounded-lg border

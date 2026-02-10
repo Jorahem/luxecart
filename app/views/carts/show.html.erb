@@ -59,6 +59,164 @@
 <div class="max-w-6xl mx-auto px-4 py-10">
   <h1 class="text-3xl font-bold mb-6">Your Cart</h1>
 
+  <%# ---------------------------------------------- %>
+  <%# NEW: Last/Current Order Tracking (for customer) %>
+  <%# Requires @last_order set in CartsController#show %>
+  <%# ---------------------------------------------- %>
+  <% if defined?(@last_order) && @last_order.present? %>
+    <div class="bg-white rounded-lg shadow-sm border p-5 mb-6">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <div class="text-sm font-semibold text-gray-900">
+            Your last order:
+            <span class="text-indigo-600">
+              <%= @last_order.order_number.presence || "##{@last_order.id}" %>
+            </span>
+          </div>
+
+          <div class="text-xs text-gray-500 mt-1">
+            Status: <span class="font-medium text-gray-800"><%= @last_order.status.to_s.humanize %></span>
+            <% if @last_order.respond_to?(:tracking_number) && @last_order.tracking_number.present? %>
+              • Tracking #: <span class="font-medium text-gray-800"><%= @last_order.tracking_number %></span>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <%= link_to "View tracking",
+                order_path(@last_order),
+                class: "inline-flex items-center justify-center px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow transition" %>
+        </div>
+      </div>
+
+      <%# ---------------------------- %>
+      <%# Clear tracking timeline + log %>
+      <%# ---------------------------- %>
+      <% if @last_order.respond_to?(:order_tracking_events) %>
+        <% events = @last_order.order_tracking_events.to_a %>
+
+        <div class="mt-4 border-t pt-4">
+          <div class="flex items-center justify-between">
+            <div class="text-sm font-semibold text-gray-800">Shipment timeline</div>
+            <div class="text-xs text-gray-500">
+              Updated: <%= l((events.last&.happened_at || @last_order.updated_at), format: :short) rescue (events.last&.happened_at || @last_order.updated_at).to_s %>
+            </div>
+          </div>
+
+          <% if events.any? %>
+            <% current_index =
+                 if @last_order.respond_to?(:status_step_index)
+                   @last_order.status_step_index
+                 else
+                   0
+                 end %>
+
+            <% steps = [
+              ['pending',    'Order placed'],
+              ['paid',       'Payment confirmed'],
+              ['processing', 'Processing'],
+              ['shipped',    'Shipped'],
+              ['delivered',  'Delivered'],
+              ['received',   'Received']
+            ] %>
+
+            <div class="mt-3 bg-gray-50 rounded-lg border p-4">
+              <ol class="space-y-3">
+                <% steps.each_with_index do |(key, label), idx| %>
+                  <% done = idx <= current_index %>
+                  <% ev = events.reverse.find { |e| e.status.to_s == key.to_s } %>
+
+                  <li class="flex items-start gap-3">
+                    <div class="mt-1 flex flex-col items-center">
+                      <span class="inline-block w-3 h-3 rounded-full <%= done ? 'bg-indigo-600' : 'bg-gray-300' %>"></span>
+                      <% unless idx == steps.length - 1 %>
+                        <span class="w-[2px] h-6 <%= done ? 'bg-indigo-300' : 'bg-gray-200' %>"></span>
+                      <% end %>
+                    </div>
+
+                    <div class="flex-1">
+                      <div class="flex items-center justify-between gap-3">
+                        <div class="text-sm font-semibold <%= done ? 'text-gray-900' : 'text-gray-500' %>">
+                          <%= label %>
+                        </div>
+
+                        <div class="text-xs text-gray-500">
+                          <% if ev&.happened_at.present? %>
+                            <%= l(ev.happened_at, format: :short) rescue ev.happened_at.to_s %>
+                          <% elsif done %>
+                            <span class="text-gray-400">Completed</span>
+                          <% else %>
+                            <span class="text-gray-400">Pending</span>
+                          <% end %>
+                        </div>
+                      </div>
+
+                      <% if ev&.location.present? %>
+                        <div class="text-xs text-gray-500 mt-0.5">
+                          Location: <%= ev.location %>
+                        </div>
+                      <% end %>
+
+                      <% if ev&.message.present? %>
+                        <div class="text-xs text-gray-600 mt-0.5"><%= ev.message %></div>
+                      <% else %>
+                        <% if key == 'shipped' && @last_order.respond_to?(:shipped_at) && @last_order.shipped_at.present? %>
+                          <div class="text-xs text-gray-600 mt-0.5">
+                            Shipped at: <%= l(@last_order.shipped_at, format: :short) rescue @last_order.shipped_at.to_s %>
+                          </div>
+                        <% end %>
+
+                        <% if key == 'delivered' && @last_order.respond_to?(:delivered_at) && @last_order.delivered_at.present? %>
+                          <div class="text-xs text-gray-600 mt-0.5">
+                            Delivered at: <%= l(@last_order.delivered_at, format: :short) rescue @last_order.delivered_at.to_s %>
+                          </div>
+                        <% end %>
+                      <% end %>
+                    </div>
+                  </li>
+                <% end %>
+              </ol>
+
+              <div class="mt-4 pt-4 border-t">
+                <details>
+                  <summary class="cursor-pointer text-sm font-semibold text-indigo-700 hover:text-indigo-800">
+                    View full history log
+                  </summary>
+
+                  <div class="mt-3 space-y-2">
+                    <% events.reverse_each do |ev2| %>
+                      <div class="flex items-start justify-between gap-4 bg-white rounded-lg border p-3">
+                        <div>
+                          <div class="text-sm font-semibold text-gray-900">
+                            <%= ev2.status.to_s.humanize %>
+                            <% if ev2.location.present? %>
+                              <span class="text-xs font-normal text-gray-500">• <%= ev2.location %></span>
+                            <% end %>
+                          </div>
+                          <% if ev2.message.present? %>
+                            <div class="text-xs text-gray-600 mt-0.5"><%= ev2.message %></div>
+                          <% end %>
+                        </div>
+
+                        <div class="text-xs text-gray-500 whitespace-nowrap">
+                          <%= l(ev2.happened_at, format: :short) rescue ev2.happened_at.to_s %>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                </details>
+              </div>
+            </div>
+          <% else %>
+            <div class="mt-3 text-sm text-gray-500">
+              Tracking history will appear here once the order status updates.
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
   <% if @items.blank? %>
     <div class="bg-white rounded-lg p-8 shadow-sm">
       <p class="text-gray-700 mb-4">Your cart is empty.</p>

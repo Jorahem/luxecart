@@ -1,32 +1,65 @@
-<!-- app/views/admin_panel/sessions/new.html.erb -->
+<div class="w-full max-w-xl">
+  <div class="bg-gray-800/60 border border-gray-700 rounded-2xl shadow-xl p-8 sm:p-10">
+    <div class="flex flex-col items-center text-center mb-7">
+      <div class="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-md mb-4">
+        <i class="fas fa-user-shield text-white text-2xl"></i>
+      </div>
 
-<div class="min-h-screen flex items-center justify-center bg-gray-900 py-8 px-4">
-  <div class="w-full max-w-md bg-gray-800 rounded-xl shadow-lg p-8">
-    <div class="flex flex-col items-center mb-8">
-      <div class="bg-indigo-600 rounded-full h-16 w-16 flex items-center justify-center mb-2">
-        <i class="fa-solid fa-user-shield text-3xl text-white"></i>
-      </div>
-      <h2 class="text-2xl font-semibold text-white mb-1">Admin Login</h2>
-      <p class="text-gray-400">LuxeCart Admin Area</p>
+      <h1 class="text-3xl font-extrabold text-white">Admin Login</h1>
+      <p class="text-sm text-gray-300 mt-1">Sign in to access the LuxeCart admin area</p>
     </div>
-    <% if flash[:alert] %>
-      <div class="mb-4 px-4 py-2 bg-red-700 text-white rounded text-center text-sm"><%= flash[:alert] %></div>
+
+    <%= form_with url: admin_login_path, method: :post, local: true do %>
+      <div class="space-y-5">
+        <div>
+          <label class="block text-sm font-semibold text-gray-200 mb-2">Email</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+              <i class="fas fa-envelope"></i>
+            </span>
+            <input
+              type="email"
+              name="email"
+              value="<%= params[:email].presence || 'admin@example.com' %>"
+              class="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="admin@example.com"
+              required
+              autofocus
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-200 mb-2">Password</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+              <i class="fas fa-lock"></i>
+            </span>
+            <input
+              type="password"
+              name="password"
+              class="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-lg transition"
+        >
+          Sign in
+        </button>
+
+        <p class="text-xs text-gray-400 text-center">
+          For authorized personnel only.
+        </p>
+      </div>
     <% end %>
-    <%= form_with url: admin_login_path, method: :post, local: true, class: "space-y-6" do |f| %>
-      <div>
-        <label for="admin_email" class="block text-gray-300 font-semibold">Email</label>
-        <%= f.email_field :email, autofocus: true, required: true, class: "mt-2 w-full px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-400", id: "admin_email", placeholder: "admin@example.com" %>
-      </div>
-      <div>
-        <label for="admin_password" class="block text-gray-300 font-semibold">Password</label>
-        <%= f.password_field :password, required: true, class: "mt-2 w-full px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-400", id: "admin_password", placeholder: "Password" %>
-      </div>
-      <div>
-        <%= f.submit "Sign in", class: "w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded shadow mt-2 transition duration-150" %>
-      </div>
-    <% end %>
-    <div class="pt-6 text-gray-400 text-xs text-center">
-      For authorized personnel only.
-    </div>
+  </div>
+
+  <div class="text-center text-xs text-gray-500 mt-5">
+    <span>© <%= Time.current.year %> LuxeCart</span>
   </div>
 </div>

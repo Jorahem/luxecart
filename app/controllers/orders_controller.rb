@@ -157,6 +157,10 @@ class OrdersController < ApplicationController
     end
   end
 
+  def index
+  @orders = current_user.orders.order(created_at: :desc)
+end
+
   def order_params
     params.require(:order).permit(
       :shipping_full_name,

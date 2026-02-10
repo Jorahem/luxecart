@@ -1,6 +1,7 @@
 module AdminPanel
   class SessionsController < ApplicationController
-    layout 'admin'
+    # Use a clean layout for login page (form only)
+    layout "admin_auth"
 
     def new
     end

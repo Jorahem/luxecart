@@ -1,5 +1,7 @@
 module AdminPanel
   class BaseController < ApplicationController
+    layout "admin"
+
     before_action :authenticate_user!
     before_action :authenticate_admin!
 
@@ -20,4 +22,4 @@ module AdminPanel
       end
     end
   end
-end
+end 

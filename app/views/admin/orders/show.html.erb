@@ -1,0 +1,95 @@
+<div class="flex items-start justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-extrabold text-gray-900">
+      Order <span class="text-indigo-700"><%= @order.order_number.presence || "##{@order.id}" %></span>
+    </h1>
+    <p class="text-sm text-gray-600 mt-1">
+      Created <%= l(@order.created_at, format: :long) rescue @order.created_at.to_s %>
+      • Customer: <span class="font-semibold"><%= @order.user&.email || "-" %></span>
+    </p>
+  </div>
+
+  <%= link_to "Back", admin_orders_path, class: "px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 font-semibold" %>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Update -->
+  <div class="lg:col-span-2 rounded-xl border border-gray-200 bg-white p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-extrabold text-gray-900">Update order</h2>
+      <span class="text-sm text-gray-600">
+        Current: <span class="font-semibold"><%= @order.status.to_s.humanize %></span>
+      </span>
+    </div>
+
+    <%= form_with model: @order, url: admin_order_path(@order), method: :patch, local: true do |f| %>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <div>
+          <label class="block text-sm font-semibold text-gray-800 mb-1">Status</label>
+          <%= f.select :status, Order.statuses.keys.map { |s| [s.humanize, s] },
+                {}, class: "w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500" %>
+          <p class="text-xs text-gray-500 mt-1">Updates customer tracking timeline.</p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-800 mb-1">Tracking number</label>
+          <%= f.text_field :tracking_number,
+                placeholder: "Optional",
+                class: "w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500" %>
+          <p class="text-xs text-gray-500 mt-1">Visible to customer.</p>
+        </div>
+
+        <div class="flex md:justify-end">
+          <%= f.submit "Update",
+                class: "w-full md:w-auto px-6 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Info -->
+  <div class="rounded-xl border border-gray-200 bg-white p-5">
+    <h3 class="text-lg font-extrabold text-gray-900 mb-3">Order info</h3>
+
+    <div class="space-y-3 text-sm">
+      <div class="flex items-center justify-between">
+        <span class="text-gray-600">Total</span>
+        <span class="font-extrabold text-gray-900"><%= number_to_currency(@order.total_price) rescue @order.total_price %></span>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <span class="text-gray-600">Tracking</span>
+        <span class="font-semibold text-gray-900"><%= @order.tracking_number.presence || "—" %></span>
+      </div>
+
+      <div class="pt-3 border-t">
+        <div class="text-gray-600 text-xs mb-1">Shipping</div>
+        <div class="font-semibold text-gray-900"><%= @order.shipping_full_name %></div>
+        <div class="text-gray-700"><%= @order.shipping_street %></div>
+        <div class="text-gray-700"><%= [@order.shipping_city, @order.shipping_state, @order.shipping_postal_code].compact.join(", ") %></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-6 rounded-xl border border-gray-200 bg-white p-5">
+  <h2 class="text-lg font-extrabold text-gray-900 mb-3">Customer tracking preview</h2>
+  <ol class="list-decimal pl-5 text-sm text-gray-800 space-y-1">
+    <li>Order placed</li>
+    <li>Payment confirmed</li>
+    <li>Processing</li>
+    <li>Shipped</li>
+    <li>Delivered</li>
+    <li>Received</li>
+  </ol>
+
+  <div class="mt-4 pt-4 border-t flex items-center justify-between text-sm">
+    <div>
+      <div class="text-gray-600 text-xs">Tracking number</div>
+      <div class="font-semibold text-gray-900"><%= @order.tracking_number.presence || "—" %></div>
+    </div>
+    <div class="text-gray-600">
+      Status: <span class="font-semibold text-gray-900"><%= @order.status.to_s.humanize %></span>
+    </div>
+  </div>
+</div>
