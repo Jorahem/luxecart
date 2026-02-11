@@ -60,17 +60,31 @@
   <h1 class="text-3xl font-bold mb-6">Your Cart</h1>
 
   <%# ---------------------------------------------- %>
-  <%# NEW: Last/Current Order Tracking (for customer) %>
+  <%# Last/Current Order Tracking (customer)          %>
   <%# Requires @last_order set in CartsController#show %>
   <%# ---------------------------------------------- %>
   <% if defined?(@last_order) && @last_order.present? %>
     <div class="bg-white rounded-lg shadow-sm border p-5 mb-6">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
+          <%# Show simple product name(s) instead of order number like ORD... %>
+          <% ordered_names =
+               if @last_order.respond_to?(:order_items) && @last_order.order_items.any?
+                 @last_order.order_items.map { |oi| oi.product_name.presence || oi.product&.name }.compact
+               else
+                 []
+               end %>
+
+          <% first_name = ordered_names.first %>
+          <% extra_count = [ordered_names.size - 1, 0].max %>
+
           <div class="text-sm font-semibold text-gray-900">
             Your last order:
             <span class="text-indigo-600">
-              <%= @last_order.order_number.presence || "##{@last_order.id}" %>
+              <%= first_name.presence || "Your order" %>
+              <% if extra_count > 0 %>
+                + <%= extra_count %> more
+              <% end %>
             </span>
           </div>
 
@@ -80,12 +94,6 @@
               • Tracking #: <span class="font-medium text-gray-800"><%= @last_order.tracking_number %></span>
             <% end %>
           </div>
-        </div>
-
-        <div class="flex gap-2">
-          <%= link_to "View tracking",
-                order_path(@last_order),
-                class: "inline-flex items-center justify-center px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow transition" %>
         </div>
       </div>
 
@@ -526,4 +534,6 @@
       });
     </script>
   <% end %>
+
+   
 </div>

@@ -1,0 +1,96 @@
+<main class="px-4 py-8">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div>
+        <h1 class="text-3xl font-extrabold text-white tracking-tight">Products</h1>
+        <p class="text-sm text-slate-300 mt-1">Manage catalog products</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <%= link_to "Add Product",
+              new_admin_product_path,
+              class: "px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow" %>
+
+        <%= link_to admin_dashboard_path,
+              class: "px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-semibold text-white" do %>
+          <i class="fas fa-arrow-left mr-2"></i> Back
+        <% end %>
+      </div>
+    </div>
+
+    <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead class="bg-white/5">
+            <tr class="text-left text-xs uppercase tracking-wider text-slate-300">
+              <th class="px-4 py-3">Name</th>
+              <th class="px-4 py-3">SKU</th>
+              <th class="px-4 py-3">Price</th>
+              <th class="px-4 py-3">Stock</th>
+              <th class="px-4 py-3">Featured</th>
+              <th class="px-4 py-3 text-right">Action</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-white/5">
+            <% if @products.blank? %>
+              <tr>
+                <td colspan="6" class="px-4 py-10 text-center text-slate-300">
+                  No products found.
+                </td>
+              </tr>
+            <% else %>
+              <% @products.each do |p| %>
+                <tr class="hover:bg-white/5">
+                  <td class="px-4 py-4 font-semibold text-white">
+                    <%= p.name %>
+                  </td>
+
+                  <td class="px-4 py-4 text-slate-200">
+                    <%= p.respond_to?(:sku) ? (p.sku.presence || "—") : "—" %>
+                  </td>
+
+                  <td class="px-4 py-4 text-slate-200">
+                    <%= number_to_currency(p.price) rescue p.price %>
+                  </td>
+
+                  <td class="px-4 py-4 text-slate-200">
+                    <%= p.respond_to?(:stock) ? (p.stock || 0) : "—" %>
+                  </td>
+
+                  <td class="px-4 py-4">
+                    <% if p.respond_to?(:featured) %>
+                      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold <%= p.featured ? 'bg-emerald-500/20 text-emerald-200' : 'bg-white/10 text-slate-200' %>">
+                        <%= p.featured ? "Yes" : "No" %>
+                      </span>
+                    <% else %>
+                      <span class="text-slate-400">—</span>
+                    <% end %>
+                  </td>
+
+                  <td class="px-4 py-4 text-right whitespace-nowrap">
+                    <%= link_to "Edit",
+                          edit_admin_product_path(p),
+                          class: "text-indigo-300 hover:text-indigo-200 font-semibold mr-3" %>
+
+                    <% if p.respond_to?(:featured) %>
+                      <%= link_to "Toggle featured",
+                            toggle_featured_admin_product_path(p),
+                            data: { turbo_method: :patch },
+                            class: "text-amber-300 hover:text-amber-200 font-semibold mr-3" %>
+                    <% end %>
+
+                    <%= link_to "Delete",
+                          admin_product_path(p),
+                          data: { turbo_method: :delete, turbo_confirm: "Delete this product?" },
+                          class: "text-red-300 hover:text-red-200 font-semibold" %>
+                  </td>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>

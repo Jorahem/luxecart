@@ -76,15 +76,15 @@ Rails.application.routes.draw do
 
   # -------------------------
   # Admin namespace (controllers under AdminPanel::)
-  namespace :admin_panel, path: '/admin', as: :admin do
-    # Admin login/logout
-    get    'login',     to: 'sessions#new',     as: :login
-    post   'login',     to: 'sessions#create'
-    delete 'logout',    to: 'sessions#destroy', as: :logout
+ 
 
-    # Admin dashboard
-    root to: 'dashboard#index'
-    get  'dashboard',   to: 'dashboard#index',  as: :dashboard
+    namespace :admin_panel, path: '/admin', as: :admin do
+  get    'login',  to: 'sessions#new',    as: :login
+  post   'login',  to: 'sessions#create'
+  delete 'logout', to: 'sessions#destroy', as: :logout
+  root to: 'dashboard#index'
+  get  'dashboard', to: 'dashboard#index', as: :dashboard
+  
 
     # Example admin resources:
     resources :products do

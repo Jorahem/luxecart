@@ -1,3 +1,5 @@
+require "csv"
+
 module AdminPanel
   class OrdersController < AdminPanel::BaseController
     before_action :set_order, only: [:show, :edit, :update, :destroy, :update_status, :mark_as_shipped, :mark_as_delivered]
@@ -5,6 +7,32 @@ module AdminPanel
     def index
       @orders = Order.order(created_at: :desc)
       @orders = @orders.where(status: params[:status]) if params[:status].present?
+
+      respond_to do |format|
+        format.html
+
+        format.csv do
+          csv_data = CSV.generate(headers: true) do |csv|
+            csv << ["OrderNumber", "Status", "CustomerEmail", "TotalPrice", "TrackingNumber", "CreatedAt"]
+
+            # Use find_each only if this is an AR::Relation (it is), keeps memory low
+            @orders.find_each do |o|
+              csv << [
+                (o.order_number.presence || o.id),
+                o.status,
+                (o.user&.email || ""),
+                o.total_price,
+                (o.tracking_number.presence || ""),
+                o.created_at
+              ]
+            end
+          end
+
+          send_data csv_data,
+                    filename: "orders-#{Date.today}.csv",
+                    type: "text/csv"
+        end
+      end
     end
 
     def show; end

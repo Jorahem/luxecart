@@ -2,24 +2,25 @@ module AdminPanel
   class BaseController < ApplicationController
     layout "admin"
 
-    before_action :authenticate_user!
-    before_action :authenticate_admin!
+    before_action :require_admin_login
+
+    helper_method :current_admin, :admin_signed_in?
 
     private
 
-    def authenticate_admin!
-      # Use the boolean column directly (works even if admin? is private/not defined)
-      is_admin =
-        if current_user.respond_to?(:admin)
-          !!current_user.admin
-        else
-          false
-        end
+    def current_admin
+      @current_admin ||= Admin.find_by(id: session[:admin_id])
+    rescue StandardError
+      nil
+    end
 
-      unless is_admin
-        flash[:alert] = "You are not authorized to access this area."
-        redirect_to root_path
-      end
+    def admin_signed_in?
+      current_admin.present?
+    end
+
+    def require_admin_login
+      return if admin_signed_in?
+      redirect_to admin_login_path, alert: "Please sign in as admin."
     end
   end
-end 
+end

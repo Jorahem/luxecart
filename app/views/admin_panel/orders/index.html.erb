@@ -61,166 +61,107 @@
             <% selected_status = params[:status].to_s %>
             <% selected_label  = selected_status.present? ? selected_status.humanize : "All statuses" %>
 
-            <input type="hidden" name="status" id="orders_status_value" value="<%= selected_status %>">
-
-            <div class="relative" id="orders-status-dd">
-              <button
-                type="button"
-                id="orders-status-btn"
-                class="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-[#0B1220] border border-white/10 text-white hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <span id="orders-status-label" class="font-semibold"><%= selected_label %></span>
-                <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
-                </svg>
-              </button>
-
-              <div
-                id="orders-status-menu"
-                class="hidden absolute left-0 right-0 mt-2 z-[9999] rounded-xl overflow-hidden bg-[#0B1220] border border-white/10 shadow-2xl"
-              >
-                <button type="button"
-                  class="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/5 border-b border-white/5"
-                  data-orders-status-value=""
-                  data-orders-status-label="All statuses"
-                >
-                  All statuses
-                </button>
-
-                <% Order.statuses.keys.each do |s| %>
-                  <button type="button"
-                    class="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/5"
-                    data-orders-status-value="<%= s %>"
-                    data-orders-status-label="<%= s.humanize %>"
-                  >
-                    <%= s.humanize %>
-                  </button>
-                <% end %>
-              </div>
-            </div>
+            <select
+              name="status"
+              class="w-full px-4 py-3 
+                               rounded-xl bg-[#0B1220] border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="" <%= "selected" if selected_status.blank? %>>All statuses</option>
+              <% (Order.respond_to?(:statuses) ? Order.statuses.keys : []).each do |k| %>
+                <option value="<%= k %>" <%= "selected" if selected_status == k %>><%= k.humanize %></option>
+              <% end %>
+            </select>
           </div>
 
           <!-- Buttons -->
-          <div class="flex gap-2">
-            <button class="flex-1 px-4 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold">
+          <div class="flex gap-3">
+            <button
+              type="submit"
+              class="flex-1 px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow"
+            >
               Apply
             </button>
 
             <%= link_to "Reset",
                   admin_orders_path,
-                  class: "px-4 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-semibold" %>
+                  class: "px-5 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-semibold text-white text-center" %>
           </div>
         </div>
       </form>
     </div>
 
-    <!-- Table -->
+    <!-- Orders table -->
     <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
-      <table class="w-full">
-        <thead class="bg-white/5">
-          <tr class="text-left text-xs uppercase tracking-wider text-slate-300 border-b border-white/10">
-            <th class="px-4 py-3">Order</th>
-            <th class="px-4 py-3">User</th>
-            <th class="px-4 py-3">Total</th>
-            <th class="px-4 py-3">Status</th>
-            <th class="px-4 py-3">Tracking</th>
-            <th class="px-4 py-3">Created</th>
-            <th class="px-4 py-3 text-right">Action</th>
-          </tr>
-        </thead>
-
-        <tbody class="divide-y divide-white/10">
-          <% @orders.each do |order| %>
-            <tr class="hover:bg-white/5">
-              <td class="px-4 py-3 font-extrabold text-white">
-                <%= order.order_number.presence || "##{order.id}" %>
-              </td>
-
-              <td class="px-4 py-3 text-slate-200">
-                <%= order.user&.email || "-" %>
-              </td>
-
-              <td class="px-4 py-3 text-slate-200">
-                <%= number_to_currency(order.total_price) rescue order.total_price %>
-              </td>
-
-              <td class="px-4 py-3">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border
-                            <%= case order.status.to_s
-                                when 'pending' then 'bg-amber-500/10 text-amber-100 border-amber-400/20'
-                                when 'paid', 'processing' then 'bg-indigo-500/10 text-indigo-100 border-indigo-400/20'
-                                when 'shipped' then 'bg-sky-500/10 text-sky-100 border-sky-400/20'
-                                when 'delivered', 'received' then 'bg-emerald-500/10 text-emerald-100 border-emerald-400/20'
-                                when 'cancelled' then 'bg-red-500/10 text-red-100 border-red-400/20'
-                                else 'bg-slate-900/40 text-slate-200 border-white/10'
-                                end %>">
-                  <%= order.status.to_s.humanize %>
-                </span>
-              </td>
-
-              <td class="px-4 py-3 text-slate-200">
-                <%= order.tracking_number.presence || "-" %>
-              </td>
-
-              <td class="px-4 py-3 text-slate-300">
-                <%= l(order.created_at, format: :short) rescue order.created_at.to_s %>
-              </td>
-
-              <td class="px-4 py-3 text-right">
-                <%= link_to "View",
-                      admin_order_path(order),
-                      class: "inline-flex items-center justify-center px-3 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-sm font-semibold text-white" %>
-              </td>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead class="bg-white/5">
+            <tr class="text-left text-xs uppercase tracking-wider text-slate-300">
+              <th class="px-4 py-3">Order</th>
+              <th class="px-4 py-3">User</th>
+              <th class="px-4 py-3">Total</th>
+              <th class="px-4 py-3">Status</th>
+              <th class="px-4 py-3">Tracking</th>
+              <th class="px-4 py-3">Created</th>
+              <th class="px-4 py-3 text-right">Action</th>
             </tr>
-          <% end %>
+          </thead>
 
-          <% if @orders.empty? %>
-            <tr>
-              <td colspan="7" class="px-4 py-10 text-center text-slate-300">
-                No orders found.
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+          <tbody class="divide-y divide-white/5">
+            <% if @orders.blank? %>
+              <tr>
+                <td colspan="7" class="px-4 py-8 text-center text-slate-300">
+                  No orders found.
+                </td>
+              </tr>
+            <% else %>
+              <% @orders.each do |order| %>
+                <tr class="hover:bg-white/5">
+                  <td class="px-4 py-4 font-semibold text-white">
+                    <%= order.order_number.presence || "##{order.id}" %>
+                  </td>
+                  <td class="px-4 py-4 text-slate-200">
+                    <%= order.user&.email || "—" %>
+                  </td>
+                  <td class="px-4 py-4 text-slate-200">
+                    <%= number_to_currency(order.total_price) rescue order.total_price %>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-white">
+                      <%= order.status.to_s.humanize %>
+                    </span>
+                  </td>
+                  <td class="px-4 py-4 text-slate-200">
+                    <%= order.tracking_number.presence || "—" %>
+                  </td>
+                  <td class="px-4 py-4 text-slate-300">
+                    <%= l(order.created_at, format: :short) rescue order.created_at.to_s %>
+                  </td>
+                  <td class="px-4 py-4 text-right">
+                    <%= link_to "View",
+                          admin_order_path(order),
+                          class: "text-indigo-300 hover:text-indigo-200 font-semibold" %>
+                  </td>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
     </div>
 
+    <!-- ✅ Bottom back button -->
+    <div class="mt-6 flex items-center justify-end">
+      <%= link_to admin_dashboard_path,
+            class: "inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-semibold border border-white/10" do %>
+        <i class="fas fa-arrow-left"></i>
+        Back to Dashboard
+      <% end %>
+    </div>
+<style>
+.text-white {
+    --tw-text-opacity: 1;
+    color: rgb(241 167 167);
+}
+</style>
   </div>
 </main>
-
-<script>
-  (function () {
-    const root = document.getElementById('orders-status-dd');
-    const btn = document.getElementById('orders-status-btn');
-    const menu = document.getElementById('orders-status-menu');
-    const hidden = document.getElementById('orders_status_value');
-    const label = document.getElementById('orders-status-label');
-
-    if (!root || !btn || !menu || !hidden || !label) return;
-
-    function close() { menu.classList.add('hidden'); }
-    function open() { menu.classList.remove('hidden'); }
-    function toggle() { menu.classList.contains('hidden') ? open() : close(); }
-
-    document.addEventListener('click', function (e) {
-      const opt = e.target.closest('[data-orders-status-value]');
-      if (opt && root.contains(opt)) {
-        hidden.value = opt.getAttribute('data-orders-status-value') || '';
-        label.textContent = opt.getAttribute('data-orders-status-label') || 'All statuses';
-        close();
-        return;
-      }
-
-      if (e.target === btn || btn.contains(e.target)) {
-        toggle();
-        return;
-      }
-
-      if (!e.target.closest('#orders-status-dd')) close();
-    });
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') close();
-    });
-  })();
-</script>

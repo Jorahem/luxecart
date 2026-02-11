@@ -1,24 +1,13 @@
 module Admin
   class BaseController < ApplicationController
-    layout "admin"
-
     before_action :authenticate_user!
-    before_action :authenticate_admin!
+    before_action :require_admin!
 
     private
 
-    def authenticate_admin!
-      is_admin =
-        if current_user.respond_to?(:admin)
-          !!current_user.admin
-        else
-          false
-        end
-
-      unless is_admin
-        flash[:alert] = "You are not authorized to access this area."
-        redirect_to root_path
-      end
+    def require_admin!
+      return if current_user&.admin?
+      redirect_to root_path, alert: "You are not authorized to access admin."
     end
   end
 end

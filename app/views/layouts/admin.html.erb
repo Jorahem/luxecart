@@ -45,8 +45,8 @@
     </div>
   </header>
 
-  <!-- ✅ Sidebar removed: the page is now full width -->
-  <main class="p-6">
+  <!-- ✅ Make the whole admin content area dark -->
+  <main class="p-6 bg-gray-900 min-h-screen">
     <% flash.each do |k,v| %>
       <div class="mb-4 px-4 py-3 rounded-lg border
                   <%= k.to_s == 'notice' ? 'border-emerald-700 bg-emerald-900/30 text-emerald-100' : 'border-red-700 bg-red-900/30 text-red-100' %>">

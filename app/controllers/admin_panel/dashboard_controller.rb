@@ -11,11 +11,7 @@ module AdminPanel
 
     # Kept from your old code (no longer used as a before_action, but preserved safely)
     # If you still want session-based Admin login, we can switch BaseController to use this.
-    def require_admin_login
-      unless current_admin
-        redirect_to admin_login_path, alert: "Please sign in."
-      end
-    end
+  
 
     # Kept from your old code for compatibility with any dashboard views/partials
     # that might call current_admin.
@@ -26,4 +22,12 @@ module AdminPanel
 
     helper_method :current_admin
   end
+
+
+  # Kept from your old code (no longer used as a before_action, but preserved safely)
+def require_admin_login
+  unless current_admin
+    redirect_to admin_login_path, alert: "Please sign in."
+  end
+end
 end
