@@ -1,0 +1,89 @@
+<main class="px-4 py-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex items-center justify-between gap-4 mb-6">
+      <div>
+        <h1 class="text-3xl font-extrabold text-white tracking-tight">User Details</h1>
+        <p class="text-sm text-slate-300 mt-1">
+          <%= @user.respond_to?(:full_name) ? @user.full_name : "#{@user.first_name} #{@user.last_name}".strip %>
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <%= link_to "Back",
+              admin_users_path,
+              class: "px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-semibold text-white" %>
+
+        <%= link_to "Edit",
+              edit_admin_user_path(@user),
+              class: "px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow" %>
+      </div>
+    </div>
+
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5 text-sm">
+        <div>
+          <dt class="text-slate-400">First name</dt>
+          <dd class="text-white font-semibold mt-1"><%= @user.first_name.presence || "—" %></dd>
+        </div>
+
+        <div>
+          <dt class="text-slate-400">Last name</dt>
+          <dd class="text-white font-semibold mt-1"><%= @user.last_name.presence || "—" %></dd>
+        </div>
+
+        <div>
+          <dt class="text-slate-400">Email</dt>
+          <dd class="text-white font-semibold mt-1"><%= @user.email.presence || "—" %></dd>
+        </div>
+
+        <div>
+          <dt class="text-slate-400">Joined</dt>
+          <dd class="text-white font-semibold mt-1">
+            <%= @user.respond_to?(:created_at) && @user.created_at.present? ? @user.created_at.strftime("%Y-%m-%d %H:%M") : "—" %>
+          </dd>
+        </div>
+
+        <div>
+          <dt class="text-slate-400">Admin</dt>
+          <dd class="mt-1">
+            <% if @user.respond_to?(:admin) %>
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold <%= @user.admin ? 'bg-emerald-500/20 text-emerald-200' : 'bg-white/10 text-slate-200' %>">
+                <%= @user.admin ? "Yes" : "No" %>
+              </span>
+            <% else %>
+              <span class="text-slate-300">—</span>
+            <% end %>
+          </dd>
+        </div>
+
+        <div>
+          <dt class="text-slate-400">Blocked</dt>
+          <dd class="mt-1">
+            <% if @user.respond_to?(:blocked) %>
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold <%= @user.blocked ? 'bg-red-500/20 text-red-200' : 'bg-white/10 text-slate-200' %>">
+                <%= @user.blocked ? "Yes" : "No" %>
+              </span>
+            <% else %>
+              <span class="text-slate-300">—</span>
+            <% end %>
+          </dd>
+        </div>
+      </dl>
+
+      <div class="flex items-center gap-3 pt-6">
+        <%= link_to "Toggle admin",
+              toggle_admin_admin_user_path(@user),
+              data: { turbo_method: :patch },
+              class: "px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-semibold text-white" %>
+
+
+      
+        <%= button_to "Delete user",
+      admin_user_path(@user),
+      method: :delete,
+      form: { data: { turbo_confirm: "Delete this user permanently? This will delete orders, addresses, etc." } },
+      class: "px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold shadow" %>
+      </div>
+    </div>
+  </div>
+</main>

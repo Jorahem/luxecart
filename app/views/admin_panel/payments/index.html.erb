@@ -1,0 +1,82 @@
+
+
+<main class="px-4 py-8">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div>
+        <h1 class="text-3xl font-extrabold text-white tracking-tight">Payments</h1>
+        <p class="text-sm text-slate-300 mt-1">View payment status for orders</p>
+      </div>
+
+      <%= link_to admin_dashboard_path,
+            class: "px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-semibold text-white" do %>
+        <i class="fas fa-arrow-left mr-2"></i> Back
+      <% end %>
+    </div>
+
+    <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead class="bg-white/5">
+            <tr class="text-left text-xs uppercase tracking-wider text-slate-300">
+              <th class="px-4 py-3">Order #</th>
+              <th class="px-4 py-3">Customer</th>
+              <th class="px-4 py-3">Method</th>
+              <th class="px-4 py-3">Payment Status</th>
+              <th class="px-4 py-3">Stripe Intent</th>
+              <th class="px-4 py-3 text-right">Action</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-white/5">
+            <% if @orders.blank? %>
+              <tr>
+                <td colspan="6" class="px-4 py-10 text-center text-slate-300">No payments found.</td>
+              </tr>
+            <% else %>
+              <% @orders.each do |o| %>
+                <tr class="hover:bg-white/5">
+                  <td class="px-4 py-4 font-semibold text-white">
+                    <%= o.respond_to?(:order_number) ? (o.order_number.presence || o.id) : o.id %>
+                  </td>
+
+                  <td class="px-4 py-4 text-slate-200">
+                    <%= o.user&.full_name.presence || o.shipping_full_name.presence || "—" %>
+                  </td>
+
+                  <td class="px-4 py-4 text-slate-200">
+                    <%= o.respond_to?(:payment_method) ? (o.payment_method.presence || "—") : "—" %>
+                  </td>
+
+                  <td class="px-4 py-4">
+                    <% status = (o.respond_to?(:payment_status) ? o.payment_status.to_s : "unknown") %>
+                    <% badge =
+                      case status
+                      when "paid" then "bg-emerald-500/20 text-emerald-200"
+                      when "failed" then "bg-red-500/20 text-red-200"
+                      else "bg-white/10 text-slate-200"
+                      end
+                    %>
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold <%= badge %>">
+                      <%= status.presence || "unknown" %>
+                    </span>
+                  </td>
+
+                  <td class="px-4 py-4 text-slate-200">
+                    <%= o.respond_to?(:stripe_payment_intent_id) ? (o.stripe_payment_intent_id.presence || "—") : "—" %>
+                  </td>
+
+                  <td class="px-4 py-4 text-right whitespace-nowrap">
+                    <%= link_to "View",
+                          admin_payment_path(o),
+                          class: "text-indigo-300 hover:text-indigo-200 font-semibold" %>
+                  </td>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>

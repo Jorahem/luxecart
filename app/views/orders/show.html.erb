@@ -1,5 +1,16 @@
 <% require 'ostruct' %>
 
+<%# --- Who can edit order status/tracking? (admin/ceo/staff) --- %>
+<% can_manage_order =
+     if current_user&.respond_to?(:can_view_reports?)
+       current_user.can_view_reports?
+     elsif current_user&.respond_to?(:role)
+       %w[admin ceo staff].include?(current_user.role.to_s)
+     else
+       current_user&.respond_to?(:admin?) ? current_user.admin? : false
+     end
+%>
+
 <% status_options = Order.statuses.keys.map { |k| [k.humanize, k] } %>
 <% current_status_key = @order.status.to_s %>
 <% current_status_label = status_options.find { |(_l, k)| k == current_status_key }&.first || current_status_key.humanize %>
@@ -25,7 +36,8 @@
             <span class="font-semibold text-slate-200"><%= l(@order.created_at, format: :long) rescue @order.created_at.to_s %></span>
           </div>
 
-          <% if @order.user&.email.present? %>
+          <%# show customer email only to admin/ceo/staff (privacy) %>
+          <% if can_manage_order && @order.user&.email.present? %>
             <div>
               <span class="text-slate-400">Customer:</span>
               <span class="font-semibold text-slate-200"><%= @order.user.email %></span>
@@ -40,118 +52,128 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <%= link_to admin_orders_path,
-              class: "inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-semibold" do %>
-          <span class="text-slate-200">←</span>
-          Back to Orders
+        <% if can_manage_order %>
+          <%= link_to admin_orders_path,
+                class: "inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-semibold" do %>
+            <span class="text-slate-200">←</span>
+            Back to Orders
+          <% end %>
+        <% else %>
+          <%= link_to orders_path,
+                class: "inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-semibold" do %>
+            <span class="text-slate-200">←</span>
+            Back to Orders
+          <% end %>
         <% end %>
       </div>
     </div>
 
     <!-- Top grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Left: Update card -->
-      <div class="lg:col-span-2 bg-white/5 backdrop-blur border border-white/10 rounded-2xl shadow-xl overflow-hidden">
-        <div class="p-6 border-b border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <div class="text-sm font-extrabold text-white">Update status & tracking</div>
-            <div class="text-xs text-slate-300 mt-1">Changes here affect the customer tracking timeline.</div>
+      <%# ADMIN/CEO/STAFF ONLY: Update card %>
+      <% if can_manage_order %>
+        <div class="lg:col-span-2 bg-white/5 backdrop-blur border border-white/10 rounded-2xl shadow-xl overflow-hidden">
+          <div class="p-6 border-b border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <div class="text-sm font-extrabold text-white">Update status & tracking</div>
+              <div class="text-xs text-slate-300 mt-1">Changes here affect the customer tracking timeline.</div>
+            </div>
+
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border
+                         <%= case @order.status.to_s
+                             when 'pending' then 'bg-slate-900/40 text-slate-200 border-white/10'
+                             when 'paid', 'processing' then 'bg-indigo-500/10 text-indigo-100 border-indigo-400/20'
+                             when 'shipped' then 'bg-sky-500/10 text-sky-100 border-sky-400/20'
+                             when 'delivered' then 'bg-green-500/10 text-green-100 border-green-400/20'
+                             when 'received' then 'bg-emerald-500/10 text-emerald-100 border-emerald-400/20'
+                             when 'cancelled' then 'bg-red-500/10 text-red-100 border-red-400/20'
+                             else 'bg-slate-900/40 text-slate-200 border-white/10'
+                             end %>">
+              Current: <%= @order.status.to_s.humanize %>
+            </span>
           </div>
 
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border
-                       <%= case @order.status.to_s
-                           when 'pending' then 'bg-slate-900/40 text-slate-200 border-white/10'
-                           when 'paid', 'processing' then 'bg-indigo-500/10 text-indigo-100 border-indigo-400/20'
-                           when 'shipped' then 'bg-sky-500/10 text-sky-100 border-sky-400/20'
-                           when 'delivered' then 'bg-green-500/10 text-green-100 border-green-400/20'
-                           when 'received' then 'bg-emerald-500/10 text-emerald-100 border-emerald-400/20'
-                           when 'cancelled' then 'bg-red-500/10 text-red-100 border-red-400/20'
-                           else 'bg-slate-900/40 text-slate-200 border-white/10'
-                           end %>">
-            Current: <%= @order.status.to_s.humanize %>
-          </span>
-        </div>
+          <div class="p-6">
+            <%= form_with model: @order, url: admin_order_path(@order), method: :patch, local: true do %>
+              <%= hidden_field_tag "order[status]", current_status_key, id: "order_status" %>
 
-        <div class="p-6">
-          <%= form_with model: @order, url: admin_order_path(@order), method: :patch, local: true do %>
-            <%= hidden_field_tag "order[status]", current_status_key, id: "order_status" %>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Custom dropdown -->
+                <div>
+                  <label class="block text-xs font-bold text-slate-200 mb-2">Status</label>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <!-- Custom dropdown -->
-              <div>
-                <label class="block text-xs font-bold text-slate-200 mb-2">Status</label>
+                  <div class="relative" id="status-dd">
+                    <button
+                      type="button"
+                      id="status-dd-btn"
+                      class="w-full flex items-center justify-between bg-[#050814]/60 text-white border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    >
+                      <span id="status-label" class="font-semibold"><%= current_status_label %></span>
+                      <svg class="h-4 w-4 text-slate-300" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
+                      </svg>
+                    </button>
 
-                <div class="relative" id="status-dd">
-                  <button
-                    type="button"
-                    id="status-dd-btn"
-                    class="w-full flex items-center justify-between bg-[#050814]/60 text-white border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                  >
-                    <span id="status-label" class="font-semibold"><%= current_status_label %></span>
-                    <svg class="h-4 w-4 text-slate-300" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
-                    </svg>
-                  </button>
-
-                  <div
-                    id="status-dd-menu"
-                    class="hidden absolute z-50 mt-2 w-full bg-[#070A12] border border-white/10 rounded-xl shadow-2xl overflow-hidden"
-                  >
-                    <% status_options.each do |label, key| %>
-                      <button
-                        type="button"
-                        class="w-full text-left px-4 py-3 text-sm hover:bg-white/5 <%= key == current_status_key ? 'bg-white/5 text-indigo-100' : 'text-white' %>"
-                        data-status-key="<%= key %>"
-                        data-status-label="<%= label %>"
-                      >
-                        <div class="flex items-center justify-between">
-                          <span class="font-semibold"><%= label %></span>
-                          <% if key == current_status_key %>
-                            <span class="text-xs text-indigo-200">selected</span>
-                          <% end %>
-                        </div>
-                      </button>
-                    <% end %>
+                    <div
+                      id="status-dd-menu"
+                      class="hidden absolute z-50 mt-2 w-full bg-[#070A12] border border-white/10 rounded-xl shadow-2xl overflow-hidden"
+                    >
+                      <% status_options.each do |label, key| %>
+                        <button
+                          type="button"
+                          class="w-full text-left px-4 py-3 text-sm hover:bg-white/5 <%= key == current_status_key ? 'bg-white/5 text-indigo-100' : 'text-white' %>"
+                          data-status-key="<%= key %>"
+                          data-status-label="<%= label %>"
+                        >
+                          <div class="flex items-center justify-between">
+                            <span class="font-semibold"><%= label %></span>
+                            <% if key == current_status_key %>
+                              <span class="text-xs text-indigo-200">selected</span>
+                            <% end %>
+                          </div>
+                        </button>
+                      <% end %>
+                    </div>
                   </div>
+
+                  <p class="text-[11px] text-slate-400 mt-2">
+                    Tip: Use “Shipped” when you add a tracking number.
+                  </p>
                 </div>
 
-                <p class="text-[11px] text-slate-400 mt-2">
-                  Tip: Use “Shipped” when you add a tracking number.
-                </p>
+                <!-- Tracking number -->
+                <div>
+                  <label class="block text-xs font-bold text-slate-200 mb-2">Tracking number</label>
+                  <%= text_field_tag "order[tracking_number]", @order.tracking_number,
+                        placeholder: "e.g. DHL123456789",
+                        class: "w-full bg-[#050814]/60 text-white border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-400" %>
+
+                  <p class="text-[11px] text-slate-400 mt-2">
+                    Optional. Visible to customer on Cart + Order page.
+                  </p>
+                </div>
               </div>
 
-              <!-- Tracking number -->
-              <div>
-                <label class="block text-xs font-bold text-slate-200 mb-2">Tracking number</label>
-                <%= text_field_tag "order[tracking_number]", @order.tracking_number,
-                      placeholder: "e.g. DHL123456789",
-                      class: "w-full bg-[#050814]/60 text-white border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-400" %>
+              <div class="mt-5 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                <div class="text-xs text-slate-400">
+                  Last updated: <%= l(@order.updated_at, format: :long) rescue @order.updated_at.to_s %>
+                </div>
 
-                <p class="text-[11px] text-slate-400 mt-2">
-                  Optional. Visible to customer on Cart + Order page.
-                </p>
+                <button type="submit"
+                  class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-extrabold shadow-lg shadow-indigo-900/30 transition">
+                  Save changes
+                </button>
               </div>
-            </div>
-
-            <div class="mt-5 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-              <div class="text-xs text-slate-400">
-                Last updated: <%= l(@order.updated_at, format: :long) rescue @order.updated_at.to_s %>
-              </div>
-
-              <button type="submit"
-                class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-extrabold shadow-lg shadow-indigo-900/30 transition">
-                Save changes
-              </button>
-            </div>
-          <% end %>
+            <% end %>
+          </div>
         </div>
-      </div>
+      <% end %>
 
-      <!-- Right: Quick info -->
-      <div class="bg-white/5 backdrop-blur border border-white/10 rounded-2xl shadow-xl p-6">
+      <!-- Right: Quick info (always visible) -->
+      <div class="<%= can_manage_order ? '' : 'lg:col-span-3' %> bg-white/5 backdrop-blur border border-white/10 rounded-2xl shadow-xl p-6">
         <div class="text-sm font-extrabold text-white mb-4">Quick info</div>
 
-        <div class="space-y-4">
+        <div class="<%= can_manage_order ? 'space-y-4' : 'grid grid-cols-1 md:grid-cols-3 gap-4' %>">
           <div class="bg-[#050814]/60 border border-white/10 rounded-xl p-4">
             <div class="text-xs text-slate-400">Shipping to</div>
             <div class="mt-1 font-semibold text-slate-100"><%= @order.shipping_full_name %></div>
@@ -161,8 +183,11 @@
 
           <div class="bg-[#050814]/60 border border-white/10 rounded-xl p-4">
             <div class="text-xs text-slate-400">Tracking number</div>
-            <div class="mt-1 font-extrabold text-slate-100">
+            <div class="mt-1 text-lg font-extrabold text-slate-100">
               <%= @order.tracking_number.presence || "—" %>
+            </div>
+            <div class="text-[11px] text-slate-400 mt-2">
+              Add tracking after shipment.
             </div>
           </div>
 
@@ -176,12 +201,18 @@
       </div>
     </div>
 
-    <!-- Timeline -->
+    <!-- Timeline (customer tracking) -->
     <div class="mt-6 bg-white/5 backdrop-blur border border-white/10 rounded-2xl shadow-xl p-6">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
         <div>
-          <div class="text-sm font-extrabold text-white">Customer tracking preview</div>
-          <div class="text-xs text-slate-300 mt-1">What the customer sees in cart/order pages.</div>
+          <div class="text-sm font-extrabold text-white">Order tracking</div>
+          <div class="text-xs text-slate-300 mt-1">
+            <% if can_manage_order %>
+              Preview of what the customer sees.
+            <% else %>
+              Track your order status and shipment here.
+            <% end %>
+          </div>
         </div>
       </div>
 
@@ -199,7 +230,8 @@
              @order.status_step_index
            else
              steps.map(&:first).index(@order.status.to_s) || 0
-           end %>
+           end
+      %>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="bg-[#050814]/60 border border-white/10 rounded-xl p-4">
@@ -238,56 +270,43 @@
       </div>
     </div>
 
-    <!-- Summary (kept) -->
-    <div class="mt-6 bg-white/5 backdrop-blur border border-white/10 rounded-2xl shadow-xl p-6">
-      <div class="text-sm font-extrabold text-white mb-4">Order summary</div>
-      <div class="bg-[#050814]/60 border border-white/10 rounded-xl p-4">
-        <%= render 'checkout/order_summary', cart: OpenStruct.new(
-          cart_items: @order.order_items.map { |oi|
-            OpenStruct.new(product: oi.product, quantity: oi.quantity, line_subtotal: oi.total_price)
-          },
-          subtotal: @order.subtotal,
-          shipping_cost: @order.shipping_cost,
-          tax_amount: (@order.respond_to?(:tax_amount) && @order.tax_amount.present?) ? @order.tax_amount : @order.tax,
-          total_price: @order.total_price
-        ) %>
-      </div>
-    </div>
-
   </div>
 </div>
 
-<script>
-  (function () {
-    const btn = document.getElementById('status-dd-btn');
-    const menu = document.getElementById('status-dd-menu');
-    const label = document.getElementById('status-label');
-    const input = document.getElementById('order_status');
+<%# Only load the status dropdown JS for admin/ceo/staff (customers don’t need it) %>
+<% if can_manage_order %>
+  <script>
+    (function () {
+      const btn = document.getElementById('status-dd-btn');
+      const menu = document.getElementById('status-dd-menu');
+      const label = document.getElementById('status-label');
+      const input = document.getElementById('order_status');
 
-    function close() { menu && menu.classList.add('hidden'); }
-    function toggle() { if (menu) menu.classList.toggle('hidden'); }
+      function close() { menu && menu.classList.add('hidden'); }
+      function toggle() { if (menu) menu.classList.toggle('hidden'); }
 
-    document.addEventListener('click', function (e) {
-      const opt = e.target.closest('[data-status-key]');
-      if (opt) {
-        const key = opt.getAttribute('data-status-key');
-        const text = opt.getAttribute('data-status-label');
-        if (input) input.value = key;
-        if (label) label.textContent = text;
-        close();
-        return;
-      }
+      document.addEventListener('click', function (e) {
+        const opt = e.target.closest('[data-status-key]');
+        if (opt) {
+          const key = opt.getAttribute('data-status-key');
+          const text = opt.getAttribute('data-status-label');
+          if (input) input.value = key;
+          if (label) label.textContent = text;
+          close();
+          return;
+        }
 
-      if (btn && (e.target === btn || btn.contains(e.target))) {
-        toggle();
-        return;
-      }
+        if (btn && (e.target === btn || btn.contains(e.target))) {
+          toggle();
+          return;
+        }
 
-      if (!e.target.closest('#status-dd')) close();
-    });
+        if (!e.target.closest('#status-dd')) close();
+      });
 
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') close();
-    });
-  })();
-</script>
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') close();
+      });
+    })();
+  </script>
+<% end %>

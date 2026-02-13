@@ -1,0 +1,377 @@
+<main class="px-4 py-8">
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 text-xs font-semibold text-slate-200 mb-3">
+          <span class="h-2 w-2 rounded-full" style="background: rgba(16,185,129,.95)"></span>
+          Premium Analytics
+        </div>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight">Reports</h1>
+        <p class="text-sm text-slate-300 mt-2 max-w-2xl">
+          Executive dashboard for Admin / CEO / Staff. Choose a range and review performance at a glance.
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+        <div class="flex items-center gap-2">
+          <%= link_to "7 days", admin_reports_path(range: "7d"),
+                class: "px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-semibold text-white" %>
+          <%= link_to "30 days", admin_reports_path(range: "30d"),
+                class: "px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-semibold text-white" %>
+          <%= link_to "90 days", admin_reports_path(range: "90d"),
+                class: "px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-semibold text-white" %>
+        </div>
+
+        <%= link_to admin_dashboard_path,
+              class: "px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-semibold text-white" do %>
+          <i class="fas fa-arrow-left mr-2"></i> Back
+        <% end %>
+      </div>
+    </div>
+
+    <!-- KPI Cards (guaranteed colors using inline gradients) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+      <!-- Revenue -->
+      <div class="rounded-2xl border border-white/10 p-5 relative overflow-hidden"
+           style="background: linear-gradient(135deg, rgba(245,158,11,.38), rgba(255,255,255,.04));">
+        <div class="absolute -top-10 -right-10 h-28 w-28 rounded-full"
+             style="background: rgba(245,158,11,.40); filter: blur(35px);"></div>
+        <div class="text-sm font-semibold" style="color: rgba(253,230,138,.95);">Revenue</div>
+        <div class="text-white text-3xl font-extrabold mt-1">
+          <%= number_to_currency(@revenue) rescue @revenue %>
+        </div>
+        <div class="text-xs text-slate-300 mt-2">Selected range</div>
+      </div>
+
+      <!-- Orders -->
+      <div class="rounded-2xl border border-white/10 p-5 relative overflow-hidden"
+           style="background: linear-gradient(135deg, rgba(16,185,129,.35), rgba(255,255,255,.04));">
+        <div class="absolute -top-10 -right-10 h-28 w-28 rounded-full"
+             style="background: rgba(16,185,129,.38); filter: blur(35px);"></div>
+        <div class="text-sm font-semibold" style="color: rgba(167,243,208,.95);">Orders</div>
+        <div class="text-white text-3xl font-extrabold mt-1"><%= @orders_in_range.count %></div>
+        <div class="text-xs text-slate-300 mt-2">
+          Paid: <span class="text-white font-semibold"><%= @paid_orders %></span>
+          • Failed: <span class="text-white font-semibold"><%= @failed_orders %></span>
+        </div>
+      </div>
+
+      <!-- New Users -->
+      <div class="rounded-2xl border border-white/10 p-5 relative overflow-hidden"
+           style="background: linear-gradient(135deg, rgba(56,189,248,.35), rgba(255,255,255,.04));">
+        <div class="absolute -top-10 -right-10 h-28 w-28 rounded-full"
+             style="background: rgba(56,189,248,.38); filter: blur(35px);"></div>
+        <div class="text-sm font-semibold" style="color: rgba(186,230,253,.95);">New Users</div>
+        <div class="text-white text-3xl font-extrabold mt-1"><%= @new_users %></div>
+        <div class="text-xs text-slate-300 mt-2">Selected range</div>
+      </div>
+
+      <!-- Total Users -->
+      <div class="rounded-2xl border border-white/10 p-5 relative overflow-hidden"
+           style="background: linear-gradient(135deg, rgba(217,70,239,.35), rgba(255,255,255,.04));">
+        <div class="absolute -top-10 -right-10 h-28 w-28 rounded-full"
+             style="background: rgba(217,70,239,.38); filter: blur(35px);"></div>
+        <div class="text-sm font-semibold" style="color: rgba(245,208,254,.95);">Total Users</div>
+        <div class="text-white text-3xl font-extrabold mt-1"><%= @total_users %></div>
+        <div class="text-xs text-slate-300 mt-2">All time</div>
+      </div>
+    </div>
+
+    <!-- Executive Insights -->
+    <div class="rounded-2xl border border-white/10 p-5 mb-8"
+         style="background: linear-gradient(135deg, rgba(99,102,241,.18), rgba(16,185,129,.10), rgba(217,70,239,.10));">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h2 class="text-white font-extrabold text-lg">Executive Insights</h2>
+          <p class="text-xs text-slate-200/80 mt-1">Quick highlights for leadership</p>
+        </div>
+        <div class="text-xs text-slate-200/80">
+          Updated: <span class="text-white font-semibold"><%= Time.current.strftime("%Y-%m-%d %H:%M") %></span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+        <% insights = @insights.presence || [] %>
+        <% insights.each_with_index do |i, idx| %>
+          <% glow = ["rgba(245,158,11,.35)", "rgba(16,185,129,.35)", "rgba(56,189,248,.35)", "rgba(217,70,239,.35)"][idx % 4] %>
+          <div class="rounded-xl border border-white/10 p-4 relative overflow-hidden" style="background: rgba(255,255,255,.04);">
+            <div class="absolute -top-8 -right-8 h-20 w-20 rounded-full" style="background:<%= glow %>; filter: blur(30px);"></div>
+            <div class="text-xs text-slate-300 font-semibold"><%= i[:title] %></div>
+            <div class="text-white text-2xl font-extrabold mt-1"><%= i[:value] %></div>
+            <div class="text-xs text-slate-400 mt-1"><%= i[:note] %></div>
+          </div>
+        <% end %>
+
+        <% if insights.empty? %>
+          <div class="rounded-xl border border-white/10 p-4" style="background: rgba(255,255,255,.04);">
+            <div class="text-white font-semibold">No insights yet</div>
+            <div class="text-xs text-slate-400 mt-1">Add @insights in ReportsController#index.</div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Main analytics grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Order status breakdown -->
+      <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+        <div class="px-5 py-4 border-b border-white/10 flex items-center justify-between">
+          <div>
+            <h2 class="text-white font-bold text-lg">Order Status</h2>
+            <p class="text-xs text-slate-400 mt-1">Selected range breakdown</p>
+          </div>
+          <div class="text-xs text-slate-300">
+            Total: <span class="text-white font-semibold"><%= @orders_in_range.count %></span>
+          </div>
+        </div>
+
+        <div class="p-5">
+          <% if @orders_by_status.blank? %>
+            <p class="text-slate-300 text-sm">No status data available.</p>
+          <% else %>
+            <% total = @orders_in_range.count.nonzero? || 1 %>
+
+            <% bar_color = lambda do |status|
+                 case status.to_s
+                 when "pending" then "rgba(148,163,184,.85)"
+                 when "paid" then "rgba(16,185,129,.90)"
+                 when "processing" then "rgba(99,102,241,.90)"
+                 when "shipped" then "rgba(56,189,248,.90)"
+                 when "delivered", "received" then "rgba(34,197,94,.90)"
+                 when "cancelled" then "rgba(239,68,68,.90)"
+                 else "rgba(217,70,239,.85)"
+                 end
+               end
+            %>
+
+            <div class="space-y-4">
+              <% @orders_by_status.sort_by { |k, _| k.to_s }.each do |status, count| %>
+                <% percent = ((count.to_f / total) * 100).round %>
+
+                <div>
+                  <div class="flex items-center justify-between">
+                    <div class="text-sm text-slate-200 font-semibold"><%= status %></div>
+                    <div class="text-sm text-white font-bold">
+                      <%= count %> <span class="text-slate-400 font-semibold">(<%= percent %>%)</span>
+                    </div>
+                  </div>
+
+                  <div class="h-2.5 rounded-full mt-2 overflow-hidden" style="background: rgba(255,255,255,.10);">
+                    <div class="h-full" style="width:<%= percent %>%; background:<%= bar_color.call(status) %>;"></div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Top products -->
+      <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+        <div class="px-5 py-4 border-b border-white/10">
+          <h2 class="text-white font-bold text-lg">Top Products</h2>
+          <p class="text-xs text-slate-400 mt-1">Best sellers by quantity</p>
+        </div>
+
+        <div class="p-5">
+          <% if @top_products.blank? %>
+            <p class="text-slate-300 text-sm">No sales data found for selected range.</p>
+          <% else %>
+            <% max_qty = @top_products.map { |r| r.try(:qty_sold).to_i }.max.to_i %>
+            <% max_qty = 1 if max_qty <= 0 %>
+            <% accents = ["rgba(99,102,241,.9)", "rgba(16,185,129,.9)", "rgba(56,189,248,.9)", "rgba(245,158,11,.9)", "rgba(217,70,239,.9)", "rgba(244,63,94,.9)"] %>
+
+            <div class="space-y-3">
+              <% @top_products.each_with_index do |row, idx| %>
+                <% qty = row.try(:qty_sold).to_i %>
+                <% w = ((qty.to_f / max_qty) * 100).round %>
+                <% accent = accents[idx % accents.length] %>
+
+                <div class="rounded-xl border border-white/10 p-3" style="background: rgba(255,255,255,.04);">
+                  <div class="flex items-center justify-between gap-3">
+                    <div class="text-white font-semibold truncate"><%= row.name %></div>
+                    <div class="text-slate-200 text-sm font-bold"><%= qty %></div>
+                  </div>
+
+                  <div class="h-2 rounded-full mt-2 overflow-hidden" style="background: rgba(255,255,255,.10);">
+                    <div class="h-full" style="width:<%= w %>%; background:<%= accent %>;"></div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Premium row: Top customers + payment methods -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+      <!-- Top Customers -->
+      <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+        <div class="px-5 py-4 border-b border-white/10">
+          <h2 class="text-white font-bold text-lg">Top Customers</h2>
+          <p class="text-xs text-slate-400 mt-1">Ranked by total spend (paid orders)</p>
+        </div>
+
+        <div class="p-5">
+          <% if @top_customers.blank? %>
+            <p class="text-slate-300 text-sm">No customer revenue data available.</p>
+          <% else %>
+            <% max_spend = @top_customers.map { |r| r.try(:spend).to_f }.max.to_f %>
+            <% max_spend = 1 if max_spend <= 0 %>
+
+            <div class="space-y-3">
+              <% @top_customers.each_with_index do |c, idx| %>
+                <% spend = c.try(:spend).to_f %>
+                <% w = ((spend / max_spend) * 100).round %>
+                <% accent = ["rgba(99,102,241,.9)", "rgba(16,185,129,.9)", "rgba(56,189,248,.9)", "rgba(245,158,11,.9)", "rgba(217,70,239,.9)"][idx % 5] %>
+
+                <div class="rounded-xl border border-white/10 p-3" style="background: rgba(255,255,255,.04);">
+                  <div class="flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                      <div class="text-white font-semibold truncate">
+                        <%= "#{c.first_name} #{c.last_name}".strip.presence || c.email %>
+                      </div>
+                      <div class="text-xs text-slate-400 truncate"><%= c.email %></div>
+                    </div>
+                    <div class="text-white font-extrabold text-sm whitespace-nowrap">
+                      <%= number_to_currency(spend) rescue spend %>
+                    </div>
+                  </div>
+
+                  <div class="h-2 rounded-full mt-2 overflow-hidden" style="background: rgba(255,255,255,.10);">
+                    <div class="h-full" style="width:<%= w %>%; background:<%= accent %>;"></div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Payment Methods -->
+      <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+        <div class="px-5 py-4 border-b border-white/10">
+          <h2 class="text-white font-bold text-lg">Payment Methods</h2>
+          <p class="text-xs text-slate-400 mt-1">Selected range split</p>
+        </div>
+
+        <div class="p-5">
+          <% if @payment_methods.blank? %>
+            <p class="text-slate-300 text-sm">No payment method data available.</p>
+          <% else %>
+            <% total = @orders_in_range.count.nonzero? || 1 %>
+            <div class="space-y-4">
+              <% @payment_methods.each_with_index do |(method, count), idx| %>
+                <% percent = ((count.to_f / total) * 100).round %>
+                <% accent = ["rgba(16,185,129,.9)", "rgba(99,102,241,.9)", "rgba(56,189,248,.9)", "rgba(245,158,11,.9)", "rgba(217,70,239,.9)"][idx % 5] %>
+
+                <div>
+                  <div class="flex items-center justify-between">
+                    <div class="text-slate-200 font-semibold text-sm"><%= method.presence || "unknown" %></div>
+                    <div class="text-white font-bold text-sm"><%= count %> <span class="text-slate-400 font-semibold">(<%= percent %>%)</span></div>
+                  </div>
+                  <div class="h-2.5 rounded-full mt-2 overflow-hidden" style="background: rgba(255,255,255,.10);">
+                    <div class="h-full" style="width:<%= percent %>%; background:<%= accent %>;"></div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent orders -->
+    <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden mt-6">
+      <div class="px-5 py-4 border-b border-white/10 flex items-center justify-between">
+        <div>
+          <h2 class="text-white font-bold text-lg">Recent Orders</h2>
+          <p class="text-xs text-slate-400 mt-1">Latest activity</p>
+        </div>
+
+        <%= link_to "View Orders",
+              admin_orders_path,
+              class: "px-3 py-2 rounded-xl text-white text-xs font-semibold shadow",
+              style: "background: linear-gradient(135deg, rgba(99,102,241,.9), rgba(217,70,239,.9));" %>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead style="background: rgba(255,255,255,.04);">
+            <tr class="text-left text-xs uppercase tracking-wider text-slate-300">
+              <th class="px-4 py-3">Order</th>
+              <th class="px-4 py-3">Customer</th>
+              <th class="px-4 py-3">Status</th>
+              <th class="px-4 py-3">Payment</th>
+              <th class="px-4 py-3">Created</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-white/5">
+            <% if @recent_orders.blank? %>
+              <tr>
+                <td colspan="5" class="px-4 py-10 text-center text-slate-300">No orders yet.</td>
+              </tr>
+            <% else %>
+              <% @recent_orders.each do |o| %>
+                <% status = o.respond_to?(:status) ? o.status.to_s : "" %>
+                <% payment = o.respond_to?(:payment_status) ? o.payment_status.to_s : "" %>
+
+                <% status_style =
+                  case status
+                  when "pending" then "background: rgba(148,163,184,.18); color: rgba(226,232,240,.95);"
+                  when "processing" then "background: rgba(99,102,241,.18); color: rgba(224,231,255,.95);"
+                  when "shipped" then "background: rgba(56,189,248,.18); color: rgba(186,230,253,.95);"
+                  when "delivered", "received" then "background: rgba(16,185,129,.18); color: rgba(167,243,208,.95);"
+                  when "cancelled" then "background: rgba(239,68,68,.18); color: rgba(254,202,202,.95);"
+                  else "background: rgba(217,70,239,.16); color: rgba(245,208,254,.95);"
+                  end
+                %>
+
+                <% payment_style =
+                  case payment
+                  when "paid" then "background: rgba(16,185,129,.18); color: rgba(167,243,208,.95);"
+                  when "failed" then "background: rgba(239,68,68,.18); color: rgba(254,202,202,.95);"
+                  else "background: rgba(245,158,11,.14); color: rgba(253,230,138,.95);"
+                  end
+                %>
+
+                <tr class="hover:bg-white/5">
+                  <td class="px-4 py-4 text-white font-semibold">
+                    <%= o.respond_to?(:order_number) ? (o.order_number.presence || o.id) : o.id %>
+                  </td>
+
+                  <td class="px-4 py-4 text-slate-200">
+                    <%= o.user&.full_name.presence || o.shipping_full_name.presence || "—" %>
+                  </td>
+
+                  <td class="px-4 py-4">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold" style="<%= status_style %>">
+                      <%= status.presence || "—" %>
+                    </span>
+                  </td>
+
+                  <td class="px-4 py-4">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold" style="<%= payment_style %>">
+                      <%= payment.presence || "—" %>
+                    </span>
+                  </td>
+
+                  <td class="px-4 py-4 text-slate-200">
+                    <%= o.created_at.strftime("%Y-%m-%d") rescue "—" %>
+                  </td>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-6 text-xs text-slate-400">
+      Premium tip: if you want real charts, we can add Chartkick or ApexCharts next.
+    </div>
+  </div>
+</main>

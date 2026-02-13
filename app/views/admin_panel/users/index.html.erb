@@ -1,0 +1,194 @@
+<main class="px-4 py-8">
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 text-xs font-semibold text-slate-200 mb-3">
+          <span class="h-2 w-2 rounded-full" style="background: rgba(56,189,248,.95)"></span>
+          People & Access
+        </div>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight">Users</h1>
+        <p class="text-sm text-slate-300 mt-2 max-w-2xl">
+          Manage admin/CEO/staff/customers and user accounts.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <%= link_to admin_dashboard_path,
+              class: "px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-semibold text-white" do %>
+          <i class="fas fa-arrow-left mr-2"></i> Back
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Summary cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+      <div class="rounded-2xl border border-white/10 p-5 relative overflow-hidden"
+           style="background: linear-gradient(135deg, rgba(99,102,241,.30), rgba(255,255,255,.04));">
+        <div class="absolute -top-10 -right-10 h-28 w-28 rounded-full"
+             style="background: rgba(99,102,241,.35); filter: blur(35px);"></div>
+        <div class="text-sm font-semibold" style="color: rgba(224,231,255,.95);">Total Users</div>
+        <div class="text-white text-3xl font-extrabold mt-1"><%= @users.count %></div>
+        <div class="text-xs text-slate-300 mt-2">All time</div>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 p-5 relative overflow-hidden"
+           style="background: linear-gradient(135deg, rgba(16,185,129,.30), rgba(255,255,255,.04));">
+        <div class="absolute -top-10 -right-10 h-28 w-28 rounded-full"
+             style="background: rgba(16,185,129,.35); filter: blur(35px);"></div>
+        <div class="text-sm font-semibold" style="color: rgba(167,243,208,.95);">Privileged</div>
+        <div class="text-white text-3xl font-extrabold mt-1">
+          <% if defined?(User) && User.column_names.include?("role") %>
+            <%= User.where(role: %w[admin ceo staff]).count %>
+          <% else %>
+            <%= User.where(admin: true).count rescue 0 %>
+          <% end %>
+        </div>
+        <div class="text-xs text-slate-300 mt-2">Admin/CEO/Staff</div>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 p-5 relative overflow-hidden"
+           style="background: linear-gradient(135deg, rgba(245,158,11,.30), rgba(255,255,255,.04));">
+        <div class="absolute -top-10 -right-10 h-28 w-28 rounded-full"
+             style="background: rgba(245,158,11,.35); filter: blur(35px);"></div>
+        <div class="text-sm font-semibold" style="color: rgba(253,230,138,.95);">Blocked</div>
+        <div class="text-white text-3xl font-extrabold mt-1">
+          <%= User.where(blocked: true).count rescue 0 %>
+        </div>
+        <div class="text-xs text-slate-300 mt-2">Cannot sign in</div>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 p-5 relative overflow-hidden"
+           style="background: linear-gradient(135deg, rgba(217,70,239,.30), rgba(255,255,255,.04));">
+        <div class="absolute -top-10 -right-10 h-28 w-28 rounded-full"
+             style="background: rgba(217,70,239,.35); filter: blur(35px);"></div>
+        <div class="text-sm font-semibold" style="color: rgba(245,208,254,.95);">New (30d)</div>
+        <div class="text-white text-3xl font-extrabold mt-1">
+          <%= User.where("created_at >= ?", 30.days.ago).count rescue 0 %>
+        </div>
+        <div class="text-xs text-slate-300 mt-2">Registrations</div>
+      </div>
+    </div>
+
+    <!-- Users table -->
+    <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+      <div class="px-5 py-4 border-b border-white/10">
+        <h2 class="text-white font-bold text-lg">All Users</h2>
+        <p class="text-xs text-slate-400 mt-1">View, edit, and permanently delete accounts</p>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead style="background: rgba(255,255,255,.04);">
+            <tr class="text-left text-xs uppercase tracking-wider text-slate-300">
+              <th class="px-4 py-3">User</th>
+              <th class="px-4 py-3">Role</th>
+              <th class="px-4 py-3">Status</th>
+              <th class="px-4 py-3">Joined</th>
+              <th class="px-4 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-white/5">
+            <% if @users.blank? %>
+              <tr>
+                <td colspan="5" class="px-4 py-10 text-center text-slate-300">No users found.</td>
+              </tr>
+            <% else %>
+              <% @users.each do |u| %>
+                <% role =
+                  if u.respond_to?(:role) && u.role.present?
+                    u.role.to_s
+                  elsif u.respond_to?(:admin) && u.admin
+                    "admin"
+                  else
+                    "customer"
+                  end
+                %>
+                <% blocked = u.respond_to?(:blocked) ? !!u.blocked : false %>
+
+                <% role_style =
+                  case role
+                  when "admin" then "background: rgba(99,102,241,.18); color: rgba(224,231,255,.95);"
+                  when "ceo" then "background: rgba(245,158,11,.18); color: rgba(253,230,138,.95);"
+                  when "staff" then "background: rgba(56,189,248,.18); color: rgba(186,230,253,.95);"
+                  else "background: rgba(148,163,184,.16); color: rgba(226,232,240,.95);"
+                  end
+                %>
+
+                <% status_style =
+                  if blocked
+                    "background: rgba(239,68,68,.18); color: rgba(254,202,202,.95);"
+                  else
+                    "background: rgba(16,185,129,.18); color: rgba(167,243,208,.95);"
+                  end
+                %>
+
+                <tr class="hover:bg-white/5">
+                  <td class="px-4 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="h-10 w-10 rounded-xl border border-white/10 overflow-hidden flex items-center justify-center"
+                           style="background: rgba(255,255,255,.04);">
+                        <% if u.respond_to?(:profile_image) && u.profile_image.respond_to?(:attached?) && u.profile_image.attached? %>
+                          <%= image_tag url_for(u.profile_image), class: "h-full w-full object-cover" %>
+                        <% else %>
+                          <span class="text-slate-400 text-xs">
+                            <%= (u.full_name.presence || u.email.to_s).to_s.first(2).upcase %>
+                          </span>
+                        <% end %>
+                      </div>
+
+                      <div class="min-w-0">
+                        <div class="text-white font-semibold truncate"><%= u.full_name.presence || "—" %></div>
+                        <div class="text-xs text-slate-400 truncate"><%= u.email %></div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td class="px-4 py-4">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold" style="<%= role_style %>">
+                      <%= role %>
+                    </span>
+                  </td>
+
+                  <td class="px-4 py-4">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold" style="<%= status_style %>">
+                      <%= blocked ? "blocked" : "active" %>
+                    </span>
+                  </td>
+
+                  <td class="px-4 py-4 text-slate-200">
+                    <%= u.created_at.strftime("%Y-%m-%d") rescue "—" %>
+                  </td>
+
+                  <td class="px-4 py-4">
+                    <div class="flex items-center justify-end gap-2">
+                      <%= link_to "View",
+                            admin_user_path(u),
+                            class: "px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-semibold text-white" %>
+
+                      <%= link_to "Edit",
+                            edit_admin_user_path(u),
+                            class: "px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-semibold text-white" %>
+
+                      <%= button_to "Delete",
+                            admin_user_path(u),
+                            method: :delete,
+                            form: { data: { turbo_confirm: "Delete this user permanently? This will delete orders, addresses, etc." } },
+                            class: "px-3 py-2 rounded-xl text-xs font-semibold text-white",
+                            style: "background: rgba(239,68,68,.85);" %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-6 text-xs text-slate-400">
+      If you tell me your exact routes for block/unblock (or toggle blocked), I can add the buttons back safely.
+    </div>
+  </div>
+</main>

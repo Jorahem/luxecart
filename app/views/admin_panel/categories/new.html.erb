@@ -1,0 +1,18 @@
+<main class="px-4 py-8">
+  <div class="max-w-3xl mx-auto">
+    <div class="flex items-center justify-between gap-4 mb-6">
+      <div>
+        <h1 class="text-3xl font-extrabold text-white tracking-tight">New Category</h1>
+        <p class="text-sm text-slate-300 mt-1">Create a new category</p>
+      </div>
+
+      <%= link_to "Back",
+            admin_categories_path,
+            class: "px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-semibold text-white" %>
+    </div>
+
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <%= render "form" %>
+    </div>
+  </div>
+</main>

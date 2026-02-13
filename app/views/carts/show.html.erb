@@ -47,7 +47,7 @@
        when /light/
          return "https://images.unsplash.com/photo-1540574163026-643ea20ade25?q=80&w=800&auto=format&fit=crop"
        else
-         return "https://images.unsplash.com/photo-1549187774-b4e9b0445b6b?q=80&w=800&auto=format&fit=crop"
+         return "https://images.unsplash.com/photo-1549187774-b4e9b0445b6b0445b6b?q=80&w=800&auto=format&fit=crop"
        end
      end
 
@@ -57,15 +57,34 @@
 %>
 
 <div class="max-w-6xl mx-auto px-4 py-10">
-  <h1 class="text-3xl font-bold mb-6">Your Cart</h1>
+  <!-- Page header -->
+  <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
+    <div>
+      <h1 class="text-3xl font-extrabold text-gray-900">Your Cart</h1>
+      <p class="text-sm text-gray-600 mt-1">Review items, then proceed to checkout. Track your orders and history below.</p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <%= link_to orders_path,
+            class: "inline-flex items-center justify-center px-4 py-2 rounded-lg text-white font-semibold shadow",
+            style: "background: linear-gradient(135deg, rgba(99,102,241,.95), rgba(217,70,239,.95));" do %>
+        View my orders
+      <% end %>
+
+      <%= link_to categories_path,
+            class: "inline-flex items-center justify-center px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 font-semibold hover:bg-gray-50" do %>
+        Continue shopping
+      <% end %>
+    </div>
+  </div>
 
   <%# ---------------------------------------------- %>
   <%# Last/Current Order Tracking (customer)          %>
   <%# Requires @last_order set in CartsController#show %>
   <%# ---------------------------------------------- %>
   <% if defined?(@last_order) && @last_order.present? %>
-    <div class="bg-white rounded-lg shadow-sm border p-5 mb-6">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 mb-6">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div>
           <%# Show simple product name(s) instead of order number like ORD... %>
           <% ordered_names =
@@ -95,6 +114,14 @@
             <% end %>
           </div>
         </div>
+
+        <div class="flex items-center gap-2">
+          <%= link_to order_path(@last_order),
+                class: "inline-flex items-center justify-center px-4 py-2 rounded-lg text-white font-semibold shadow",
+                style: "background: linear-gradient(135deg, rgba(59,130,246,.95), rgba(99,102,241,.95));" do %>
+            Track this order
+          <% end %>
+        </div>
       </div>
 
       <%# ---------------------------- %>
@@ -103,7 +130,7 @@
       <% if @last_order.respond_to?(:order_tracking_events) %>
         <% events = @last_order.order_tracking_events.to_a %>
 
-        <div class="mt-4 border-t pt-4">
+        <div class="mt-4 border-t border-gray-200 pt-4">
           <div class="flex items-center justify-between">
             <div class="text-sm font-semibold text-gray-800">Shipment timeline</div>
             <div class="text-xs text-gray-500">
@@ -111,127 +138,227 @@
             </div>
           </div>
 
-          <% if events.any? %>
-            <% current_index =
-                 if @last_order.respond_to?(:status_step_index)
-                   @last_order.status_step_index
-                 else
-                   0
-                 end %>
+          <% steps = [
+            ['pending',    'Order placed'],
+            ['paid',       'Payment confirmed'],
+            ['processing', 'Processing'],
+            ['shipped',    'Shipped'],
+            ['delivered',  'Delivered'],
+            ['received',   'Received']
+          ] %>
 
-            <% steps = [
-              ['pending',    'Order placed'],
-              ['paid',       'Payment confirmed'],
-              ['processing', 'Processing'],
-              ['shipped',    'Shipped'],
-              ['delivered',  'Delivered'],
-              ['received',   'Received']
-            ] %>
+          <% current_index =
+               if @last_order.respond_to?(:status_step_index)
+                 @last_order.status_step_index
+               else
+                 steps.map(&:first).index(@last_order.status.to_s) || 0
+               end %>
 
-            <div class="mt-3 bg-gray-50 rounded-lg border p-4">
-              <ol class="space-y-3">
-                <% steps.each_with_index do |(key, label), idx| %>
-                  <% done = idx <= current_index %>
-                  <% ev = events.reverse.find { |e| e.status.to_s == key.to_s } %>
+          <div class="mt-3 bg-gray-50 rounded-xl border border-gray-200 p-4">
+            <ol class="space-y-3">
+              <% steps.each_with_index do |(key, label), idx| %>
+                <% done = idx <= current_index %>
+                <% ev = events.reverse.find { |e| e.status.to_s == key.to_s } %>
 
-                  <li class="flex items-start gap-3">
-                    <div class="mt-1 flex flex-col items-center">
-                      <span class="inline-block w-3 h-3 rounded-full <%= done ? 'bg-indigo-600' : 'bg-gray-300' %>"></span>
-                      <% unless idx == steps.length - 1 %>
-                        <span class="w-[2px] h-6 <%= done ? 'bg-indigo-300' : 'bg-gray-200' %>"></span>
-                      <% end %>
-                    </div>
+                <li class="flex items-start gap-3">
+                  <div class="mt-1 flex flex-col items-center">
+                    <span class="inline-block w-3 h-3 rounded-full <%= done ? 'bg-indigo-600' : 'bg-gray-300' %>"></span>
+                    <% unless idx == steps.length - 1 %>
+                      <span class="w-[2px] h-6 <%= done ? 'bg-indigo-300' : 'bg-gray-200' %>"></span>
+                    <% end %>
+                  </div>
 
-                    <div class="flex-1">
-                      <div class="flex items-center justify-between gap-3">
-                        <div class="text-sm font-semibold <%= done ? 'text-gray-900' : 'text-gray-500' %>">
-                          <%= label %>
-                        </div>
-
-                        <div class="text-xs text-gray-500">
-                          <% if ev&.happened_at.present? %>
-                            <%= l(ev.happened_at, format: :short) rescue ev.happened_at.to_s %>
-                          <% elsif done %>
-                            <span class="text-gray-400">Completed</span>
-                          <% else %>
-                            <span class="text-gray-400">Pending</span>
-                          <% end %>
-                        </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between gap-3">
+                      <div class="text-sm font-semibold <%= done ? 'text-gray-900' : 'text-gray-500' %>">
+                        <%= label %>
                       </div>
 
-                      <% if ev&.location.present? %>
-                        <div class="text-xs text-gray-500 mt-0.5">
-                          Location: <%= ev.location %>
-                        </div>
-                      <% end %>
-
-                      <% if ev&.message.present? %>
-                        <div class="text-xs text-gray-600 mt-0.5"><%= ev.message %></div>
-                      <% else %>
-                        <% if key == 'shipped' && @last_order.respond_to?(:shipped_at) && @last_order.shipped_at.present? %>
-                          <div class="text-xs text-gray-600 mt-0.5">
-                            Shipped at: <%= l(@last_order.shipped_at, format: :short) rescue @last_order.shipped_at.to_s %>
-                          </div>
+                      <div class="text-xs text-gray-500">
+                        <% if ev&.happened_at.present? %>
+                          <%= l(ev.happened_at, format: :short) rescue ev.happened_at.to_s %>
+                        <% elsif done %>
+                          <span class="text-gray-400">Completed</span>
+                        <% else %>
+                          <span class="text-gray-400">Pending</span>
                         <% end %>
-
-                        <% if key == 'delivered' && @last_order.respond_to?(:delivered_at) && @last_order.delivered_at.present? %>
-                          <div class="text-xs text-gray-600 mt-0.5">
-                            Delivered at: <%= l(@last_order.delivered_at, format: :short) rescue @last_order.delivered_at.to_s %>
-                          </div>
-                        <% end %>
-                      <% end %>
+                      </div>
                     </div>
-                  </li>
-                <% end %>
-              </ol>
 
-              <div class="mt-4 pt-4 border-t">
-                <details>
-                  <summary class="cursor-pointer text-sm font-semibold text-indigo-700 hover:text-indigo-800">
-                    View full history log
-                  </summary>
+                    <% if ev&.location.present? %>
+                      <div class="text-xs text-gray-500 mt-0.5">
+                        Location: <%= ev.location %>
+                      </div>
+                    <% end %>
 
-                  <div class="mt-3 space-y-2">
-                    <% events.reverse_each do |ev2| %>
-                      <div class="flex items-start justify-between gap-4 bg-white rounded-lg border p-3">
-                        <div>
-                          <div class="text-sm font-semibold text-gray-900">
-                            <%= ev2.status.to_s.humanize %>
-                            <% if ev2.location.present? %>
-                              <span class="text-xs font-normal text-gray-500">• <%= ev2.location %></span>
-                            <% end %>
-                          </div>
-                          <% if ev2.message.present? %>
-                            <div class="text-xs text-gray-600 mt-0.5"><%= ev2.message %></div>
-                          <% end %>
-                        </div>
-
-                        <div class="text-xs text-gray-500 whitespace-nowrap">
-                          <%= l(ev2.happened_at, format: :short) rescue ev2.happened_at.to_s %>
-                        </div>
+                    <% if ev&.message.present? %>
+                      <div class="text-xs text-gray-600 mt-0.5"><%= ev.message %></div>
+                    <% elsif key == 'shipped' && @last_order.respond_to?(:shipped_at) && @last_order.shipped_at.present? %>
+                      <div class="text-xs text-gray-600 mt-0.5">
+                        Shipped at: <%= l(@last_order.shipped_at, format: :short) rescue @last_order.shipped_at.to_s %>
+                      </div>
+                    <% elsif key == 'delivered' && @last_order.respond_to?(:delivered_at) && @last_order.delivered_at.present? %>
+                      <div class="text-xs text-gray-600 mt-0.5">
+                        Delivered at: <%= l(@last_order.delivered_at, format: :short) rescue @last_order.delivered_at.to_s %>
                       </div>
                     <% end %>
                   </div>
-                </details>
-              </div>
+                </li>
+              <% end %>
+            </ol>
+
+            <div class="mt-4 pt-4 border-t border-gray-200">
+              <details>
+                <summary class="cursor-pointer text-sm font-semibold text-indigo-700 hover:text-indigo-800">
+                  View full history log
+                </summary>
+
+                <div class="mt-3 space-y-2">
+                  <% events.reverse_each do |ev2| %>
+                    <div class="flex items-start justify-between gap-4 bg-white rounded-lg border border-gray-200 p-3">
+                      <div>
+                        <div class="text-sm font-semibold text-gray-900">
+                          <%= ev2.status.to_s.humanize %>
+                          <% if ev2.location.present? %>
+                            <span class="text-xs font-normal text-gray-500">• <%= ev2.location %></span>
+                          <% end %>
+                        </div>
+                        <% if ev2.message.present? %>
+                          <div class="text-xs text-gray-600 mt-0.5"><%= ev2.message %></div>
+                        <% end %>
+                      </div>
+
+                      <div class="text-xs text-gray-500 whitespace-nowrap">
+                        <%= l(ev2.happened_at, format: :short) rescue ev2.happened_at.to_s %>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </details>
             </div>
-          <% else %>
-            <div class="mt-3 text-sm text-gray-500">
-              Tracking history will appear here once the order status updates.
-            </div>
-          <% end %>
+          </div>
         </div>
       <% end %>
     </div>
   <% end %>
 
+  <%# ---------------------------------------------- %>
+  <%# Premium: Past order history (products preview)   %>
+  <%# Requires @recent_orders in CartsController#show   %>
+  <%# ---------------------------------------------- %>
+  <% if defined?(@recent_orders) && @recent_orders.present? %>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 mb-6">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <div class="text-lg font-extrabold text-gray-900">Order history</div>
+          <div class="text-sm text-gray-600 mt-1">Your recent purchases (with products) and tracking.</div>
+        </div>
+
+        <%= link_to orders_path,
+              class: "inline-flex items-center justify-center px-4 py-2 rounded-lg text-white font-semibold shadow",
+              style: "background: linear-gradient(135deg, rgba(99,102,241,.95), rgba(217,70,239,.95));" do %>
+          View all
+        <% end %>
+      </div>
+
+      <div class="mt-4 space-y-4">
+        <% @recent_orders.each do |o| %>
+          <% status = o.status.to_s %>
+          <% badge =
+            case status
+            when "pending" then ["#334155", "#e2e8f0"]
+            when "paid", "processing" then ["#3730a3", "#e0e7ff"]
+            when "shipped" then ["#0369a1", "#e0f2fe"]
+            when "delivered", "received" then ["#047857", "#d1fae5"]
+            when "cancelled" then ["#b91c1c", "#fee2e2"]
+            else ["#334155", "#e2e8f0"]
+            end
+          %>
+
+          <div class="rounded-2xl border border-gray-200 overflow-hidden">
+            <div class="px-5 py-4 bg-gray-50 border-b border-gray-200 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div class="min-w-0">
+                <div class="text-gray-900 font-extrabold truncate">
+                  Order <%= o.order_number.presence || "##{o.id}" %>
+                </div>
+                <div class="text-xs text-gray-600 mt-1 flex flex-wrap gap-x-4 gap-y-1">
+                  <span><span class="text-gray-400">Date:</span> <%= o.created_at.strftime("%Y-%m-%d") rescue "—" %></span>
+                  <span><span class="text-gray-400">Total:</span> <%= number_to_currency(o.total_price) rescue o.total_price %></span>
+                  <span><span class="text-gray-400">Tracking:</span> <%= o.tracking_number.presence || "—" %></span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold"
+                      style="background:<%= badge[1] %>; color:<%= badge[0] %>;">
+                  <%= status.humanize %>
+                </span>
+
+                <%= link_to order_path(o),
+                      class: "inline-flex items-center justify-center px-4 py-2 rounded-lg text-white text-sm font-semibold shadow",
+                      style: "background: linear-gradient(135deg, rgba(59,130,246,.95), rgba(99,102,241,.95));" do %>
+                  Track
+                <% end %>
+              </div>
+            </div>
+
+            <div class="p-5">
+              <% items = (o.respond_to?(:order_items) ? o.order_items.to_a : []).first(6) %>
+
+              <% if items.blank? %>
+                <div class="text-sm text-gray-500">No items found for this order.</div>
+              <% else %>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  <% items.each do |oi| %>
+                    <% product = oi.respond_to?(:product) ? oi.product : nil %>
+
+                    <div class="rounded-xl border border-gray-200 bg-white p-3">
+                      <div class="flex items-center gap-3">
+                        <div class="h-12 w-12 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center">
+                          <%= image_tag product_image_src(product),
+                                class: "h-full w-full object-cover",
+                                alt: (product&.name || oi.try(:product_name) || "Product") %>
+                        </div>
+
+                        <div class="min-w-0">
+                          <div class="text-sm font-bold text-gray-900 truncate">
+                            <%= product&.name || oi.try(:product_name) || "Product" %>
+                          </div>
+                          <div class="text-xs text-gray-600 mt-0.5">
+                            Qty: <span class="font-semibold"><%= oi.quantity %></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+
+                <% if o.respond_to?(:order_items) && o.order_items.count > 6 %>
+                  <div class="text-xs text-gray-500 mt-3">
+                    + <%= o.order_items.count - 6 %> more item(s)
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# ---------------- %>
+  <%# Cart Items/Table  %>
+  <%# ---------------- %>
   <% if @items.blank? %>
-    <div class="bg-white rounded-lg p-8 shadow-sm">
+    <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
       <p class="text-gray-700 mb-4">Your cart is empty.</p>
-      <%= link_to "Continue shopping", categories_path, class: "inline-block px-5 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700" %>
+
+      <%# IMPORTANT: remove duplicate buttons here (buttons are already in the header) %>
+      <%= link_to "Continue shopping", categories_path,
+            class: "inline-flex items-center justify-center px-5 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700" %>
     </div>
   <% else %>
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
       <div class="overflow-x-auto">
         <table class="w-full text-left">
           <thead>
@@ -245,9 +372,11 @@
 
           <tbody id="cart-rows" class="text-sm text-gray-800">
             <% total = 0 %>
+
             <% @items.each do |row| %>
               <% product = row[:product] %>
               <% qty = row[:quantity].to_i %>
+
               <% if product %>
                 <% price = product.respond_to?(:price) ? product.price.to_f : 0.0 %>
                 <% subtotal = price * qty %>
@@ -256,11 +385,13 @@
                 <tr class="border-b" data-product-id="<%= product.id %>" data-price="<%= price %>">
                   <td class="py-4 pl-2 align-top">
                     <div class="flex items-start gap-4">
-                      <div class="w-20 h-20 flex-shrink-0 rounded overflow-hidden bg-gray-50">
+                      <div class="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-gray-50 border border-gray-200">
                         <%= image_tag product_image_src(product), alt: product.name, class: "w-full h-full object-cover" %>
                       </div>
                       <div class="flex-1">
-                        <div class="font-semibold text-gray-900"><%= link_to product.name, product_path(product), class: "hover:underline" %></div>
+                        <div class="font-semibold text-gray-900">
+                          <%= link_to product.name, product_path(product), class: "hover:underline" %>
+                        </div>
                         <% if product.respond_to?(:sku) && product.sku.present? %>
                           <div class="text-xs text-gray-500 mt-1">SKU: <%= product.sku %></div>
                         <% end %>
@@ -272,13 +403,17 @@
 
                   <td class="py-4 align-top">
                     <div class="inline-flex items-center gap-2">
-                      <button type="button" class="decrease-qty inline-flex items-center justify-center w-8 h-8 rounded bg-gray-100 hover:bg-gray-200" title="Decrease">
+                      <button type="button"
+                              class="decrease-qty inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200"
+                              title="Decrease">
                         &minus;
                       </button>
 
-                      <span class="mx-2 px-3 py-1 rounded bg-gray-100 text-gray-700 qty-value"><%= qty %></span>
+                      <span class="mx-1 px-3 py-1 rounded-lg bg-gray-100 text-gray-700 qty-value font-semibold"><%= qty %></span>
 
-                      <button type="button" class="increase-qty inline-flex items-center justify-center w-8 h-8 rounded bg-indigo-600 text-white hover:bg-indigo-700" title="Increase">
+                      <button type="button"
+                              class="increase-qty inline-flex items-center justify-center w-9 h-9 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700"
+                              title="Increase">
                         &#43;
                       </button>
                     </div>
@@ -298,7 +433,7 @@
                 <tr class="border-b bg-yellow-50" data-product-id="<%= pid %>" data-price="0">
                   <td class="py-4 pl-2">
                     <div class="flex items-start gap-4">
-                      <div class="w-20 h-20 flex-shrink-0 rounded overflow-hidden bg-gray-50">
+                      <div class="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-gray-50 border border-gray-200">
                         <%= image_tag product_image_src(nil), alt: "Missing product", class: "w-full h-full object-cover" %>
                       </div>
                       <div class="flex-1">
@@ -310,28 +445,31 @@
 
                   <td class="py-4 align-top">—</td>
                   <td class="py-4 align-top">
-                    <span class="inline-flex items-center px-3 py-1 rounded bg-gray-100 text-gray-700"><%= qty %></span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-lg bg-gray-100 text-gray-700 font-semibold"><%= qty %></span>
                   </td>
                   <td class="py-4 pr-2 font-semibold text-right align-top">—</td>
                 </tr>
               <% end %>
             <% end %>
 
-            <tr class="font-bold">
-              <td colspan="3" class="py-4 text-right pr-2">Total</td>
-              <td class="py-4 pr-2 font-bold text-right" id="cart-total"><%= number_to_currency(total) %></td>
+            <tr class="font-extrabold">
+              <td colspan="3" class="py-4 text-right pr-2 text-gray-900">Total</td>
+              <td class="py-4 pr-2 text-right text-gray-900" id="cart-total"><%= number_to_currency(total) %></td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div class="mt-6 flex items-center justify-between gap-4">
-        <div>
-          <%= link_to "Continue shopping", categories_path, class: "px-4 py-2 border rounded-md text-sm" %>
+      <div class="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-center gap-2">
+          <%= link_to "Continue shopping", categories_path, class: "px-4 py-2 border border-gray-300 rounded-lg text-sm font-semibold text-gray-800 hover:bg-gray-50" %>
+          <%= link_to "View my orders", orders_path,
+                class: "px-4 py-2 rounded-lg text-white text-sm font-semibold shadow",
+                style: "background: linear-gradient(135deg, rgba(99,102,241,.95), rgba(217,70,239,.95));" %>
         </div>
 
         <div class="flex items-center gap-3">
-          <%= link_to "Proceed to Checkout", checkout_path, class: "px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700" %>
+          <%= link_to "Proceed to Checkout", checkout_path, class: "px-5 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700" %>
         </div>
       </div>
     </div>
@@ -353,18 +491,23 @@
 
         function recalcTotal() {
           let total = 0.0;
+
           document.querySelectorAll('tbody#cart-rows tr[data-product-id]').forEach(row => {
             const price = parseFloat(row.dataset.price || 0);
             const qtyEl = row.querySelector('.qty-value');
             if (!qtyEl) return;
+
             const qty = parseInt(qtyEl.textContent || '0', 10);
             const subtotal = price * qty;
+
             const subtotalEl = row.querySelector('.row-subtotal');
-            if (subtotalEl) subtotalEl.textContent = new Intl.NumberFormat(undefined, { style: 'currency', currency: '<%= (defined?(Money) ? Money.default_currency || "RS" : "RS") %>' }).format(subtotal);
+            if (subtotalEl) subtotalEl.textContent = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(subtotal);
+
             total += subtotal;
           });
+
           const totalEl = document.getElementById('cart-total');
-          if (totalEl) totalEl.textContent = new Intl.NumberFormat(undefined, { style: 'currency', currency: '<%= (defined?(Money) ? Money.default_currency || "RS" : "RS") %>' }).format(total);
+          if (totalEl) totalEl.textContent = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(total);
         }
 
         async function postAdd(productId) {
@@ -380,16 +523,11 @@
               credentials: 'same-origin',
               body
             });
-            if (!res.ok) {
-              showError();
-              return null;
-            }
+
+            if (!res.ok) return null;
+
             const ct = res.headers.get('content-type') || '';
-            if (ct.indexOf('application/json') !== -1) {
-              return await res.json();
-            } else {
-              return null;
-            }
+            return ct.includes('application/json') ? await res.json() : null;
           } catch (err) {
             console.error(err);
             showError();
@@ -410,16 +548,11 @@
               credentials: 'same-origin',
               body
             });
-            if (!res.ok) {
-              showError();
-              return null;
-            }
+
+            if (!res.ok) return null;
+
             const ct = res.headers.get('content-type') || '';
-            if (ct.indexOf('application/json') !== -1) {
-              return await res.json();
-            } else {
-              return null;
-            }
+            return ct.includes('application/json') ? await res.json() : null;
           } catch (err) {
             console.error(err);
             showError();
@@ -437,16 +570,11 @@
               },
               credentials: 'same-origin'
             });
-            if (!res.ok) {
-              showError();
-              return null;
-            }
+
+            if (!res.ok) return null;
+
             const ct = res.headers.get('content-type') || '';
-            if (ct.indexOf('application/json') !== -1) {
-              return await res.json();
-            } else {
-              return null;
-            }
+            return ct.includes('application/json') ? await res.json() : null;
           } catch (err) {
             console.error(err);
             showError();
@@ -463,10 +591,11 @@
           const removeBtn = row.querySelector('.remove-item');
 
           if (incBtn) {
-            incBtn.addEventListener('click', async (e) => {
+            incBtn.addEventListener('click', async () => {
               incBtn.disabled = true;
               const data = await postAdd(productId);
               incBtn.disabled = false;
+
               if (data && data.cart) {
                 const newQty = data.cart[productId]?.toString() || qtyEl.textContent;
                 qtyEl.textContent = newQty;
@@ -479,19 +608,19 @@
           }
 
           if (decBtn) {
-            decBtn.addEventListener('click', async (e) => {
+            decBtn.addEventListener('click', async () => {
               const currentQty = parseInt(qtyEl.textContent || '0', 10);
+
               if (currentQty <= 1) {
                 if (!confirm('Remove this item from your cart?')) return;
                 decBtn.disabled = true;
                 const data = await deleteRemove(productId);
                 decBtn.disabled = false;
+
                 if (data && data.cart) {
-                  if (!data.cart[productId] || parseInt(data.cart[productId]) <= 0) {
-                    row.remove();
-                  } else {
-                    qtyEl.textContent = data.cart[productId];
-                  }
+                  if (!data.cart[productId] || parseInt(data.cart[productId]) <= 0) row.remove();
+                  else qtyEl.textContent = data.cart[productId];
+
                   if (typeof data.cart_count !== 'undefined') updateBadge(data.cart_count);
                   recalcTotal();
                 } else if (data === null) {
@@ -504,6 +633,7 @@
               decBtn.disabled = true;
               const data = await patchUpdate(productId, newQty);
               decBtn.disabled = false;
+
               if (data && data.cart) {
                 qtyEl.textContent = data.cart[productId] || newQty;
                 if (typeof data.cart_count !== 'undefined') updateBadge(data.cart_count);
@@ -516,11 +646,12 @@
           }
 
           if (removeBtn) {
-            removeBtn.addEventListener('click', async (e) => {
+            removeBtn.addEventListener('click', async () => {
               if (!confirm('Remove this item from your cart?')) return;
               removeBtn.disabled = true;
               const data = await deleteRemove(productId);
               removeBtn.disabled = false;
+
               if (data && data.cart) {
                 row.remove();
                 if (typeof data.cart_count !== 'undefined') updateBadge(data.cart_count);
@@ -534,6 +665,4 @@
       });
     </script>
   <% end %>
-
-   
 </div>

@@ -1,0 +1,79 @@
+<main class="px-4 py-8">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div>
+        <h1 class="text-3xl font-extrabold text-white tracking-tight">Categories</h1>
+        <p class="text-sm text-slate-300 mt-1">Manage product categories</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <%= link_to "Add Category",
+              new_admin_category_path,
+              class: "px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow" %>
+
+        <%= link_to admin_dashboard_path,
+              class: "px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-semibold text-white" do %>
+          <i class="fas fa-arrow-left mr-2"></i> Back
+        <% end %>
+      </div>
+    </div>
+
+    <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead class="bg-white/5">
+            <tr class="text-left text-xs uppercase tracking-wider text-slate-300">
+              <th class="px-4 py-3">Name</th>
+              <th class="px-4 py-3">Parent</th>
+              <th class="px-4 py-3">Active</th>
+              <th class="px-4 py-3 text-right">Action</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-white/5">
+            <% if @categories.blank? %>
+              <tr>
+                <td colspan="4" class="px-4 py-10 text-center text-slate-300">
+                  No categories found.
+                </td>
+              </tr>
+            <% else %>
+              <% @categories.each do |c| %>
+                <tr class="hover:bg-white/5">
+                  <td class="px-4 py-4 font-semibold text-white">
+                    <%= c.name %>
+                  </td>
+
+                  <td class="px-4 py-4 text-slate-200">
+                    <%= c.parent_category&.name.presence || "—" %>
+                  </td>
+
+                  <td class="px-4 py-4">
+                    <% if c.respond_to?(:active) %>
+                      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold <%= c.active ? 'bg-emerald-500/20 text-emerald-200' : 'bg-white/10 text-slate-200' %>">
+                        <%= c.active ? "Yes" : "No" %>
+                      </span>
+                    <% else %>
+                      <span class="text-slate-400">—</span>
+                    <% end %>
+                  </td>
+
+                  <td class="px-4 py-4 text-right whitespace-nowrap">
+                    <%= link_to "Edit",
+                          edit_admin_category_path(c),
+                          class: "text-indigo-300 hover:text-indigo-200 font-semibold mr-3" %>
+
+                    <%= link_to "Delete",
+                          admin_category_path(c),
+                          data: { turbo_method: :delete, turbo_confirm: "Delete this category?" },
+                          class: "text-red-300 hover:text-red-200 font-semibold" %>
+                  </td>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
