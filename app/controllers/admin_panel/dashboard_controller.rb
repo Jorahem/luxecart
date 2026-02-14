@@ -1,33 +1,22 @@
 module AdminPanel
   class DashboardController < AdminPanel::BaseController
-    # Keep your admin layout
     layout "admin"
 
     def index
-      # You can add dashboard logic here (stats, etc.)
+      @total_orders     = Order.count
+      @total_revenue    = Order.sum(:total_price) # change field name if yours differs
+      @orders_today     = Order.where(created_at: Time.zone.today.all_day).count
+      @total_users      = User.count
+      @total_products   = Product.count
+
+      @low_stock_products =
+        if Product.column_names.include?("stock_quantity")
+          Product.where("stock_quantity <= ?", 5).order(stock_quantity: :asc).limit(8)
+        else
+          []
+        end
+
+      @recent_orders = Order.order(created_at: :desc).limit(8)
     end
-
-    private
-
-    # Kept from your old code (no longer used as a before_action, but preserved safely)
-    # If you still want session-based Admin login, we can switch BaseController to use this.
-  
-
-    # Kept from your old code for compatibility with any dashboard views/partials
-    # that might call current_admin.
-    def current_admin
-      # Use your old session-based admin if you have an Admin model/table
-      @current_admin ||= (Admin.find_by(id: session[:admin_id]) rescue nil)
-    end
-
-    helper_method :current_admin
   end
-
-
-  # Kept from your old code (no longer used as a before_action, but preserved safely)
-def require_admin_login
-  unless current_admin
-    redirect_to admin_login_path, alert: "Please sign in."
-  end
-end
 end

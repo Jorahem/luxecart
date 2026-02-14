@@ -2,61 +2,69 @@ Rails.application.routes.draw do
   # -------------------------
   # Authentication
   # -------------------------
-  devise_for :users, controllers: { registrations: 'registrations' }
+  devise_for :users, controllers: { registrations: "registrations" }
 
   # -------------------------
   # Public / Customer-facing
   # -------------------------
-  root 'home#index'
+  root "home#index"
 
   # Products + reviews + featured + like/unlike
-  resources :products, only: [:index, :show] do
-    resources :reviews, only: [:create, :destroy]
+  resources :products, only: %i[index show] do
+    resources :reviews, only: %i[create destroy]
+
     collection do
       get :featured
     end
+
     member do
-      post :like, to: 'likes#create'
-      delete :like, to: 'likes#destroy'
+      post :like, to: "likes#create"
+      delete :like, to: "likes#destroy"
     end
   end
 
   # Categories & Brands (public)
-  resources :categories, only: [:index, :show]
-  resources :brands, only: [:index, :show]
+  resources :categories, only: %i[index show]
+  resources :brands, only: %i[index show]
 
-  resource :profile, only: [:show, :update]
+  resource :profile, only: %i[show update]
 
-
-  resources :products, only: [:index, :show]
   # -------------------------
   # Cart
   # -------------------------
-  get    '/cart',                   to: 'carts#show',        as: :cart
-  post   '/cart/add_item',          to: 'cart_items#create', as: :cart_add_item
-  patch  '/cart/update_item/:id',   to: 'carts#update_item', as: :cart_update_item
-  delete '/cart/remove_item/:id',   to: 'carts#remove_item', as: :cart_remove_item
-  delete '/cart/clear',             to: 'carts#clear',       as: :cart_clear
-  get    '/cart/summary',           to: 'carts#summary',     as: :cart_summary, defaults: { format: :json }
-  get    '/cart/add_item',          to: redirect('/cart')
+  get    "/cart",                 to: "carts#show",        as: :cart
+  post   "/cart/add_item",        to: "cart_items#create", as: :cart_add_item
+  patch  "/cart/update_item/:id", to: "carts#update_item", as: :cart_update_item
+  delete "/cart/remove_item/:id", to: "carts#remove_item", as: :cart_remove_item
+  delete "/cart/clear",           to: "carts#clear",       as: :cart_clear
+
+  get "/cart/summary", to: "carts#summary", as: :cart_summary, defaults: { format: :json }
+
+  # keep this redirect from your old file
+  get "/cart/add_item", to: redirect("/cart")
 
   # -------------------------
   # Wishlist
   # -------------------------
-  resource :wishlist, only: [:show] do
+  resource :wishlist, only: %i[show] do
     post :add_item
     delete :remove_item
   end
 
+  # -------------------------
   # Orders (customer/checkout)
-  resources :orders, only: [:index, :new, :create, :show] do
+  # -------------------------
+  resources :orders, only: %i[index new create show] do
     member do
       patch :cancel
+      patch :mark_received
     end
   end
-  get '/checkout', to: 'orders#new', as: :checkout
+  get "/checkout", to: "orders#new", as: :checkout
 
+  # -------------------------
   # Addresses (user-managed)
+  # -------------------------
   resources :addresses do
     member do
       patch :set_default
@@ -66,91 +74,91 @@ Rails.application.routes.draw do
   # -------------------------
   # Static & utility routes
   # -------------------------
-  get :search, to: 'search#index'
+  get :search, to: "search#index"
 
-  get '/about',   to: 'pages#about',   as: :about
-  get '/contact', to: 'pages#contact', as: :contact
-  post '/contact_submit', to: 'pages#contact_submit', as: :contact_submit
-  get '/privacy', to: 'pages#privacy', as: :privacy
-  get '/terms',   to: 'pages#terms',   as: :terms
+  get  "/about",   to: "pages#about",   as: :about
+  get  "/contact", to: "pages#contact", as: :contact
+  post "/contact_submit", to: "pages#contact_submit", as: :contact_submit
+  get  "/privacy", to: "pages#privacy", as: :privacy
+  get  "/terms",   to: "pages#terms",   as: :terms
 
   # -------------------------
   # Admin namespace (controllers under AdminPanel::)
- 
+  # URL prefix: /admin
+  # Named routes: admin_*
+  # -------------------------
+  namespace :admin_panel, path: "/admin", as: :admin do
+    # Auth
+    get    "login",  to: "sessions#new",     as: :login
+    post   "login",  to: "sessions#create"
+    delete "logout", to: "sessions#destroy", as: :logout
 
-    namespace :admin_panel, path: '/admin', as: :admin do
-  get    'login',  to: 'sessions#new',    as: :login
-  post   'login',  to: 'sessions#create'
-  delete 'logout', to: 'sessions#destroy', as: :logout
-  root to: 'dashboard#index'
-  get  'dashboard', to: 'dashboard#index', as: :dashboard
-  
+    # Dashboard
+    root to: "dashboard#index"
+    get "dashboard", to: "dashboard#index", as: :dashboard
 
-    # Example admin resources:
+    # NEW (optional, useful for dashboard widgets)
+    # These can return JSON for cards/charts without reloading the whole page
+    get "dashboard/summary",  to: "dashboard#summary",  as: :dashboard_summary, defaults: { format: :json }
+    get "dashboard/activity", to: "dashboard#activity", as: :dashboard_activity, defaults: { format: :json }
+
+    # Admin resources
     resources :products do
       member do
         patch :toggle_featured
+
+        # NEW (optional quick action)
+        patch :adjust_stock
       end
     end
+
     resources :orders do
       member do
         patch :update_status
         patch :mark_as_shipped
         patch :mark_as_delivered
+
+        # NEW (optional quick action)
+        patch :mark_as_paid
       end
     end
+
     resources :users do
       member do
         patch :toggle_admin
       end
     end
-    resources :payments, only: [:index, :show]
-    resources :reports, only: [:index]
-    resource  :settings, only: [:show, :update]
+
+    resources :payments, only: %i[index show]
+    resources :reports, only: %i[index]
+    resource  :settings, only: %i[show update]
+
     resources :categories do
       collection do
         post :sort
       end
     end
+
     resources :brands
+
     resources :coupons do
       member do
         patch :toggle_active
       end
     end
+
     resources :reviews do
       member do
         patch :approve
         patch :reject
       end
     end
-    resources :addresses, only: [:index, :show, :destroy]
+
+    resources :addresses, only: %i[index show destroy]
   end
-
-
-  # Orders (customer/checkout)
-resources :orders, only: [:index, :new, :create, :show] do
-  member do
-    patch :cancel
-    patch :mark_received
-  end
-end
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   # -------------------------
   # Health check
   # -------------------------
-  get 'up' => 'rails/health#show', as: :rails_health_check
+  get "up" => "rails/health#show", as: :rails_health_check
 end
