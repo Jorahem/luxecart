@@ -164,21 +164,24 @@
                 </div>
               </div>
 
+              <%# ---------- FIXED EMAIL SECTION (display only, NO input) ---------- %>
               <div>
                 <div class="flex items-center justify-between">
-                  <%= f.label :email, "Email address", class: "block text-sm font-medium text-gray-700" %>
-                  <span class="text-xs text-gray-400">Required</span>
+                  <span class="block text-sm font-medium text-gray-700">Email address</span>
+                  <span class="text-xs text-gray-400">From your account</span>
                 </div>
-                <div class="mt-1 relative">
-                  <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-300">
+
+                <div class="mt-1 flex items-center gap-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
+                  <span class="text-gray-400">
                     <i class="fa-solid fa-envelope"></i>
                   </span>
-                  <%= f.email_field :email,
-                      name: "contact[email]",
-                      required: true,
-                      class: "mt-0 block w-full pl-9 rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
-                      placeholder: "you@example.com" %>
+                  <div class="text-sm font-semibold text-gray-900">
+                    <%= current_user.email %>
+                  </div>
                 </div>
+
+                <%# Optional: keep hidden field for compatibility (not required because controller forces email) %>
+                <%= hidden_field_tag "contact[email]", current_user.email %>
               </div>
             </div>
 
@@ -368,22 +371,18 @@
     if (form) {
       form.addEventListener('submit', function(e) {
         const name = form.querySelector('input[name="contact[name]"]');
-        const email = form.querySelector('input[name="contact[email]"]');
         const phone = form.querySelector('input[name="contact[phone]"]');
         const message = form.querySelector('textarea[name="contact[message]"]');
 
         let errors = [];
 
         if (!name || !name.value.trim()) errors.push('Please enter your name.');
-        if (!email || !/^\\S+@\\S+\\.\\S+$/.test(email.value || '')) errors.push('Please enter a valid email address.');
-        if (!phone || !phone.value.trim()) {
-          errors.push('Please enter your phone number.');
-        }
+        if (!phone || !phone.value.trim()) errors.push('Please enter your phone number.');
         if (!message || !message.value.trim()) errors.push('Please write a message.');
 
         if (errors.length > 0) {
           e.preventDefault();
-          alert(errors.join('\\n'));
+          alert(errors.join('\n'));
           return false;
         }
 

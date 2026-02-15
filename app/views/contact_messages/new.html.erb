@@ -1,0 +1,45 @@
+<div class="min-h-screen bg-gray-950 text-gray-100">
+  <div class="max-w-xl mx-auto px-4 py-10">
+    <h1 class="text-3xl font-bold mb-2">Contact us</h1>
+    <p class="text-sm text-gray-400 mb-6">Send a message to the store admin.</p>
+
+    <% if notice.present? %>
+      <div class="mb-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-400/20 text-emerald-100">
+        <%= notice %>
+      </div>
+    <% end %>
+
+    <%= form_with model: @contact_message, class: "space-y-4" do |f| %>
+      <div>
+        <%= f.label :name, class: "text-sm text-gray-300" %>
+        <%= f.text_field :name, class: "mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white" %>
+        <% @contact_message.errors.full_messages_for(:name).each do |e| %>
+          <div class="text-xs text-rose-300 mt-1"><%= e %></div>
+        <% end %>
+      </div>
+
+      <div>
+        <%= f.label :email, class: "text-sm text-gray-300" %>
+        <%= f.email_field :email, class: "mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white" %>
+        <% @contact_message.errors.full_messages_for(:email).each do |e| %>
+          <div class="text-xs text-rose-300 mt-1"><%= e %></div>
+        <% end %>
+      </div>
+
+      <div>
+        <%= f.label :subject, class: "text-sm text-gray-300" %>
+        <%= f.text_field :subject, class: "mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white" %>
+      </div>
+
+      <div>
+        <%= f.label :message, class: "text-sm text-gray-300" %>
+        <%= f.text_area :message, rows: 6, class: "mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white" %>
+        <% @contact_message.errors.full_messages_for(:message).each do |e| %>
+          <div class="text-xs text-rose-300 mt-1"><%= e %></div>
+        <% end %>
+      </div>
+
+      <%= f.submit "Send message", class: "w-full rounded-lg bg-indigo-600 hover:bg-indigo-500 px-4 py-2 font-semibold" %>
+    <% end %>
+  </div>
+</div>

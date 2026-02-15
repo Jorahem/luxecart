@@ -1,59 +1,112 @@
 <!doctype html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title><%= content_for?(:title) ? yield(:title) : "LuxeCart Admin" %></title>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title><%= content_for?(:title) ? yield(:title) : "LuxeCart Admin" %></title>
 
-  <%= csrf_meta_tag %>
-  <%= csp_meta_tag %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" />
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
-<body class="bg-gray-900 text-white min-h-screen">
-  <!-- Admin Header -->
-  <header class="border-b border-gray-800 bg-gray-900">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center font-black">
-          <i class="fas fa-user-shield"></i>
+    <style>
+      /* small nice defaults (no extra libs) */
+      .admin-shell { min-height: calc(100vh - 76px); }
+    </style>
+  </head>
+
+  <body class="bg-slate-950 text-slate-100">
+    <%# ---------- Topbar ---------- %>
+    <header class="sticky top-0 z-50 border-b border-white/10 bg-slate-950/85 backdrop-blur">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-600 to-fuchsia-600 flex items-center justify-center shadow-lg">
+            <i class="fas fa-gem text-white"></i>
+          </div>
+
+          <div class="leading-tight min-w-0">
+            <div class="font-extrabold tracking-tight text-white truncate">
+              LuxeCart Admin
+              <span class="ml-2 align-middle text-[11px] font-semibold px-2 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300">
+                Panel
+              </span>
+            </div>
+            <div class="text-xs text-slate-400 truncate">
+              Manage store, orders, products & customers
+            </div>
+          </div>
         </div>
 
-        <div>
-          <div class="font-extrabold tracking-tight text-white">
-            LuxeCart Admin Panel
-          </div>
-          <div class="text-xs text-gray-400">
-            Manage orders, products, customers
-          </div>
-        </div>
+        <nav class="flex flex-wrap items-center justify-end gap-2">
+          <% nav_btn = "inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-sm text-slate-100" %>
+          <% active = "bg-indigo-500/15 border-indigo-400/20 text-indigo-100" %>
+
+          <%= link_to (admin_dashboard_path rescue "#"),
+                class: "#{nav_btn} #{active if request.path == (admin_dashboard_path rescue '')}" do %>
+            <i class="fas fa-gauge-high text-indigo-300"></i><span class="hidden sm:inline">Dashboard</span>
+          <% end %>
+
+          <%= link_to (admin_orders_path rescue "#"),
+                class: "#{nav_btn} #{active if request.path.start_with?((admin_orders_path rescue '/admin/orders'))}" do %>
+            <i class="fas fa-receipt text-indigo-300"></i><span class="hidden sm:inline">Orders</span>
+          <% end %>
+
+          <%= link_to (admin_products_path rescue "#"),
+                class: "#{nav_btn} #{active if request.path.start_with?((admin_products_path rescue '/admin/products'))}" do %>
+            <i class="fas fa-box text-indigo-300"></i><span class="hidden sm:inline">Products</span>
+          <% end %>
+
+          <%= link_to (admin_contact_messages_path rescue "#"),
+                class: "#{nav_btn} #{active if request.path.start_with?((admin_contact_messages_path rescue '/admin/contact_messages'))}" do %>
+            <i class="fas fa-envelope text-indigo-300"></i><span class="hidden sm:inline">Contact</span>
+          <% end %>
+
+          <%= link_to root_path,
+                class: "inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 text-sm shadow-md" do %>
+            <i class="fas fa-store"></i><span class="hidden sm:inline">Store</span>
+          <% end %>
+        </nav>
       </div>
+    </header>
 
-      <nav class="flex items-center gap-2 text-sm">
-        <%= link_to (admin_orders_path rescue "#"),
-              class: "px-3 py-2 rounded-lg hover:bg-gray-800 bg-gray-800/40" do %>
-          <i class="fas fa-receipt mr-2"></i> Orders
+    <%# ---------- Full width page area (no tiny centered box) ---------- %>
+    <div class="admin-shell">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        <%# Flash %>
+        <% flash.each do |k, v| %>
+          <div class="mb-4 rounded-2xl border px-4 py-3 text-sm
+            <%= k.to_s == 'notice' ? 'border-emerald-400/20 bg-emerald-500/10 text-emerald-100' : 'border-rose-400/20 bg-rose-500/10 text-rose-100' %>">
+            <div class="flex items-start gap-3">
+              <div class="mt-0.5">
+                <% if k.to_s == "notice" %>
+                  <i class="fas fa-circle-check text-emerald-300"></i>
+                <% else %>
+                  <i class="fas fa-triangle-exclamation text-rose-300"></i>
+                <% end %>
+              </div>
+              <div class="min-w-0"><%= v %></div>
+            </div>
+          </div>
         <% end %>
 
-        <%= link_to root_path,
-              class: "px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700" do %>
-          <i class="fas fa-store mr-2"></i> Back to Store
-        <% end %>
-      </nav>
+        <%= yield %>
+      </div>
     </div>
-  </header>
 
-  <!-- ✅ Sidebar removed: full width main content -->
-  <main class="p-6">
-    <% flash.each do |k,v| %>
-      <div class="mb-4 px-4 py-3 rounded-lg border
-                  <%= k.to_s == 'notice' ? 'border-emerald-700 bg-emerald-900/30 text-emerald-100' : 'border-red-700 bg-red-900/30 text-red-100' %>">
-        <%= v %>
+    <%# ---------- Small admin footer ---------- %>
+    <footer class="border-t border-white/10 bg-black/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 text-xs text-slate-400 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+        <div>© <%= Time.zone.now.year %> LuxeCart Admin. All rights reserved.</div>
+        <div class="flex items-center gap-3">
+          <span class="inline-flex items-center gap-2">
+            <span class="h-2 w-2 rounded-full bg-emerald-400"></span> System online
+          </span>
+          <span class="text-slate-500">•</span>
+          <span>v1</span>
+        </div>
       </div>
-    <% end %>
-
-    <%= yield %>
-  </main>
-</body>
+    </footer>
+  </body>
 </html>

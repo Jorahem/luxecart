@@ -72,4 +72,13 @@ class ApplicationController < ActionController::Base
     flash[:alert] = "You are not authorized to perform this action."
     redirect_back(fallback_location: root_path)
   end
+
+
+    layout :resolve_layout
+
+  private
+
+  def resolve_layout
+    self.class.name.start_with?("AdminPanel::") ? "admin_panel" : "application"
+  end
 end

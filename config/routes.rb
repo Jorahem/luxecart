@@ -83,6 +83,13 @@ Rails.application.routes.draw do
   get  "/terms",   to: "pages#terms",   as: :terms
 
   # -------------------------
+  # NEW: Public contact messages (recommended)
+  # If you want to keep using PagesController contact_submit, you can skip this,
+  # but this is the clean DB-backed version.
+  # -------------------------
+  resources :contact_messages, only: %i[new create]
+
+  # -------------------------
   # Admin namespace (controllers under AdminPanel::)
   # URL prefix: /admin
   # Named routes: admin_*
@@ -97,8 +104,7 @@ Rails.application.routes.draw do
     root to: "dashboard#index"
     get "dashboard", to: "dashboard#index", as: :dashboard
 
-    # NEW (optional, useful for dashboard widgets)
-    # These can return JSON for cards/charts without reloading the whole page
+    # Optional dashboard JSON endpoints
     get "dashboard/summary",  to: "dashboard#summary",  as: :dashboard_summary, defaults: { format: :json }
     get "dashboard/activity", to: "dashboard#activity", as: :dashboard_activity, defaults: { format: :json }
 
@@ -106,8 +112,6 @@ Rails.application.routes.draw do
     resources :products do
       member do
         patch :toggle_featured
-
-        # NEW (optional quick action)
         patch :adjust_stock
       end
     end
@@ -117,8 +121,6 @@ Rails.application.routes.draw do
         patch :update_status
         patch :mark_as_shipped
         patch :mark_as_delivered
-
-        # NEW (optional quick action)
         patch :mark_as_paid
       end
     end
@@ -155,6 +157,17 @@ Rails.application.routes.draw do
     end
 
     resources :addresses, only: %i[index show destroy]
+
+    # -------------------------
+    # FIXED: Admin Contact Messages (NO Admin:: namespace)
+    # /admin/contact_messages
+    # helpers: admin_contact_messages_path, admin_contact_message_path(...)
+    # -------------------------
+    resources :contact_messages, only: %i[index show] do
+      member do
+        patch :mark_read
+      end
+    end
   end
 
   # -------------------------

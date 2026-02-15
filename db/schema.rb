@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_02_10_000000) do
+ActiveRecord::Schema[7.1].define(version: 2026_02_15_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -133,6 +133,20 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_10_000000) do
     t.index ["active"], name: "index_categories_on_active"
     t.index ["parent_id"], name: "index_categories_on_parent_id"
     t.index ["slug"], name: "index_categories_on_slug", unique: true
+  end
+
+  create_table "contact_messages", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "email", null: false
+    t.string "subject"
+    t.text "message", null: false
+    t.boolean "read", default: false, null: false
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_contact_messages_on_created_at"
+    t.index ["email"], name: "index_contact_messages_on_email"
+    t.index ["read"], name: "index_contact_messages_on_read"
   end
 
   create_table "coupons", force: :cascade do |t|

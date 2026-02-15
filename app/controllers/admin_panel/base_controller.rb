@@ -1,6 +1,7 @@
 module AdminPanel
   class BaseController < ApplicationController
-    layout "admin"
+    
+        layout "admin_panel"
 
     before_action :require_admin_login
 
