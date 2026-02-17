@@ -1,72 +1,81 @@
-<main class="px-4 py-8">
-  <div class="max-w-6xl mx-auto">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-      <div>
-        <h1 class="text-3xl font-extrabold text-white tracking-tight">Categories</h1>
-        <p class="text-sm text-slate-300 mt-1">Manage product categories</p>
-      </div>
+<main class="px-4 py-10 min-h-screen" style="background: linear-gradient(120deg, #fce7f3 30%, #e0e7ff 100%);">
+  <div class="max-w-5xl mx-auto">
 
-      <div class="flex items-center gap-2">
+    <!-- HEADER -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8">
+      <div>
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-pink-400 text-xs font-bold text-white mb-3 shadow">
+          <i class="fa-solid fa-list text-fuchsia-100"></i>
+          <span>Category Manager</span>
+        </div>
+        <h1 class="text-3xl font-extrabold text-indigo-700 tracking-tight mb-1">Categories</h1>
+        <p class="text-base text-fuchsia-700 font-medium">Organize and manage product categories.</p>
+      </div>
+      <div class="flex items-center gap-3">
         <%= link_to "Add Category",
               new_admin_category_path,
-              class: "px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow" %>
-
+              class: "px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white text-base font-bold shadow hover:from-indigo-600 hover:to-pink-600 transition" %>
         <%= link_to admin_dashboard_path,
-              class: "px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-semibold text-white" do %>
-          <i class="fas fa-arrow-left mr-2"></i> Back
+              class: "px-5 py-2 rounded-xl border-0 bg-gradient-to-r from-gray-300 to-gray-100 text-gray-800 text-sm font-bold shadow flex items-center gap-2 hover:from-pink-100 hover:to-indigo-100 transition" do %>
+          <i class="fas fa-arrow-left"></i> Back
         <% end %>
       </div>
     </div>
 
-    <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+    <!-- CATEGORIES TABLE -->
+    <div class="rounded-xl shadow-2xl border border-pink-200/60 overflow-hidden bg-white/95">
+      <div class="px-6 py-4 border-b border-pink-100 bg-gradient-to-r from-pink-50 to-indigo-50 flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-fuchsia-700 flex items-center gap-2">
+            <i class="fa-solid fa-list-ul text-pink-400"></i> All Categories
+          </h2>
+          <p class="text-xs text-indigo-400 mt-1">Manage your product hierarchies</p>
+        </div>
+      </div>
       <div class="overflow-x-auto">
-        <table class="min-w-full text-sm">
-          <thead class="bg-white/5">
-            <tr class="text-left text-xs uppercase tracking-wider text-slate-300">
-              <th class="px-4 py-3">Name</th>
-              <th class="px-4 py-3">Parent</th>
-              <th class="px-4 py-3">Active</th>
-              <th class="px-4 py-3 text-right">Action</th>
+        <table class="min-w-full text-base">
+          <thead class="bg-gradient-to-r from-pink-50 to-indigo-50">
+            <tr>
+              <th class="px-5 py-4 font-extrabold text-fuchsia-600 text-sm">Name</th>
+              <th class="px-5 py-4 font-extrabold text-indigo-600 text-sm">Parent</th>
+              <th class="px-5 py-4 font-extrabold text-emerald-700 text-sm">Active</th>
+              <th class="px-5 py-4 font-extrabold text-rose-700 text-right text-sm">Action</th>
             </tr>
           </thead>
-
-          <tbody class="divide-y divide-white/5">
+          <tbody class="divide-y divide-fuchsia-50">
             <% if @categories.blank? %>
               <tr>
-                <td colspan="4" class="px-4 py-10 text-center text-slate-300">
+                <td colspan="4" class="px-5 py-10 text-center text-fuchsia-400 font-bold">
                   No categories found.
                 </td>
               </tr>
             <% else %>
               <% @categories.each do |c| %>
-                <tr class="hover:bg-white/5">
-                  <td class="px-4 py-4 font-semibold text-white">
+                <tr class="hover:bg-gradient-to-l hover:from-pink-50 hover:to-indigo-50 transition">
+                  <td class="px-5 py-5 font-bold text-indigo-900">
                     <%= c.name %>
                   </td>
-
-                  <td class="px-4 py-4 text-slate-200">
+                  <td class="px-5 py-5 text-pink-700 font-semibold">
                     <%= c.parent_category&.name.presence || "—" %>
                   </td>
-
-                  <td class="px-4 py-4">
+                  <td class="px-5 py-5 text-center">
                     <% if c.respond_to?(:active) %>
-                      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold <%= c.active ? 'bg-emerald-500/20 text-emerald-200' : 'bg-white/10 text-slate-200' %>">
+                      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold 
+                        <%= c.active ? 'bg-gradient-to-r from-emerald-400 to-green-400 text-white shadow' : 'bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 shadow' %>">
                         <%= c.active ? "Yes" : "No" %>
                       </span>
                     <% else %>
                       <span class="text-slate-400">—</span>
                     <% end %>
                   </td>
-
-                  <td class="px-4 py-4 text-right whitespace-nowrap">
+                  <td class="px-5 py-5 text-right whitespace-nowrap" style="min-width:140px;">
                     <%= link_to "Edit",
                           edit_admin_category_path(c),
-                          class: "text-indigo-300 hover:text-indigo-200 font-semibold mr-3" %>
-
+                          class: "px-4 py-2 rounded-full bg-indigo-500 text-white font-bold border-0 shadow hover:bg-indigo-600 transition mr-2" %>
                     <%= link_to "Delete",
                           admin_category_path(c),
                           data: { turbo_method: :delete, turbo_confirm: "Delete this category?" },
-                          class: "text-red-300 hover:text-red-200 font-semibold" %>
+                          class: "px-4 py-2 rounded-full bg-pink-400 text-white font-bold border-0 shadow hover:bg-pink-600 transition" %>
                   </td>
                 </tr>
               <% end %>
@@ -75,5 +84,6 @@
         </table>
       </div>
     </div>
+
   </div>
 </main>

@@ -1,0 +1,7 @@
+<% if @contact_message.reply.present? %>
+  <div class="rounded-2xl bg-emerald-100/10 border border-emerald-200/20 p-4 my-4">
+    <strong class="text-emerald-700">Reply from LuxeCart Team:</strong>
+    <p class="text-slate-900"><%= @contact_message.reply %></p>
+    <div class="mt-1 text-xs text-emerald-400"><%= @contact_message.reply_at.strftime('%Y-%m-%d %H:%M') if @contact_message.reply_at %></div>
+  </div>
+<% end %>

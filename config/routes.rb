@@ -166,6 +166,7 @@ Rails.application.routes.draw do
     resources :contact_messages, only: %i[index show] do
       member do
         patch :mark_read
+          patch :reply 
       end
     end
   end

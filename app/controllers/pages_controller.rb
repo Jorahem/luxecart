@@ -18,12 +18,13 @@ class PagesController < ApplicationController
 
   # GET /contact
   def contact
-    # Optional: prefill name if you have it on user
+    # Prefill name if present and load previous messages for display
     @contact = {
       name: (current_user.respond_to?(:name) ? current_user.name : nil),
       subject: nil,
       message: nil
     }
+    @contact_messages = ContactMessage.where(email: current_user.email).order(created_at: :desc)
   end
 
   # POST /contact_submit
@@ -43,6 +44,8 @@ class PagesController < ApplicationController
     else
       flash.now[:alert] = @contact_message.errors.full_messages.to_sentence
       @contact = data
+      # Also reload past messages for re-render
+      @contact_messages = ContactMessage.where(email: current_user.email).order(created_at: :desc)
       render :contact, status: :unprocessable_entity
     end
   end
@@ -52,8 +55,7 @@ class PagesController < ApplicationController
 
   private
 
-  # NOTE:
-  # We REMOVED :email from permitted params because the email will come from current_user
+  # NOTE: :email is not permitted because we'll use current_user's email
   def contact_params
     params.require(:contact).permit(:name, :subject, :message)
   end
