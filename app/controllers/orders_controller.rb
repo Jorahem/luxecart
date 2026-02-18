@@ -160,4 +160,5 @@ class OrdersController < ApplicationController
       :payment_method
     )
   end
+  @order = Order.new(order_params.merge(admin_seen: false))
 end

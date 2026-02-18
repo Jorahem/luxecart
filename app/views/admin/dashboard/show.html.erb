@@ -1,0 +1,6 @@
+<button ...>
+  <i class="fa-solid fa-bell"></i>
+  <% if @new_order_count.to_i > 0 %>
+    <span class="absolute -top-1 -right-1 h-4 w-4 ..."><%= @new_order_count %></span>
+  <% end %>
+</button>

@@ -2,7 +2,7 @@
   <div class="max-w-4xl mx-auto">
     <div class="flex items-center justify-between gap-4 mb-6">
       <div>
-        <h1 class="text-3xl font-extrabold text-white tracking-tight">Payment Details</h1>
+        <h1 class="text-3xl font-extrabold text-black tracking-tight">Payment Details</h1>
         <p class="text-sm text-slate-300 mt-1">
           Order <%= @order.respond_to?(:order_number) ? (@order.order_number.presence || @order.id) : @order.id %>
         </p>
@@ -10,42 +10,42 @@
 
       <%= link_to "Back",
             admin_payments_path,
-            class: "px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-semibold text-white" %>
+            class: "px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-semibold text-black" %>
     </div>
 
     <div class="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
         <div>
           <div class="text-slate-400">Customer</div>
-          <div class="text-white font-semibold">
+          <div class="text-black font-semibold">
             <%= @order.user&.full_name.presence || @order.shipping_full_name.presence || "—" %>
           </div>
         </div>
 
         <div>
           <div class="text-slate-400">Email</div>
-          <div class="text-white font-semibold">
+          <div class="text-black font-semibold">
             <%= @order.user&.email.presence || "—" %>
           </div>
         </div>
 
         <div>
           <div class="text-slate-400">Payment method</div>
-          <div class="text-white font-semibold">
+          <div class="text-black font-semibold">
             <%= @order.respond_to?(:payment_method) ? (@order.payment_method.presence || "—") : "—" %>
           </div>
         </div>
 
         <div>
           <div class="text-slate-400">Payment status</div>
-          <div class="text-white font-semibold">
+          <div class="text-black font-semibold">
             <%= @order.respond_to?(:payment_status) ? @order.payment_status : "—" %>
           </div>
         </div>
 
         <div class="md:col-span-2">
           <div class="text-slate-400">Stripe payment intent</div>
-          <div class="text-white font-semibold break-all">
+          <div class="text-black font-semibold break-all">
             <%= @order.respond_to?(:stripe_payment_intent_id) ? (@order.stripe_payment_intent_id.presence || "—") : "—" %>
           </div>
         </div>

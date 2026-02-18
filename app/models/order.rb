@@ -109,6 +109,9 @@ class Order < ApplicationRecord
     true
   end
 
+  after_initialize do
+  self.admin_seen = false if self.admin_seen.nil?
+end
   # Generates a reasonably human-friendly and unique order number.
   # Format example: ORD20260117-4f3c9a8b
   def generate_order_number

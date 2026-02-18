@@ -25,11 +25,20 @@
           <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-600 to-fuchsia-600 flex items-center justify-center shadow-lg">
             <i class="fas fa-gem text-white"></i>
           </div>
+          <!-- Example in topbar, adjust placement as needed -->
+<button class="relative">
+  <i class="fa-solid fa-bell"></i>
+  <% if @unseen_order_count > 0 %>
+    <span class="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-rose-500 text-xs text-white flex items-center justify-center">
+      <%= @unseen_order_count %>
+    </span>
+  <% end %>
+</button>
 
           <div class="leading-tight min-w-0">
-            <div class="font-extrabold tracking-tight text-white truncate">
+            <div class="font-extrabold tracking-tight text-black truncate ">
               LuxeCart Admin
-              <span class="ml-2 align-middle text-[11px] font-semibold px-2 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300">
+              <span class="ml-2 align-middle text-[11px] font-semibold px-2 py-1 rounded-full bg-black/5 border border-black/10 text-slate-300">
                 Panel
               </span>
             </div>
