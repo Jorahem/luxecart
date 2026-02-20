@@ -144,4 +144,20 @@ module AdminPanel
       ]
     end
   end
+  def index
+  # Group orders by day (last 30 days)
+  @orders_by_day = Order.where(created_at: 30.days.ago..Time.current)
+                        .group_by_day(:created_at)
+                        .count
+
+  # Group revenue by day
+  @revenue_by_day = Order.where(created_at: 30.days.ago..Time.current)
+                         .group_by_day(:created_at)
+                         .sum(:total_price)
+
+  # Group users by day
+  @new_users_by_day = User.where(created_at: 30.days.ago..Time.current)
+                          .group_by_day(:created_at)
+                          .count
+end
 end

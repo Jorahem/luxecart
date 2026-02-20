@@ -7,7 +7,6 @@ module AdminPanel
     end
 
     def show
-      # optional: you can add a show page later
       redirect_to admin_products_path
     end
 
@@ -19,9 +18,12 @@ module AdminPanel
 
     def create
       @product = Product.new(product_params)
+      
+      # Set default status to active so product is visible
+      @product.status = :active if @product.status.blank?
 
       if @product.save
-        redirect_to admin_products_path, notice: "Product created."
+        redirect_to admin_products_path, notice: "Product created successfully and is now visible to customers."
       else
         render :new, status: :unprocessable_entity
       end
@@ -40,7 +42,6 @@ module AdminPanel
       redirect_to admin_products_path, notice: "Product deleted."
     end
 
-    # PATCH /admin/products/:id/toggle_featured
     def toggle_featured
       unless @product.respond_to?(:featured)
         redirect_to admin_products_path, alert: "This product model has no featured field." and return
@@ -56,17 +57,18 @@ module AdminPanel
       @product = Product.find(params[:id])
     end
 
-    # NOTE: adjust fields to your Product schema if some are different.
+    # FIXED: Changed :stock to :stock_quantity to match model
     def product_params
       params.require(:product).permit(
         :name,
         :description,
         :price,
-        :stock,
+        :stock_quantity,  # ← FIXED
         :sku,
         :category_id,
-        :brand_id,
-        :image_url
+        :brand_id,        # ← ADDED
+        :image_url,
+        :status          # ← ADDED so admin can control visibility
       )
     end
   end

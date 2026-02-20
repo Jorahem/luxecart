@@ -23,6 +23,10 @@ gem "recaptcha", require: "recaptcha/rails"
 gem "sidekiq"
 gem "redis"   # needed for Sidekiq and caching
 
+
+
+gem 'chartkick'
+gem 'groupdate'
 # URLs, pagination, charts
 gem "friendly_id", "~> 5.5"
 gem "kaminari", "1.2.2"

@@ -1,0 +1,1 @@
+import "chartkick/chart.js" // Use Chart.js for modern visuals (or "chartkick/highcharts" if you prefer)

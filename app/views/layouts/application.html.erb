@@ -13,6 +13,7 @@
     <link rel="manifest" href="/favicons/manifest.json">
     <link rel="shortcut icon" href="/favicon.ico">
     <meta name="theme-color" content="#4f46e5">
+   
 
     <!-- Tailwind via CDN (no local /assets/tailwindcss/* files) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -33,6 +34,10 @@
       window.currentUserLoggedIn = <%= !!current_user ? 'true' : 'false' %>;
     </script>
 
+
+
+
+    
     <style>
       .animate-fade-in { animation: fadeIn .5s cubic-bezier(.4,0,.2,1); }
       @keyframes fadeIn {

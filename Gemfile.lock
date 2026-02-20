@@ -126,6 +126,8 @@ GEM
       activerecord (>= 4.0.0)
     globalid (1.3.0)
       activesupport (>= 6.1)
+    groupdate (6.7.0)
+      activesupport (>= 7.1)
     hotwire-rails (0.1.3)
       rails (>= 6.0.0)
       stimulus-rails
@@ -341,6 +343,7 @@ DEPENDENCIES
   devise
   dotenv-rails
   friendly_id (~> 5.5)
+  groupdate
   hotwire-rails
   image_processing (~> 1.2)
   importmap-rails
@@ -400,6 +403,7 @@ CHECKSUMS
   ffi (1.17.3-x86_64-linux-gnu) sha256=3746b01f677aae7b16dc1acb7cb3cc17b3e35bdae7676a3f568153fb0e2c887f
   friendly_id (5.6.0) sha256=28e221cd53fbd21586321164c1c6fd0c9ba8dde13969cb2363679f44726bb0c3
   globalid (1.3.0) sha256=05c639ad6eb4594522a0b07983022f04aa7254626ab69445a0e493aa3786ff11
+  groupdate (6.7.0) sha256=beaa8d5bf3856814681914a1d4a20e77436a2214b85d0017dc2ea5c355fb6777
   hotwire-rails (0.1.3) sha256=a4ed7b6bab50f91ce5a3bfaf1c721e6cef8a9ec8f6974c290e2862a280d08d8d
   i18n (1.14.8) sha256=285778639134865c5e0f6269e0b818256017e8cde89993fdfcbfb64d088824a5
   image_processing (1.14.0) sha256=754cc169c9c262980889bec6bfd325ed1dafad34f85242b5a07b60af004742fb

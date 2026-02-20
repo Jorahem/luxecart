@@ -1,15 +1,15 @@
-<main class="px-4 py-10 min-h-screen bg-gradient-to-br from-[#101624] to-[#090B16]">
+<main class="px-4 py-10 min-h-screen bg-gradient-to-br from-[#17203c] via-[#13343f] to-[#1c184f]">
   <div class="max-w-6xl mx-auto">
 
     <!-- Header -->
     <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
       <div>
-        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-sky-400/10 bg-sky-400/5 text-xs font-semibold text-sky-200 shadow-sm mb-3">
-          <span class="h-2 w-2 rounded-full" style="background: rgba(16,185,129,.95)"></span>
-          Premium Analytics
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-cyan-300/20 bg-cyan-400/10 text-xs font-semibold text-cyan-200 shadow-sm mb-3">
+          <span class="h-2 w-2 rounded-full" style="background: rgba(34,211,238,1)"></span>
+          Luxe Analytics
         </div>
-        <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-md">Reports</h1>
-        <p class="text-base text-slate-300 mt-4 max-w-2xl">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-cyan-50 tracking-tight drop-shadow-md">Reports</h1>
+        <p class="text-base text-cyan-100/90 mt-4 max-w-2xl">
           Executive dashboard for Admin / CEO / Staff.<br>
           Choose a range and review premium performance at a glance.
         </p>
@@ -19,11 +19,11 @@
         <div class="flex items-center gap-2">
           <% [["7 days","7d"],["30 days","30d"],["90 days","90d"]].each do |label, val| %>
             <%= link_to label, admin_reports_path(range: val),
-              class: "px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 focus:bg-blue-500/10 text-xs font-semibold text-white transition-colors duration-150 outline-none focus:ring-2 focus:ring-sky-500" %>
+              class: "px-3 py-2 rounded-xl border border-cyan-300/15 bg-cyan-100/10 hover:bg-cyan-200/10 focus:bg-cyan-400/10 text-xs font-semibold text-cyan-50 hover:text-emerald-200 transition-colors duration-150 outline-none focus:ring-2 focus:ring-emerald-400" %>
           <% end %>
         </div>
         <%= link_to admin_dashboard_path,
-              class: "px-4 py-2 rounded-xl border border-white/10 bg-gradient-to-r from-white/10 to-blue-700/10 hover:bg-white/10 text-sm font-semibold text-white flex items-center gap-2 transition" do %>
+              class: "px-4 py-2 rounded-xl border border-fuchsia-400/15 bg-gradient-to-r from-cyan-100/10 via-fuchsia-400/10 to-indigo-500/10 hover:bg-fuchsia-500/10 text-sm font-semibold text-cyan-50 flex items-center gap-2 transition focus:ring-2 focus:ring-fuchsia-800" do %>
           <i class="fas fa-arrow-left"></i> Back
         <% end %>
       </div>
@@ -32,53 +32,53 @@
     <!-- KPI Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
       <% gradients = [
-        "linear-gradient(135deg, rgba(245,158,11,0.32), rgba(255,255,255,0.06))",
-        "linear-gradient(135deg, rgba(16,185,129,0.32), rgba(255,255,255,0.06))",
-        "linear-gradient(135deg, rgba(56,189,248,0.32), rgba(255,255,255,0.06))",
-        "linear-gradient(135deg, rgba(217,70,239,0.32), rgba(255,255,255,0.06))"
+        "linear-gradient(135deg, rgba(14,165,233,0.27), rgba(255,255,255,0.04))",
+        "linear-gradient(135deg, rgba(34,211,238,0.26), rgba(255,255,255,0.04))",
+        "linear-gradient(135deg, rgba(52,211,153,0.32), rgba(255,255,255,0.04))",
+        "linear-gradient(135deg, rgba(232,121,249,0.29), rgba(255,255,255,0.04))"
       ] %>
       <% labels = [
         ["Revenue", @revenue ? (number_to_currency(@revenue) rescue @revenue) : "-",
-          "Selected range", "rgba(253,230,138,0.95)"],
-        ["Orders", @orders_in_range.count, "Paid: <span class='font-semibold text-white'>#{@paid_orders}</span> • Failed: <span class='font-semibold text-white'>#{@failed_orders}</span>", "rgba(167,243,208,0.95)"],
-        ["New Users", @new_users, "Selected range", "rgba(186,230,253,0.95)"],
-        ["Total Users", @total_users, "All time", "rgba(245,208,254,0.95)"]
+          "Selected range", "rgba(165,243,252,1)"],
+        ["Orders", @orders_in_range.count, "Paid: <span class='font-semibold text-teal-100'>#{@paid_orders}</span> • Failed: <span class='font-semibold text-fuchsia-200'>#{@failed_orders}</span>", "rgba(129,230,217,1)"],
+        ["New Users", @new_users, "Selected range", "rgba(232,121,249,1)"],
+        ["Total Users", @total_users, "All time", "rgba(99,102,241,1)"]
       ] %>
       <% labels.each_with_index do |(title, value, sub, accent), idx| %>
-        <div class="rounded-2xl border border-white/10 p-6 relative overflow-hidden shadow-lg backdrop-blur bg-white/5 group transition" style="background:<%= gradients[idx] %>;">
+        <div class="rounded-2xl border border-cyan-300/15 p-6 relative overflow-hidden shadow-xl backdrop-blur bg-white/10 group transition">
           <div class="absolute -top-10 -right-10 h-32 w-32 rounded-full"
-            style="background: <%= gradients[idx].gsub('135deg, ','').split(',')[0].gsub('0.32','0.45') %>; filter: blur(50px);"></div>
+            style="background: <%= gradients[idx].split(',')[0].gsub('0.27','0.35').gsub('0.26','0.32').gsub('0.32','0.38').gsub('0.29','0.38').gsub('135deg ','') %>; filter: blur(52px);"></div>
           <div class="text-sm font-bold mb-0.5" style="color: <%= accent %>"><%= title %></div>
-          <div class="text-white text-3xl font-extrabold mt-1"><%= value %></div>
-          <div class="text-xs text-slate-300 mt-2" style="line-height:1.4"><%= sub.html_safe %></div>
+          <div class="text-cyan-50 text-3xl font-extrabold mt-1"><%= value %></div>
+          <div class="text-xs text-cyan-100/80 mt-2" style="line-height:1.4"><%= sub.html_safe %></div>
         </div>
       <% end %>
     </div>
 
     <!-- Executive Insights -->
-    <div class="rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/20 via-emerald-500/10 to-fuchsia-500/15 px-7 py-6 mb-10 shadow backdrop-blur">
+    <div class="rounded-2xl border border-fuchsia-400/15 bg-gradient-to-br from-sky-400/15 via-cyan-400/10 to-fuchsia-400/15 px-7 py-6 mb-10 shadow-lg backdrop-blur">
       <div class="flex items-center justify-between gap-4">
         <div>
-          <h2 class="text-white text-xl font-bold leading-none">Executive Insights</h2>
-          <p class="text-xs text-slate-200/80 mt-1">Quick highlights for leadership</p>
+          <h2 class="text-cyan-50 text-xl font-bold leading-none">Executive Insights</h2>
+          <p class="text-xs text-cyan-100/80 mt-1">Quick highlights for leadership</p>
         </div>
-        <div class="text-xs text-slate-200/80">Updated: <span class="text-white font-semibold"><%= Time.current.strftime("%Y-%m-%d %H:%M") %></span></div>
+        <div class="text-xs text-cyan-100/80">Updated: <span class="text-cyan-50 font-semibold"><%= Time.current.strftime("%Y-%m-%d %H:%M") %></span></div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mt-4">
         <% insights = @insights.presence || [] %>
         <% insights.each_with_index do |i, idx| %>
-          <% glow = ["rgba(245,158,11,.35)", "rgba(16,185,129,.35)", "rgba(56,189,248,.35)", "rgba(217,70,239,.35)"][idx % 4] %>
-          <div class="rounded-xl border border-white/10 p-4 relative overflow-hidden shadow bg-white/5">
+          <% glow = ["rgba(14,165,233,.22)", "rgba(34,211,238,.22)", "rgba(132,204,22,.20)", "rgba(232,121,249,.25)"][idx % 4] %>
+          <div class="rounded-xl border border-cyan-300/10 p-4 relative overflow-hidden bg-white/10 shadow-md">
             <div class="absolute -top-8 -right-8 h-20 w-20 rounded-full" style="background:<%= glow %>; filter: blur(32px);"></div>
-            <div class="text-xs text-slate-200 font-semibold"><%= i[:title] %></div>
-            <div class="text-white text-2xl font-extrabold mt-1"><%= i[:value] %></div>
-            <div class="text-xs text-slate-400 mt-1"><%= i[:note] %></div>
+            <div class="text-xs text-cyan-100 font-semibold"><%= i[:title] %></div>
+            <div class="text-cyan-50 text-2xl font-extrabold mt-1"><%= i[:value] %></div>
+            <div class="text-xs text-cyan-200 mt-1"><%= i[:note] %></div>
           </div>
         <% end %>
         <% if insights.empty? %>
-          <div class="rounded-xl border border-white/10 p-4 bg-white/5 text-white">
+          <div class="rounded-xl border border-cyan-300/10 p-4 bg-white/10 text-cyan-50">
             <div class="font-semibold">No insights yet</div>
-            <div class="text-xs text-slate-400 mt-1">Add <code>@insights</code> in ReportsController#index.</div>
+            <div class="text-xs text-cyan-200 mt-1">Add <code>@insights</code> in ReportsController#index.</div>
           </div>
         <% end %>
       </div>
@@ -87,44 +87,43 @@
     <!-- Analytics grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-7">
       <!-- Order status breakdown -->
-      <div class="rounded-2xl border border-white/10 bg-white/10 shadow-lg overflow-hidden mb-6">
-        <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+      <div class="rounded-2xl border border-cyan-300/15 bg-cyan-900/10 shadow-xl overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-cyan-300/10 flex items-center justify-between">
           <div>
-            <h2 class="text-white font-bold text-lg">Order Status</h2>
-            <p class="text-xs text-slate-400 mt-1">Selected range breakdown</p>
+            <h2 class="text-cyan-50 font-bold text-lg">Order Status</h2>
+            <p class="text-xs text-cyan-100/70 mt-1">Selected range breakdown</p>
           </div>
-          <div class="text-xs text-slate-300">
-            Total: <span class="text-white font-semibold"><%= @orders_in_range.count %></span>
+          <div class="text-xs text-cyan-100">
+            Total: <span class="text-cyan-50 font-semibold"><%= @orders_in_range.count %></span>
           </div>
         </div>
         <div class="p-6">
           <% if @orders_by_status.blank? %>
-            <p class="text-slate-300 text-sm">No status data available.</p>
+            <p class="text-cyan-100/80 text-sm">No status data available.</p>
           <% else %>
             <% total = @orders_in_range.count.nonzero? || 1 %>
             <% bar_color = lambda do |status|
-                 case status.to_s
-                 when "pending" then "rgba(148,163,184,.85)"
-                 when "paid" then "rgba(16,185,129,.90)"
-                 when "processing" then "rgba(99,102,241,.90)"
-                 when "shipped" then "rgba(56,189,248,.90)"
-                 when "delivered", "received" then "rgba(34,197,94,.90)"
-                 when "cancelled" then "rgba(239,68,68,.90)"
-                 else "rgba(217,70,239,.85)"
-                 end
-               end
-            %>
+              case status.to_s
+              when "pending" then "rgba(236,254,255,.8)"
+              when "paid" then "rgba(34,211,238,1)"
+              when "processing" then "rgba(14,165,233,1)"
+              when "shipped" then "rgba(129,230,217,1)"
+              when "delivered", "received" then "rgba(16,185,129,1)"
+              when "cancelled" then "rgba(232,121,249,0.85)"
+              else "rgba(99,102,241,0.88)"
+              end
+            end %>
             <div class="space-y-5">
               <% @orders_by_status.sort_by { |k, _| k.to_s }.each do |status, count| %>
                 <% percent = ((count.to_f / total) * 100).round %>
                 <div>
                   <div class="flex items-center justify-between">
-                    <div class="text-sm text-slate-200 font-semibold capitalize"><%= status %></div>
-                    <div class="text-sm text-white font-bold">
-                      <%= count %> <span class="text-slate-400 font-semibold">(<%= percent %>%)</span>
+                    <div class="text-sm text-cyan-100 font-semibold capitalize"><%= status %></div>
+                    <div class="text-sm text-cyan-50 font-bold">
+                      <%= count %> <span class="text-cyan-100 font-semibold">(<%= percent %>%)</span>
                     </div>
                   </div>
-                  <div class="h-2.5 rounded-full mt-2 overflow-hidden bg-slate-700/20">
+                  <div class="h-2.5 rounded-full mt-2 overflow-hidden bg-cyan-100/10">
                     <div class="h-full transition-all duration-400" style="width:<%= percent %>%; background:<%= bar_color.call(status) %>;"></div>
                   </div>
                 </div>
@@ -133,31 +132,30 @@
           <% end %>
         </div>
       </div>
-
       <!-- Top products -->
-      <div class="rounded-2xl border border-white/10 bg-white/10 shadow-lg overflow-hidden mb-6">
-        <div class="px-6 py-4 border-b border-white/10">
-          <h2 class="text-white font-bold text-lg">Top Products</h2>
-          <p class="text-xs text-slate-400 mt-1">Best sellers by quantity</p>
+      <div class="rounded-2xl border border-fuchsia-400/10 bg-fuchsia-900/10 shadow-xl overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-fuchsia-400/10">
+          <h2 class="text-cyan-50 font-bold text-lg">Top Products</h2>
+          <p class="text-xs text-cyan-100/70 mt-1">Best sellers by quantity</p>
         </div>
         <div class="p-6">
           <% if @top_products.blank? %>
-            <p class="text-slate-300 text-sm">No sales data found for selected range.</p>
+            <p class="text-cyan-100/80 text-sm">No sales data found for selected range.</p>
           <% else %>
             <% max_qty = @top_products.map { |r| r.try(:qty_sold).to_i }.max.to_i %>
             <% max_qty = 1 if max_qty <= 0 %>
-            <% accents = ["rgba(99,102,241,.9)", "rgba(16,185,129,.9)", "rgba(56,189,248,.9)", "rgba(245,158,11,.9)", "rgba(217,70,239,.9)", "rgba(244,63,94,.9)"] %>
+            <% accents = ["rgba(14,165,233,1)", "rgba(34,211,238,1)", "rgba(52,211,153,1)", "rgba(232,121,249,1)", "rgba(99,102,241,1)"] %>
             <div class="space-y-4">
               <% @top_products.each_with_index do |row, idx| %>
                 <% qty = row.try(:qty_sold).to_i %>
                 <% w = ((qty.to_f / max_qty) * 100).round %>
                 <% accent = accents[idx % accents.length] %>
-                <div class="rounded-xl border border-white/10 p-3 bg-white/10">
+                <div class="rounded-xl border border-cyan-300/10 p-3 bg-cyan-400/5">
                   <div class="flex items-center justify-between gap-3">
-                    <div class="text-white font-semibold truncate"><%= row.name %></div>
-                    <div class="text-slate-200 text-sm font-bold"><%= qty %></div>
+                    <div class="text-cyan-50 font-semibold truncate"><%= row.name %></div>
+                    <div class="text-cyan-100 text-sm font-bold"><%= qty %></div>
                   </div>
-                  <div class="h-2 rounded-full mt-2 overflow-hidden" style="background: rgba(255,255,255,.10);">
+                  <div class="h-2 rounded-full mt-2 overflow-hidden" style="background: rgba(255,255,255,.08);">
                     <div class="h-full" style="width:<%= w %>%; background:<%= accent %>;"></div>
                   </div>
                 </div>
@@ -168,36 +166,37 @@
       </div>
     </div>
 
-    <!-- Premium row: Top customers + payment methods -->
+    <!-- Top customers + payment methods -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-7 mt-8">
       <!-- Top Customers -->
-      <div class="rounded-2xl border border-white/10 bg-white/10 shadow-lg overflow-hidden">
-        <div class="px-6 py-4 border-b border-white/10">
-          <h2 class="text-white font-bold text-lg">Top Customers</h2>
-          <p class="text-xs text-slate-400 mt-1">Ranked by total spend (paid orders)</p>
+      <div class="rounded-2xl border border-cyan-300/10 bg-cyan-900/10 shadow-xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-cyan-300/10">
+          <h2 class="text-fuchsia-100 font-bold text-lg">Top Customers</h2>
+          <p class="text-xs text-fuchsia-100/70 mt-1">Ranked by total spend (paid orders)</p>
         </div>
         <div class="p-6">
           <% if @top_customers.blank? %>
-            <p class="text-slate-300 text-sm">No customer revenue data available.</p>
+            <p class="text-fuchsia-100/80 text-sm">No customer revenue data available.</p>
           <% else %>
             <% max_spend = @top_customers.map { |r| r.try(:spend).to_f }.max.to_f %>
             <% max_spend = 1 if max_spend <= 0 %>
+            <% accents = ["rgba(52,211,153,1)", "rgba(14,165,233,1)", "rgba(232,121,249,1)", "rgba(99,102,241,1)", "rgba(34,211,238,1)"] %>
             <div class="space-y-4">
               <% @top_customers.each_with_index do |c, idx| %>
                 <% spend = c.try(:spend).to_f %>
                 <% w = ((spend / max_spend) * 100).round %>
-                <% accent = ["rgba(99,102,241,.9)", "rgba(16,185,129,.9)", "rgba(56,189,248,.9)", "rgba(245,158,11,.9)", "rgba(217,70,239,.9)"][idx % 5] %>
-                <div class="rounded-xl border border-white/10 p-3 bg-white/10">
+                <% accent = accents[idx % accents.length] %>
+                <div class="rounded-xl border border-cyan-300/10 p-3 bg-fuchsia-400/5">
                   <div class="flex items-center justify-between gap-3">
                     <div class="min-w-0">
-                      <div class="text-white font-semibold truncate">
+                      <div class="text-cyan-50 font-semibold truncate">
                         <%= "#{c.first_name} #{c.last_name}".strip.presence || c.email %>
                       </div>
-                      <div class="text-xs text-slate-400 truncate"><%= c.email %></div>
+                      <div class="text-xs text-cyan-200 truncate"><%= c.email %></div>
                     </div>
-                    <div class="text-white font-extrabold text-sm whitespace-nowrap"><%= number_to_currency(spend) rescue spend %></div>
+                    <div class="text-fuchsia-100 font-extrabold text-sm whitespace-nowrap"><%= number_to_currency(spend) rescue spend %></div>
                   </div>
-                  <div class="h-2 rounded-full mt-2 overflow-hidden" style="background: rgba(255,255,255,.10);">
+                  <div class="h-2 rounded-full mt-2 overflow-hidden" style="background: rgba(255,255,255,.08);">
                     <div class="h-full" style="width:<%= w %>%; background:<%= accent %>;"></div>
                   </div>
                 </div>
@@ -207,26 +206,27 @@
         </div>
       </div>
       <!-- Payment Methods -->
-      <div class="rounded-2xl border border-white/10 bg-white/10 shadow-lg overflow-hidden">
-        <div class="px-6 py-4 border-b border-white/10">
-          <h2 class="text-white font-bold text-lg">Payment Methods</h2>
-          <p class="text-xs text-slate-400 mt-1">Selected range split</p>
+      <div class="rounded-2xl border border-cyan-300/10 bg-cyan-900/10 shadow-xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-cyan-300/10">
+          <h2 class="text-cyan-50 font-bold text-lg">Payment Methods</h2>
+          <p class="text-xs text-cyan-100/80 mt-1">Selected range split</p>
         </div>
         <div class="p-6">
           <% if @payment_methods.blank? %>
-            <p class="text-slate-300 text-sm">No payment method data available.</p>
+            <p class="text-cyan-100/80 text-sm">No payment method data available.</p>
           <% else %>
             <% total = @orders_in_range.count.nonzero? || 1 %>
+            <% accents = ["rgba(34,211,238,1)", "rgba(99,102,241,1)", "rgba(232,121,249,1)", "rgba(14,165,233,1)", "rgba(52,211,153,1)"] %>
             <div class="space-y-4">
               <% @payment_methods.each_with_index do |(method, count), idx| %>
                 <% percent = ((count.to_f / total) * 100).round %>
-                <% accent = ["rgba(16,185,129,.9)", "rgba(99,102,241,.9)", "rgba(56,189,248,.9)", "rgba(245,158,11,.9)", "rgba(217,70,239,.9)"][idx % 5] %>
+                <% accent = accents[idx % accents.length] %>
                 <div>
                   <div class="flex items-center justify-between">
-                    <div class="text-slate-200 font-semibold text-sm"><%= method.presence || "unknown" %></div>
-                    <div class="text-white font-bold text-sm"><%= count %> <span class="text-slate-400 font-semibold">(<%= percent %>%)</span></div>
+                    <div class="text-cyan-100 font-semibold text-sm"><%= method.presence || "unknown" %></div>
+                    <div class="text-cyan-50 font-bold text-sm"><%= count %> <span class="text-cyan-100 font-semibold">(<%= percent %>%)</span></div>
                   </div>
-                  <div class="h-2.5 rounded-full mt-2 overflow-hidden" style="background: rgba(255,255,255,.10);">
+                  <div class="h-2.5 rounded-full mt-2 overflow-hidden" style="background: rgba(255,255,255,.12);">
                     <div class="h-full" style="width:<%= percent %>%; background:<%= accent %>;"></div>
                   </div>
                 </div>
@@ -237,21 +237,78 @@
       </div>
     </div>
 
+
+
+<div class="rounded-2xl border border-cyan-400/15 bg-cyan-900/10 px-6 py-8 mb-12 shadow-xl backdrop-blur">
+  <div class="mb-6 flex flex-wrap items-center justify-between">
+    <h2 class="text-2xl font-bold text-cyan-50">Live Performance Charts</h2>
+    <div class="text-xs text-cyan-100/80">Auto-refreshes every minute for real-time insights.</div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-7">
+    <!-- Revenue Chart -->
+    <div>
+      <h3 class="text-lg font-semibold text-cyan-100 mb-3">Revenue (Last 30 Days)</h3>
+      <%= line_chart @revenue_by_day, 
+        colors: ["#14b8a6"], 
+        library: {backgroundColor: "transparent", scales: {x: {grid: {color: "#313e4b"}}, y: {grid: {color: "#313e4b"}}}}, 
+        thousands: ",", 
+        prefix: "$", 
+        height: "250px", 
+        id: "revenue-chart", 
+        refresh: 60 %>
+    </div>
+    <!-- Orders Chart -->
+    <div>
+      <h3 class="text-lg font-semibold text-cyan-100 mb-3">Orders (Last 30 Days)</h3>
+      <%= area_chart @orders_by_day,
+        colors: ["#647cf4"],
+        library: {backgroundColor: "transparent"},
+        height: "250px",
+        id: "orders-chart",
+        refresh: 60 %>
+    </div>
+    <!-- New Users Chart -->
+    <div>
+      <h3 class="text-lg font-semibold text-cyan-100 mb-3">New Users</h3>
+      <%= column_chart @new_users_by_day,
+        colors: ["#e879f9"], 
+        library: {backgroundColor: "transparent"}, 
+        height: "250px", 
+        id: "users-chart", 
+        refresh: 60 %>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <!-- Recent orders -->
-    <div class="rounded-2xl border border-white/10 bg-white/10 shadow-lg overflow-hidden mt-10">
-      <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+    <div class="rounded-2xl border border-fuchsia-400/10 bg-fuchsia-900/10 shadow-xl overflow-hidden mt-10">
+      <div class="px-6 py-4 border-b border-fuchsia-400/10 flex items-center justify-between">
         <div>
-          <h2 class="text-white font-bold text-lg">Recent Orders</h2>
-          <p class="text-xs text-slate-400 mt-1">Latest activity</p>
+          <h2 class="text-fuchsia-100 font-bold text-lg">Recent Orders</h2>
+          <p class="text-xs text-fuchsia-100/70 mt-1">Latest activity</p>
         </div>
         <%= link_to "View Orders",
               admin_orders_path,
-              class: "px-3 py-2 rounded-xl text-white text-xs font-semibold shadow bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-pink-600 hover:from-sky-500 focus:ring-2 focus:ring-fuchsia-500 transition" %>
+              class: "px-3 py-2 rounded-xl text-cyan-50 text-xs font-semibold shadow bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-teal-500 hover:from-fuchsia-500 focus:ring-2 focus:ring-fuchsia-400 transition" %>
       </div>
       <div class="overflow-x-auto bg-transparent">
         <table class="min-w-full text-sm">
-          <thead style="background: rgba(255,255,255,.04);">
-            <tr class="text-left text-xs uppercase tracking-wider text-slate-300">
+          <thead style="background: rgba(255,255,255,.06);">
+            <tr class="text-left text-xs uppercase tracking-wider text-fuchsia-100/80">
               <th class="px-4 py-3">Order</th>
               <th class="px-4 py-3">Customer</th>
               <th class="px-4 py-3">Status</th>
@@ -259,10 +316,10 @@
               <th class="px-4 py-3">Created</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-white/5">
+          <tbody class="divide-y divide-fuchsia-400/15">
             <% if @recent_orders.blank? %>
               <tr>
-                <td colspan="5" class="px-4 py-14 text-center text-slate-300">No orders yet.</td>
+                <td colspan="5" class="px-4 py-14 text-center text-cyan-100/80">No orders yet.</td>
               </tr>
             <% else %>
               <% @recent_orders.each do |o| %>
@@ -270,26 +327,26 @@
                 <% payment = o.respond_to?(:payment_status) ? o.payment_status.to_s : "" %>
                 <% status_style =
                   case status
-                  when "pending" then "background: rgba(148,163,184,.18); color: rgba(226,232,240,.95);"
-                  when "processing" then "background: rgba(99,102,241,.18); color: rgba(224,231,255,.95);"
-                  when "shipped" then "background: rgba(56,189,248,.18); color: rgba(186,230,253,.95);"
-                  when "delivered", "received" then "background: rgba(16,185,129,.18); color: rgba(167,243,208,.95);"
-                  when "cancelled" then "background: rgba(239,68,68,.18); color: rgba(254,202,202,.95);"
-                  else "background: rgba(217,70,239,.16); color: rgba(245,208,254,.95);"
+                  when "pending" then "background: rgba(229,231,235,.14); color: rgba(14,165,233,0.93);"
+                  when "processing" then "background: rgba(34,211,238,.14); color: rgba(34,211,238,0.9);"
+                  when "shipped" then "background: rgba(16,185,129,.15); color: rgba(52,211,153,.95);"
+                  when "delivered", "received" then "background: rgba(163,230,53,.12); color: rgba(232,121,249,.95);"
+                  when "cancelled" then "background: rgba(232,121,249,.12); color: rgba(232,121,249,.95);"
+                  else "background: rgba(99,102,241,.10); color: rgba(99,102,241,.95);"
                   end
                 %>
                 <% payment_style =
                   case payment
-                  when "paid" then "background: rgba(16,185,129,.18); color: rgba(167,243,208,.95);"
-                  when "failed" then "background: rgba(239,68,68,.18); color: rgba(254,202,202,.95);"
-                  else "background: rgba(245,158,11,.14); color: rgba(253,230,138,.95);"
+                  when "paid" then "background: rgba(16,185,129,.12); color: rgba(16,185,129,.95);"
+                  when "failed" then "background: rgba(239,68,68,.17); color: rgba(239,68,68,.92);"
+                  else "background: rgba(165,243,252,.09); color: rgba(165,243,252,.89);"
                   end
                 %>
-                <tr class="hover:bg-white/10 transition">
-                  <td class="px-4 py-4 text-white font-semibold">
+                <tr class="hover:bg-fuchsia-400/10 transition">
+                  <td class="px-4 py-4 text-cyan-50 font-semibold">
                     <%= o.respond_to?(:order_number) ? (o.order_number.presence || o.id) : o.id %>
                   </td>
-                  <td class="px-4 py-4 text-slate-200">
+                  <td class="px-4 py-4 text-cyan-100">
                     <%= o.user&.full_name.presence || o.shipping_full_name.presence || "—" %>
                   </td>
                   <td class="px-4 py-4">
@@ -302,7 +359,7 @@
                       <%= payment.presence || "—" %>
                     </span>
                   </td>
-                  <td class="px-4 py-4 text-slate-200">
+                  <td class="px-4 py-4 text-cyan-100">
                     <%= o.created_at.strftime("%Y-%m-%d") rescue "—" %>
                   </td>
                 </tr>
@@ -313,9 +370,8 @@
       </div>
     </div>
 
-    <div class="mt-6 text-xs text-slate-400/80 border-l-4 border-indigo-500/30 pl-4 py-2 bg-slate-900/50 rounded shadow-inner">
-      Premium tip: for stunning charts, ask the dev team to add Chartkick, ApexCharts, or ECharts.
+    <div class="mt-7 text-xs text-cyan-100/70 border-l-4 border-cyan-400/40 pl-4 py-2 bg-cyan-950/40 rounded shadow-inner">
+      Luxe tip: Want beautiful charts? Just ask your developer to integrate Chartkick, ApexCharts, or ECharts.
     </div>
-
   </div>
 </main>
