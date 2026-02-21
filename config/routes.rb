@@ -83,9 +83,7 @@ Rails.application.routes.draw do
   get  "/terms",   to: "pages#terms",   as: :terms
 
   # -------------------------
-  # NEW: Public contact messages (recommended)
-  # If you want to keep using PagesController contact_submit, you can skip this,
-  # but this is the clean DB-backed version.
+  # Public contact messages
   # -------------------------
   resources :contact_messages, only: %i[new create]
 
@@ -105,7 +103,7 @@ Rails.application.routes.draw do
     get "dashboard", to: "dashboard#index", as: :dashboard
 
     # Optional dashboard JSON endpoints
-    get "dashboard/summary",  to: "dashboard#summary",  as: :dashboard_summary, defaults: { format: :json }
+    get "dashboard/summary",  to: "dashboard#summary",  as: :dashboard_summary,  defaults: { format: :json }
     get "dashboard/activity", to: "dashboard#activity", as: :dashboard_activity, defaults: { format: :json }
 
     # Admin resources
@@ -132,7 +130,7 @@ Rails.application.routes.draw do
     end
 
     resources :payments, only: %i[index show]
-    resources :reports, only: %i[index]
+    resources :reports,  only: %i[index]
     resource  :settings, only: %i[show update]
 
     resources :categories do
@@ -158,15 +156,12 @@ Rails.application.routes.draw do
 
     resources :addresses, only: %i[index show destroy]
 
-    # -------------------------
-    # FIXED: Admin Contact Messages (NO Admin:: namespace)
+    # Admin Contact Messages
     # /admin/contact_messages
-    # helpers: admin_contact_messages_path, admin_contact_message_path(...)
-    # -------------------------
     resources :contact_messages, only: %i[index show] do
       member do
         patch :mark_read
-          patch :reply 
+        patch :reply
       end
     end
   end

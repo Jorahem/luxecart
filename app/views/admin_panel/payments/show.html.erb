@@ -1,55 +1,162 @@
-<main class="px-4 py-8">
-  <div class="max-w-4xl mx-auto">
-    <div class="flex items-center justify-between gap-4 mb-6">
-      <div>
-        <h1 class="text-3xl font-extrabold text-black tracking-tight">Payment Details</h1>
-        <p class="text-sm text-slate-300 mt-1">
-          Order <%= @order.respond_to?(:order_number) ? (@order.order_number.presence || @order.id) : @order.id %>
-        </p>
-      </div>
+<% content_for :title, "Payment Details | LuxeCart Admin" %>
 
-      <%= link_to "Back",
-            admin_payments_path,
-            class: "px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-semibold text-black" %>
+<main class="px-4 py-10 min-h-screen" style="background: linear-gradient(100deg, #e0e7ff 60%, #f3e8ff 100%);">
+  <div class="max-w-5xl mx-auto">
+
+    <!-- HEADER -->
+    <div class="flex items-center justify-between gap-4 mb-8">
+      <%= link_to admin_payments_path,
+            class: "inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/90 backdrop-blur-sm text-indigo-700 text-sm font-bold shadow-lg hover:shadow-xl hover:bg-white transition-all duration-200 border border-indigo-200" do %>
+        <i class="fas fa-arrow-left"></i>
+        Back to Payments
+      <% end %>
+
+      <%= link_to admin_order_path(@order),
+            class: "inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200" do %>
+        <i class="fas fa-receipt"></i>
+        View Full Order
+      <% end %>
     </div>
 
-    <div class="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-4">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-        <div>
-          <div class="text-slate-400">Customer</div>
-          <div class="text-black font-semibold">
-            <%= @order.user&.full_name.presence || @order.shipping_full_name.presence || "—" %>
+    <!-- PAYMENT SUMMARY CARD -->
+    <div class="rounded-2xl shadow-2xl border border-purple-200 overflow-hidden bg-white mb-6">
+      <div class="px-8 py-6 border-b border-purple-100 bg-gradient-to-r from-emerald-600 to-teal-600">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h1 class="text-3xl font-extrabold text-white mb-2">
+              Payment Details
+            </h1>
+            <div class="text-emerald-100 text-sm">
+              Order <%= @order.order_number.presence || "##{@order.id}" %>
+            </div>
+          </div>
+          
+          <% status = @order.payment_status.to_s %>
+          <% if status == "paid" %>
+            <span class="inline-flex items-center px-5 py-3 rounded-full text-sm font-bold bg-white text-emerald-600 shadow-lg">
+              <i class="fas fa-check-circle mr-2 text-lg"></i>Payment Successful
+            </span>
+          <% elsif status == "pending" %>
+            <span class="inline-flex items-center px-5 py-3 rounded-full text-sm font-bold bg-white text-amber-600 shadow-lg animate-pulse">
+              <i class="fas fa-clock mr-2 text-lg"></i>Payment Pending
+            </span>
+          <% elsif status == "failed" %>
+            <span class="inline-flex items-center px-5 py-3 rounded-full text-sm font-bold bg-white text-rose-600 shadow-lg">
+              <i class="fas fa-times-circle mr-2 text-lg"></i>Payment Failed
+            </span>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Customer & Payment Info -->
+      <div class="p-8 bg-gradient-to-br from-white to-indigo-50/30">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <!-- Customer Info -->
+          <div class="bg-white rounded-2xl border-2 border-indigo-100 p-6 shadow-md">
+            <h3 class="text-lg font-bold text-indigo-900 mb-4 flex items-center gap-2">
+              <i class="fas fa-user text-indigo-600"></i>
+              Customer Information
+            </h3>
+            <div class="space-y-3">
+              <div>
+                <div class="text-xs font-bold text-purple-600 uppercase tracking-wide">Full Name</div>
+                <div class="text-indigo-900 font-semibold">
+                  <%= @order.user&.full_name.presence || @order.shipping_full_name.presence || "—" %>
+                </div>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-purple-600 uppercase tracking-wide">Email</div>
+                <div class="text-indigo-900 font-semibold">
+                  <%= @order.user&.email.presence || "—" %>
+                </div>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-purple-600 uppercase tracking-wide">Phone</div>
+                <div class="text-indigo-900 font-semibold">
+                  <%= @order.shipping_phone.presence || "—" %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Info -->
+          <div class="bg-white rounded-2xl border-2 border-purple-100 p-6 shadow-md">
+            <h3 class="text-lg font-bold text-purple-900 mb-4 flex items-center gap-2">
+              <i class="fas fa-credit-card text-purple-600"></i>
+              Payment Information
+            </h3>
+            <div class="space-y-3">
+              <div>
+                <div class="text-xs font-bold text-purple-600 uppercase tracking-wide">Payment Method</div>
+                <div class="text-purple-900 font-semibold capitalize">
+                  <%= @order.payment_method.presence || "—" %>
+                </div>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-purple-600 uppercase tracking-wide">Payment Status</div>
+                <div class="text-purple-900 font-semibold capitalize">
+                  <%= @order.payment_status %>
+                </div>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-purple-600 uppercase tracking-wide">Transaction Date</div>
+                <div class="text-purple-900 font-semibold">
+                  <%= @order.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div>
-          <div class="text-slate-400">Email</div>
-          <div class="text-black font-semibold">
-            <%= @order.user&.email.presence || "—" %>
+        <!-- Stripe Payment Intent -->
+        <% if @order.stripe_payment_intent_id.present? %>
+          <div class="bg-gradient-to-br from-purple-50 to-fuchsia-50 rounded-2xl border-2 border-purple-200 p-6">
+            <h3 class="text-lg font-bold text-purple-900 mb-3 flex items-center gap-2">
+              <i class="fab fa-stripe text-purple-600 text-xl"></i>
+              Stripe Payment Intent
+            </h3>
+            <div class="bg-white rounded-xl p-4 border border-purple-200">
+              <code class="text-sm font-mono text-purple-700 break-all">
+                <%= @order.stripe_payment_intent_id %>
+              </code>
+            </div>
+            <p class="text-xs text-purple-600 mt-2">
+              <i class="fas fa-info-circle mr-1"></i>
+              Use this ID to track the payment in Stripe Dashboard
+            </p>
           </div>
-        </div>
+        <% end %>
+      </div>
 
-        <div>
-          <div class="text-slate-400">Payment method</div>
-          <div class="text-black font-semibold">
-            <%= @order.respond_to?(:payment_method) ? (@order.payment_method.presence || "—") : "—" %>
+      <!-- Payment Amount Breakdown -->
+      <div class="px-8 py-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-t border-purple-100">
+        <h3 class="text-lg font-bold text-emerald-900 mb-4 flex items-center gap-2">
+          <i class="fas fa-calculator text-emerald-600"></i>
+          Amount Breakdown
+        </h3>
+
+        <div class="space-y-3">
+          <div class="flex items-center justify-between py-2 border-b border-emerald-200">
+            <span class="text-emerald-700 font-semibold">Subtotal</span>
+            <span class="text-emerald-900 font-bold"><%= number_to_currency(@order.subtotal) %></span>
           </div>
-        </div>
-
-        <div>
-          <div class="text-slate-400">Payment status</div>
-          <div class="text-black font-semibold">
-            <%= @order.respond_to?(:payment_status) ? @order.payment_status : "—" %>
+          <div class="flex items-center justify-between py-2 border-b border-emerald-200">
+            <span class="text-emerald-700 font-semibold">Shipping</span>
+            <span class="text-emerald-900 font-bold"><%= number_to_currency(@order.shipping_cost) %></span>
           </div>
-        </div>
-
-        <div class="md:col-span-2">
-          <div class="text-slate-400">Stripe payment intent</div>
-          <div class="text-black font-semibold break-all">
-            <%= @order.respond_to?(:stripe_payment_intent_id) ? (@order.stripe_payment_intent_id.presence || "—") : "—" %>
+          <% if @order.respond_to?(:tax) && @order.tax.to_f > 0 %>
+            <div class="flex items-center justify-between py-2 border-b border-emerald-200">
+              <span class="text-emerald-700 font-semibold">Tax</span>
+              <span class="text-emerald-900 font-bold"><%= number_to_currency(@order.tax) %></span>
+            </div>
+          <% end %>
+          <div class="flex items-center justify-between py-4 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl px-4 mt-2">
+            <span class="text-xl font-bold text-white">Total Amount</span>
+            <span class="text-3xl font-extrabold text-white"><%= number_to_currency(@order.total_price) %></span>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </main>

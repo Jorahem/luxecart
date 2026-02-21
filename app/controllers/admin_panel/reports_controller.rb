@@ -108,7 +108,12 @@ module AdminPanel
 
       @recent_orders = Order.order(created_at: :desc).limit(10)
 
-      # Executive insights (simple, but looks premium)
+      # Charts data (last 30 days)
+      @orders_by_day = Order.where(created_at: 30.days.ago..Time.current).group_by_day(:created_at).count
+      @revenue_by_day = Order.where(created_at: 30.days.ago..Time.current).group_by_day(:created_at).sum(:total_price)
+      @new_users_by_day = User.where(created_at: 30.days.ago..Time.current).group_by_day(:created_at).count
+
+      # Executive insights (simple)
       @insights = build_insights
     end
 
@@ -116,7 +121,7 @@ module AdminPanel
 
     def selected_range
       case params[:range].to_s
-      when "7d" then 7.days.ago.beginning_of_day..Time.current
+      when "7d"  then 7.days.ago.beginning_of_day..Time.current
       when "30d" then 30.days.ago.beginning_of_day..Time.current
       when "90d" then 90.days.ago.beginning_of_day..Time.current
       else
@@ -144,20 +149,4 @@ module AdminPanel
       ]
     end
   end
-  def index
-  # Group orders by day (last 30 days)
-  @orders_by_day = Order.where(created_at: 30.days.ago..Time.current)
-                        .group_by_day(:created_at)
-                        .count
-
-  # Group revenue by day
-  @revenue_by_day = Order.where(created_at: 30.days.ago..Time.current)
-                         .group_by_day(:created_at)
-                         .sum(:total_price)
-
-  # Group users by day
-  @new_users_by_day = User.where(created_at: 30.days.ago..Time.current)
-                          .group_by_day(:created_at)
-                          .count
-end
 end

@@ -1,75 +1,304 @@
+<% content_for :title, "Payments | LuxeCart Admin" %>
 
+<main class="px-4 py-10 min-h-screen" style="background: linear-gradient(100deg, #e0e7ff 60%, #f3e8ff 100%);">
+  <div class="max-w-full mx-auto">  <!-- ✅ CHANGED: max-w-7xl to max-w-full -->
 
-<main class="px-4 py-8">
-  <div class="max-w-6xl mx-auto">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+    <% 
+      total_orders = @orders.size
+      paid_count = @orders.count { |o| o.payment_status.to_s == "paid" }
+      pending_count = @orders.count { |o| o.payment_status.to_s == "pending" }
+      failed_count = @orders.count { |o| o.payment_status.to_s == "failed" }
+      total_revenue = @orders.select { |o| o.payment_status.to_s == "paid" }.sum(&:total_price)
+      stripe_payments = @orders.count { |o| o.payment_method.to_s == "stripe" }
+    %>
+
+    <!-- HEADER -->
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
       <div>
-        <h1 class="text-3xl font-extrabold text-black tracking-tight">Payments</h1>
-        <p class="text-sm text-slate-300 mt-1">View payment status for orders</p>
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-xs font-bold text-white mb-4 shadow-lg">
+          <span class="h-2 w-2 rounded-full bg-white animate-pulse"></span>
+          Financial Management
+        </div>
+        <h1 class="text-5xl font-extrabold text-indigo-900 mb-2 tracking-tight drop-shadow-sm">Payments & Transactions</h1>
+        <p class="text-lg text-purple-700 mb-3 font-semibold">Monitor payments, revenue, and transaction status</p>
       </div>
+      <div class="flex items-center gap-3">
+        <%= link_to admin_dashboard_path,
+              class: "px-6 py-3 rounded-xl bg-white/90 backdrop-blur-sm text-indigo-700 text-sm font-bold shadow-lg hover:shadow-xl hover:bg-white transition-all duration-200 flex items-center gap-2 border border-indigo-200" do %>
+          <i class="fas fa-arrow-left"></i> Back
+        <% end %>
+      </div>
+    </div>
 
-      <%= link_to admin_dashboard_path,
-            class: "px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-semibold text-black" do %>
-        <i class="fas fa-arrow-left mr-2"></i> Back
+    <!-- STATS CARDS -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+      <% stats = [
+        ["Total Revenue", number_to_currency(total_revenue), "from-emerald-500 to-green-600", "text-white", "fa-dollar-sign"],
+        ["Total Payments", total_orders, "from-indigo-500 to-indigo-600", "text-white", "fa-credit-card"],
+        ["Paid", paid_count, "from-emerald-400 to-teal-500", "text-white", "fa-check-circle"],
+        ["Pending", pending_count, "from-amber-400 to-yellow-500", "text-amber-900", "fa-clock"],
+        ["Failed", failed_count, "from-rose-500 to-red-600", "text-white", "fa-times-circle"],
+        ["Stripe", stripe_payments, "from-purple-500 to-fuchsia-600", "text-white", "fa-stripe-s"]
+      ] %>
+      <% stats.each do |label, value, gradient, text_color, icon| %>
+        <div class="rounded-2xl bg-gradient-to-br <%= gradient %> shadow-lg hover:shadow-xl transition-all duration-200 p-5 flex flex-col items-center justify-center <%= text_color %> transform hover:scale-105">
+          <i class="fab <%= icon %> text-2xl mb-2 opacity-90"></i>
+          <div class="text-xs font-bold uppercase tracking-wide opacity-90 mb-1 text-center"><%= label %></div>
+          <div class="text-2xl font-extrabold text-center"><%= value %></div>
+        </div>
       <% end %>
     </div>
 
-    <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+    <!-- REVENUE CHART CARD -->
+    <div class="rounded-2xl shadow-2xl border border-purple-200 overflow-hidden bg-white mb-8">
+      <div class="px-6 py-5 border-b border-purple-100 bg-gradient-to-r from-emerald-600 to-teal-600">
+        <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+          <i class="fa-solid fa-chart-line text-teal-200"></i> 
+          Revenue Overview
+        </h2>
+        <p class="text-sm text-emerald-100 mt-1">Track your earnings and payment trends</p>
+      </div>
+
+      <div class="p-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Today's Revenue -->
+          <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border-2 border-emerald-200 p-6">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-sm font-bold text-emerald-700">Today's Revenue</span>
+              <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white">
+                <i class="fas fa-calendar-day"></i>
+              </div>
+            </div>
+            <div class="text-3xl font-extrabold text-emerald-900">
+              <%= number_to_currency(@orders.select { |o| o.created_at.to_date == Date.today && o.payment_status.to_s == "paid" }.sum(&:total_price)) %>
+            </div>
+            <div class="text-xs text-emerald-600 mt-2">
+              <%= @orders.select { |o| o.created_at.to_date == Date.today && o.payment_status.to_s == "paid" }.size %> payments today
+            </div>
+          </div>
+
+          <!-- This Week -->
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border-2 border-blue-200 p-6">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-sm font-bold text-blue-700">This Week</span>
+              <div class="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center text-white">
+                <i class="fas fa-calendar-week"></i>
+              </div>
+            </div>
+            <div class="text-3xl font-extrabold text-blue-900">
+              <%= number_to_currency(@orders.select { |o| o.created_at > 1.week.ago && o.payment_status.to_s == "paid" }.sum(&:total_price)) %>
+            </div>
+            <div class="text-xs text-blue-600 mt-2">
+              <%= @orders.select { |o| o.created_at > 1.week.ago && o.payment_status.to_s == "paid" }.size %> payments this week
+            </div>
+          </div>
+
+          <!-- This Month -->
+          <div class="bg-gradient-to-br from-purple-50 to-fuchsia-50 rounded-2xl border-2 border-purple-200 p-6">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-sm font-bold text-purple-700">This Month</span>
+              <div class="w-10 h-10 rounded-xl bg-purple-500 flex items-center justify-center text-white">
+                <i class="fas fa-calendar"></i>
+              </div>
+            </div>
+            <div class="text-3xl font-extrabold text-purple-900">
+              <%= number_to_currency(@orders.select { |o| o.created_at > 1.month.ago && o.payment_status.to_s == "paid" }.sum(&:total_price)) %>
+            </div>
+            <div class="text-xs text-purple-600 mt-2">
+              <%= @orders.select { |o| o.created_at > 1.month.ago && o.payment_status.to_s == "paid" }.size %> payments this month
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYMENTS TABLE -->
+    <div class="rounded-2xl shadow-2xl border border-purple-200 overflow-hidden bg-white">
+      <div class="px-6 py-5 border-b border-purple-100 bg-gradient-to-r from-indigo-600 to-purple-600">
+        <h2 class="text-2xl font-bold text-white mb-1 flex items-center gap-3">
+          <i class="fa-solid fa-list text-purple-200"></i> 
+          All Transactions
+        </h2>
+        <p class="text-sm text-indigo-100">Complete payment history and status</p>
+      </div>
+
       <div class="overflow-x-auto">
         <table class="min-w-full text-sm">
-          <thead class="bg-white/5">
-            <tr class="text-left text-xs uppercase tracking-wider text-slate-300">
-              <th class="px-4 py-3">Order #</th>
-              <th class="px-4 py-3">Customer</th>
-              <th class="px-4 py-3">Method</th>
-              <th class="px-4 py-3">Payment Status</th>
-              <th class="px-4 py-3">Stripe Intent</th>
-              <th class="px-4 py-3 text-right">Action</th>
+          <thead class="bg-gradient-to-r from-indigo-50 to-purple-50">
+            <tr>
+              <th class="px-6 py-4 font-bold text-indigo-900 text-left">
+                <div class="flex items-center gap-2">
+                  <i class="fas fa-hashtag text-indigo-500"></i>
+                  Order #
+                </div>
+              </th>
+              <th class="px-6 py-4 font-bold text-indigo-900 text-left">
+                <div class="flex items-center gap-2">
+                  <i class="fas fa-user text-purple-500"></i>
+                  Customer
+                </div>
+              </th>
+              <th class="px-6 py-4 font-bold text-indigo-900 text-left">
+                <div class="flex items-center gap-2">
+                  <i class="fas fa-credit-card text-blue-500"></i>
+                  Payment Method
+                </div>
+              </th>
+              <th class="px-6 py-4 font-bold text-indigo-900 text-center">
+                <div class="flex items-center justify-center gap-2">
+                  <i class="fas fa-check-circle text-emerald-500"></i>
+                  Payment Status
+                </div>
+              </th>
+              <th class="px-6 py-4 font-bold text-indigo-900 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <i class="fas fa-dollar-sign text-emerald-600"></i>
+                  Amount
+                </div>
+              </th>
+              <th class="px-6 py-4 font-bold text-indigo-900 text-left">
+                <div class="flex items-center gap-2">
+                  <i class="fab fa-stripe text-purple-500"></i>
+                  Stripe ID
+                </div>
+              </th>
+              <th class="px-6 py-4 font-bold text-indigo-900 text-center">
+                <div class="flex items-center justify-center gap-2">
+                  <i class="fas fa-calendar text-indigo-500"></i>
+                  Date
+                </div>
+              </th>
+              <th class="px-6 py-4 font-bold text-indigo-900 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <i class="fas fa-cog text-rose-500"></i>
+                  Action
+                </div>
+              </th>
             </tr>
           </thead>
 
-          <tbody class="divide-y divide-white/5">
+          <tbody class="divide-y divide-purple-50">
             <% if @orders.blank? %>
               <tr>
-                <td colspan="6" class="px-4 py-10 text-center text-slate-300">No payments found.</td>
+                <td colspan="8" class="px-6 py-16 text-center">
+                  <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                    <i class="fas fa-wallet text-4xl text-indigo-400"></i>
+                  </div>
+                  <h3 class="text-lg font-bold text-indigo-900 mb-2">No Payments Yet</h3>
+                  <p class="text-sm text-slate-600">Payment transactions will appear here</p>
+                </td>
               </tr>
             <% else %>
-              <% @orders.each do |o| %>
-                <tr class="hover:bg-white/5">
-                  <td class="px-4 py-4 font-semibold text-white">
-                    <%= o.respond_to?(:order_number) ? (o.order_number.presence || o.id) : o.id %>
-                  </td>
-
-                  <td class="px-4 py-4 text-slate-200">
-                    <%= o.user&.full_name.presence || o.shipping_full_name.presence || "—" %>
-                  </td>
-
-                  <td class="px-4 py-4 text-slate-200">
-                    <%= o.respond_to?(:payment_method) ? (o.payment_method.presence || "—") : "—" %>
-                  </td>
-
-                  <td class="px-4 py-4">
-                    <% status = (o.respond_to?(:payment_status) ? o.payment_status.to_s : "unknown") %>
-                    <% badge =
-                      case status
-                      when "paid" then "bg-emerald-500/20 text-emerald-200"
-                      when "failed" then "bg-red-500/20 text-red-200"
-                      else "bg-white/10 text-slate-200"
-                      end
-                    %>
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold <%= badge %>">
-                      <%= status.presence || "unknown" %>
+              <% @orders.each_with_index do |order, index| %>
+                <tr class="hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-150 <%= 'bg-indigo-25' if index.even? %>">
+                  <!-- Order Number -->
+                  <td class="px-6 py-5 text-indigo-900 font-bold">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-100 rounded-lg">
+                      <i class="fas fa-receipt text-indigo-600 text-xs"></i>
+                      <%= order.order_number.presence || "##{order.id}" %>
                     </span>
                   </td>
 
-                  <td class="px-4 py-4 text-slate-200">
-                    <%= o.respond_to?(:stripe_payment_intent_id) ? (o.stripe_payment_intent_id.presence || "—") : "—" %>
+                  <!-- Customer -->
+                  <td class="px-6 py-5">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold shadow-md">
+                        <%= (order.user&.email&.first || order.shipping_full_name&.first || 'U').upcase %>
+                      </div>
+                      <div>
+                        <div class="font-bold text-indigo-900">
+                          <%= order.user&.full_name.presence || order.shipping_full_name.presence || "Guest" %>
+                        </div>
+                        <div class="text-xs text-indigo-600">
+                          <%= order.user&.email || "—" %>
+                        </div>
+                      </div>
+                    </div>
                   </td>
 
-                  <td class="px-4 py-4 text-right whitespace-nowrap">
-                    <%= link_to "View",
-                          admin_payment_path(o),
-                          class: "text-indigo-300 hover:text-indigo-200 font-semibold" %>
+                  <!-- Payment Method -->
+                  <td class="px-6 py-5">
+                    <% method = order.payment_method.to_s.presence || "unknown" %>
+                    <% if method == "stripe" %>
+                      <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg font-semibold">
+                        <i class="fab fa-stripe text-lg"></i>
+                        Stripe
+                      </span>
+                    <% elsif method == "paypal" %>
+                      <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg font-semibold">
+                        <i class="fab fa-paypal"></i>
+                        PayPal
+                      </span>
+                    <% elsif method == "cod" %>
+                      <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-100 text-amber-700 rounded-lg font-semibold">
+                        <i class="fas fa-money-bill-wave"></i>
+                        Cash on Delivery
+                      </span>
+                    <% else %>
+                      <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg font-semibold">
+                        <i class="fas fa-question"></i>
+                        <%= method.capitalize %>
+                      </span>
+                    <% end %>
+                  </td>
+
+                  <!-- Payment Status -->
+                  <td class="px-6 py-5 text-center">
+                    <% status = order.payment_status.to_s %>
+                    <% if status == "paid" %>
+                      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-md">
+                        <i class="fa-solid fa-check-circle"></i> Paid
+                      </span>
+                    <% elsif status == "pending" %>
+                      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-amber-400 to-yellow-500 text-amber-900 shadow-md animate-pulse">
+                        <i class="fa-solid fa-clock"></i> Pending
+                      </span>
+                    <% elsif status == "failed" %>
+                      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-rose-500 to-red-600 text-white shadow-md">
+                        <i class="fa-solid fa-times-circle"></i> Failed
+                      </span>
+                    <% else %>
+                      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-md">
+                        <i class="fa-solid fa-info-circle"></i> <%= status.capitalize %>
+                      </span>
+                    <% end %>
+                  </td>
+
+                  <!-- Amount -->
+                  <td class="px-6 py-5 text-right">
+                    <div class="text-2xl font-extrabold text-emerald-700">
+                      <%= number_to_currency(order.total_price) %>
+                    </div>
+                  </td>
+
+                  <!-- Stripe Intent ID -->
+                  <td class="px-6 py-5">
+                    <% if order.stripe_payment_intent_id.present? %>
+                      <code class="px-2 py-1 bg-purple-50 text-purple-700 rounded text-xs font-mono">
+                        <%= truncate(order.stripe_payment_intent_id, length: 20) %>
+                      </code>
+                    <% else %>
+                      <span class="text-slate-400">—</span>
+                    <% end %>
+                  </td>
+
+                  <!-- Date -->
+                  <td class="px-6 py-5 text-center">
+                    <div class="text-sm font-semibold text-indigo-900">
+                      <%= order.created_at.strftime("%b %d, %Y") %>
+                    </div>
+                    <div class="text-xs text-slate-500">
+                      <%= order.created_at.strftime("%I:%M %p") %>
+                    </div>
+                  </td>
+
+                  <!-- Actions -->
+                  <td class="px-6 py-5 text-right">
+                    <%= link_to admin_payment_path(order),
+                          class: "inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold shadow-md hover:shadow-lg transition-all duration-200" do %>
+                      <i class="fas fa-eye"></i>
+                      View
+                    <% end %>
                   </td>
                 </tr>
               <% end %>
@@ -78,5 +307,6 @@
         </table>
       </div>
     </div>
+
   </div>
 </main>

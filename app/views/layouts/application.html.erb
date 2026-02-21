@@ -13,9 +13,8 @@
     <link rel="manifest" href="/favicons/manifest.json">
     <link rel="shortcut icon" href="/favicon.ico">
     <meta name="theme-color" content="#4f46e5">
-   
 
-    <!-- Tailwind via CDN (no local /assets/tailwindcss/* files) -->
+    <!-- Tailwind via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Alpine.js -->
@@ -24,20 +23,23 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Rails Assets (application.css & application.js from the asset pipeline) -->
+    <!-- CSS -->
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+
+    <!-- IMPORTANT:
+         Use ONE JS system. In Rails 7 + importmap, prefer importmap.
+         Do NOT also include javascript_include_tag "application" here. -->
     <%= javascript_importmap_tags %>
+
+    <!-- Chart.js + Chartkick (Chart.js must load BEFORE Chartkick) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartkick@5.2.1/dist/chartkick.min.js" defer></script>
 
     <!-- Current user flag for JS -->
     <script>
       window.currentUserLoggedIn = <%= !!current_user ? 'true' : 'false' %>;
     </script>
 
-
-
-
-    
     <style>
       .animate-fade-in { animation: fadeIn .5s cubic-bezier(.4,0,.2,1); }
       @keyframes fadeIn {
@@ -119,7 +121,6 @@
                 <span class="sr-only">Profile</span>
               <% end %>
 
-              <%# Desktop Logout: direct Devise sign-out (no modal) %>
               <%= link_to "Logout",
                           destroy_user_session_path,
                           data: { turbo_method: :delete },
@@ -163,7 +164,6 @@
               <span>Profile</span>
             <% end %>
 
-            <%# Mobile Logout: Devise sign-out link %>
             <%= link_to "Logout",
                         destroy_user_session_path,
                         data: { turbo_method: :delete },
@@ -175,7 +175,7 @@
       </div>
     </nav>
 
-    <%# --- Logout Modal (optional, now unused by header links but safe to keep) --- %>
+    <%# --- Logout Modal (optional) --- %>
     <div id="logout-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
       <div class="bg-white p-6 rounded-lg shadow-lg text-center max-w-xs w-full">
         <div class="mb-4 text-lg font-semibold text-gray-800">Are you sure you want to logout?</div>
@@ -195,6 +195,26 @@
     </main>
 
     <%= render "shared/footer" %>
+
+    <!-- Chartkick redraw for Turbo navigation (fixes charts not showing / not refreshing) -->
+    <script>
+      function redrawChartkickCharts() {
+        if (!window.Chartkick) return;
+
+        try {
+          if (typeof Chartkick.eachChart === "function") {
+            Chartkick.eachChart(function(chart) {
+              if (chart && typeof chart.redraw === "function") chart.redraw();
+            });
+          }
+        } catch (e) {
+          // no-op
+        }
+      }
+
+      document.addEventListener("turbo:load", redrawChartkickCharts);
+      document.addEventListener("DOMContentLoaded", redrawChartkickCharts);
+    </script>
 
     <%# --- Add to Cart JS --- %>
     <script>
@@ -269,18 +289,14 @@
       document.addEventListener('turbo:load', attachAddToCartHandlers);
     </script>
 
-    <%# --- Logout modal JS (still works if you later re-hook a button to open it) --- %>
+    <%# --- Logout modal JS --- %>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        function showModal() {
-          document.getElementById('logout-modal').classList.remove('hidden');
-        }
         function hideModal() {
-          document.getElementById('logout-modal').classList.add('hidden');
+          document.getElementById('logout-modal')?.classList.add('hidden');
         }
 
         const cancelBtn = document.getElementById('cancel-logout');
-
         if (cancelBtn) cancelBtn.addEventListener('click', e => { e.preventDefault(); hideModal(); });
 
         document.addEventListener('keydown', e => {

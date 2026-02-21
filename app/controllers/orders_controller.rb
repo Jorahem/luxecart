@@ -70,6 +70,7 @@ class OrdersController < ApplicationController
   # Create an order from the session cart
   def create
     @order = current_user.orders.build(order_params)
+    @order.admin_seen = false if @order.respond_to?(:admin_seen)
 
     subtotal = 0.to_d
 
@@ -129,6 +130,8 @@ class OrdersController < ApplicationController
       format.html { redirect_to order_path(@order), notice: "Order placed successfully." }
       format.json { render json: { success: true, order_id: @order.id } }
     end
+  rescue ActionController::ParameterMissing => e
+    redirect_to new_order_path, alert: "Please fill in the checkout form before placing the order."
   rescue ActiveRecord::RecordInvalid => e
     flash.now[:alert] = e.message
     render :new, status: :unprocessable_entity
@@ -160,5 +163,4 @@ class OrdersController < ApplicationController
       :payment_method
     )
   end
-  @order = Order.new(order_params.merge(admin_seen: false))
 end
