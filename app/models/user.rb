@@ -1,6 +1,7 @@
 class User < ApplicationRecord
+  # Add :trackable so Devise updates sign_in_count, current_sign_in_at, etc.
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable, :trackable
 
   has_one_attached :profile_image
 

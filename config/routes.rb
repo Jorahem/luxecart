@@ -166,6 +166,14 @@ Rails.application.routes.draw do
     end
   end
 
+
+
+  namespace :admin do
+    resources :users, only: [:index, :show]
+  end
+
+
+
   # -------------------------
   # Health check
   # -------------------------
