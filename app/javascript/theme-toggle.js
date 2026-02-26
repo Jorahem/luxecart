@@ -1,7 +1,12 @@
-// app/javascript/theme-toggle.js
+// Improved theme-toggle for Turbo + importmap (frontend)
+// Initializes once, works on DOMContentLoaded and turbo:load, and guards against double handlers.
 console.log('theme-toggle.js loaded');
 
-document.addEventListener('DOMContentLoaded', function () {
+function initThemeToggle() {
+  // idempotent: avoid running twice
+  if (window.__luxecartThemeInitialized) return;
+  window.__luxecartThemeInitialized = true;
+
   var toggle = document.getElementById('theme-toggle');
   var darkIcon = document.getElementById('theme-toggle-dark-icon');
   var lightIcon = document.getElementById('theme-toggle-light-icon');
@@ -42,17 +47,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (!toggle) { console.log('theme-toggle button not found'); return; }
 
-  toggle.addEventListener('click', function () {
+  // Attach a single click handler (remove old if present)
+  if (toggle._themeClickHandler) {
+    toggle.removeEventListener('click', toggle._themeClickHandler);
+  }
+  toggle._themeClickHandler = function () {
     var nowDark = document.documentElement.classList.toggle('dark');
     applyTheme(nowDark);
-  });
+  };
+  toggle.addEventListener('click', toggle._themeClickHandler);
 
+  // Respond to OS changes when user hasn't explicitly set a preference
   try {
     var mq = window.matchMedia('(prefers-color-scheme: dark)');
     if (mq && mq.addEventListener) {
       mq.addEventListener('change', function (e) {
-        if (!localStorage.getItem('theme')) applyTheme(e.matches);
+        try {
+          if (!localStorage.getItem('theme')) applyTheme(e.matches);
+        } catch (err) { /* ignore */ }
       });
     }
-  } catch (err) { /* ignore */ }
-});
+  } catch (err) { /* ignore older browsers */ }
+}
+
+// Run on initial load and on Turbo visits (frontend)
+document.addEventListener('DOMContentLoaded', initThemeToggle);
+document.addEventListener('turbo:load', initThemeToggle);
