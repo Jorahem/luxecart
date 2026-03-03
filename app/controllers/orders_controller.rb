@@ -126,6 +126,14 @@ class OrdersController < ApplicationController
       session[:cart] = {}
     end
 
+    # === NEW: send order confirmation email ===
+    begin
+      OrderMailer.order_confirmation(@order).deliver_later
+    rescue => e
+      Rails.logger.error "Order confirmation email failed: #{e.class} - #{e.message}"
+    end
+    # ========================================
+
     respond_to do |format|
       format.html { redirect_to order_path(@order), notice: "Order placed successfully." }
       format.json { render json: { success: true, order_id: @order.id } }

@@ -6,19 +6,32 @@ class ApplicationController < ActionController::Base
   # Pundit: handle unauthorized access centrally
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
+  layout :resolve_layout
+
   protected
 
   # Permit extra Devise params (if you need this)
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name])
+    devise_parameter_sanitizer.permit(:sign_up,        keys: [:first_name, :last_name])
     devise_parameter_sanitizer.permit(:account_update, keys: [:first_name, :last_name])
   end
 
   # Called by Devise after a successful sign in.
-  # Set a friendly flash and then delegate to Devise's default path.
+  # Set a friendly flash, send login email, then delegate to Devise's default path.
   def after_sign_in_path_for(resource_or_scope)
-    name = display_name_for(resource_or_scope)
+    resource = resource_or_scope.is_a?(Symbol) ? current_user : resource_or_scope
+
+    name = display_name_for(resource)
     flash[:notice] = "Welcome back, #{name}!"
+
+    # Login notification email
+    begin
+      # Use deliver_now for simplicity; switch to deliver_later if Active Job is configured
+      UserMailer.login_notification(resource).deliver_now
+    rescue => e
+      Rails.logger.error "Login notification email failed: #{e.class} - #{e.message}"
+    end
+
     super
   end
 
@@ -30,6 +43,10 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def resolve_layout
+    self.class.name.start_with?("AdminPanel::") ? "admin_panel" : "application"
+  end
 
   # Helper to build a friendly name: prefer first_name, last_name, then email
   def display_name_for(resource)
@@ -71,14 +88,5 @@ class ApplicationController < ActionController::Base
   def user_not_authorized
     flash[:alert] = "You are not authorized to perform this action."
     redirect_back(fallback_location: root_path)
-  end
-
-
-    layout :resolve_layout
-
-  private
-
-  def resolve_layout
-    self.class.name.start_with?("AdminPanel::") ? "admin_panel" : "application"
   end
 end

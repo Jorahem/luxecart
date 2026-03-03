@@ -85,6 +85,15 @@ class CheckoutController < ApplicationController
         @order.update(payment_status: :paid, status: :processing)
         # Clear the session cart (the one the cart page uses)
         session[:cart] = {}
+
+        # === NEW: send order confirmation email ===
+        begin
+          OrderMailer.order_confirmation(@order).deliver_later
+        rescue => e
+          Rails.logger.error "Order confirmation email failed: #{e.class} - #{e.message}"
+        end
+        # ========================================
+
         redirect_to order_path(@order), notice: "Order placed successfully!"
       else
         @order.update(payment_status: :failed)

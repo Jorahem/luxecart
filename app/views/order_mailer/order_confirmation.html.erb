@@ -1,0 +1,33 @@
+<p>Hello <%= @user&.email || "customer" %>,</p>
+
+<p>Thank you for your order at <strong>LuxeCart</strong>!</p>
+
+<p>
+  Order number:
+  <strong><%= @order.order_number.presence || @order.id %></strong><br>
+  Placed at: <%= l(@order.created_at, format: :long) rescue @order.created_at.to_s %>
+</p>
+
+<h3>Items</h3>
+<ul>
+  <% @order.order_items.each do |item| %>
+    <li>
+      <strong><%= item.product_name %></strong>
+      – Qty: <%= item.quantity %>,
+      Unit price: <%= number_to_currency(item.unit_price) rescue item.unit_price %>,
+      Line total: <%= number_to_currency(item.total_price) rescue item.total_price %>
+    </li>
+  <% end %>
+</ul>
+
+<p>
+  Subtotal: <%= number_to_currency(@order.subtotal) rescue @order.subtotal %><br>
+  Shipping: <%= number_to_currency(@order.shipping_cost) rescue @order.shipping_cost %><br>
+  Tax: <%= number_to_currency(@order.tax || @order.tax_amount) rescue (@order.tax || @order.tax_amount) %><br>
+  <strong>Total: <%= number_to_currency(@order.total_price) rescue @order.total_price %></strong>
+</p>
+
+<p>We will notify you when your order ships.</p>
+
+<p>Thank you,<br>
+The LuxeCart team</p>

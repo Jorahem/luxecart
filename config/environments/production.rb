@@ -68,10 +68,28 @@ Rails.application.configure do
   # config.cache_store = :mem_cache_store
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
-  # config.active_job.queue_adapter = :resque
+  # config.active_job.queue_adapter = :async
   # config.active_job.queue_name_prefix = "luxecart_production"
 
   config.action_mailer.perform_caching = false
+
+  # === NEW: mailer URL + SMTP settings (for login + order emails) ===
+  config.action_mailer.default_url_options = {
+    host: ENV.fetch("APP_HOST", "example.com"),
+    protocol: "https"
+  }
+
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address:              ENV.fetch("SMTP_ADDRESS", "smtp.gmail.com"),
+    port:                 ENV.fetch("SMTP_PORT", 587).to_i,
+    domain:               ENV.fetch("SMTP_DOMAIN", "example.com"),
+    user_name:            ENV["SMTP_USERNAME"], # e.g. your Gmail or SMTP user
+    password:             ENV["SMTP_PASSWORD"], # app password / SMTP password
+    authentication:       :plain,
+    enable_starttls_auto: true
+  }
+  # ================================================================
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

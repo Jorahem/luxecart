@@ -51,7 +51,16 @@
       /* Theme toggle / login z-index helpers:
          - theme toggle gets a low stacking context so it won't cover login/profile elements
          - nav-login ensures login/profile are above the toggle if overlap happens */
-      .theme-toggle-btn { padding: 6px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; position: relative; z-index: 0; }
+      .theme-toggle-btn {
+        padding: 6px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 0;
+      }
       .theme-toggle-btn svg { width: 20px; height: 20px; }
       .nav-login { position: relative; z-index: 20; }
     </style>
@@ -93,8 +102,12 @@
             aria-expanded="false"
           >
             <span class="sr-only">Open main menu</span>
-            <svg class="h-6 w-6" x-show="!open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
-            <svg class="h-6 w-6" x-show="open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            <svg class="h-6 w-6" x-show="!open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <svg class="h-6 w-6" x-show="open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
 
           <!-- Desktop nav links -->
@@ -396,7 +409,5 @@
         }, 5000);
       });
     </script>
-
-    
   </body>
 </html>
