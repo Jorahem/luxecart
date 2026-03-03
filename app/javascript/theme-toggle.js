@@ -16,7 +16,7 @@ console.log('theme-toggle.js loaded');
       ['theme-toggle-dark-icon', 'theme-toggle-light-icon'],
       ['theme-toggle-dark-icon-mobile', 'theme-toggle-light-icon-mobile']
     ];
-    ids.forEach(function(pair) {
+    ids.forEach(function (pair) {
       var darkId = pair[0], lightId = pair[1];
       var darkIcon = document.getElementById(darkId);
       var lightIcon = document.getElementById(lightId);
@@ -30,11 +30,11 @@ console.log('theme-toggle.js loaded');
       var metaThemeColor = document.querySelector('meta[name="theme-color"]');
       if (isDark) {
         document.documentElement.classList.add('dark');
-        try { localStorage.setItem('theme', 'dark'); } catch(e) {}
+        try { localStorage.setItem('theme', 'dark'); } catch (e) {}
         if (metaThemeColor) metaThemeColor.setAttribute('content', '#0f172a');
       } else {
         document.documentElement.classList.remove('dark');
-        try { localStorage.setItem('theme', 'light'); } catch(e) {}
+        try { localStorage.setItem('theme', 'light'); } catch (e) {}
         if (metaThemeColor) metaThemeColor.setAttribute('content', '#ffffff');
       }
       updateIcons(isDark);
@@ -46,10 +46,10 @@ console.log('theme-toggle.js loaded');
   function findAndBindExplicit() {
     // Try to find specific toggles and attach direct handlers (if not already bound)
     var nodes = document.querySelectorAll(TOGGLE_SELECTORS);
-    nodes.forEach(function(node) {
+    nodes.forEach(function (node) {
       if (node.dataset.luxecartBound === 'true') return;
-      node.addEventListener('click', function (e) {
-        // Allow normal event bubbling; we only toggle theme
+      node.addEventListener('click', function (_e) {
+        // We toggle theme and let bubbling continue if needed
         var nowDark = document.documentElement.classList.toggle('dark');
         applyTheme(nowDark);
       });
@@ -63,6 +63,7 @@ console.log('theme-toggle.js loaded');
 
   function init() {
     if (window.__luxecart_theme_init_done) {
+      // If already initialized, just sync icons with current theme
       updateIcons(document.documentElement.classList.contains('dark'));
       return;
     }
@@ -73,11 +74,14 @@ console.log('theme-toggle.js loaded');
     try {
       var saved = null;
       try { saved = localStorage.getItem('theme'); } catch (e) {}
-      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (saved === 'dark') applyTheme(true);
+      var prefersDark = window.matchMedia &&
+                        window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark')       applyTheme(true);
       else if (saved === 'light') applyTheme(false);
-      else applyTheme(prefersDark);
-    } catch (e) { /* ignore storage errors */ }
+      else                        applyTheme(prefersDark);
+    } catch (e) {
+      // ignore storage errors
+    }
 
     // Direct binding (best-effort)
     findAndBindExplicit();
@@ -86,8 +90,7 @@ console.log('theme-toggle.js loaded');
     document.addEventListener('click', function (e) {
       var toggle = e.target.closest(TOGGLE_SELECTORS);
       if (!toggle) return;
-      // If element already handled by explicit binding, that handler will run too;
-      // toggling twice is possible if both handlers run — to avoid double toggle, short-circuit here
+      // If element already handled by explicit binding, skip to avoid double toggle
       if (toggle.dataset.luxecartBound === 'true') return;
       var nowDark = document.documentElement.classList.toggle('dark');
       applyTheme(nowDark);
@@ -95,8 +98,7 @@ console.log('theme-toggle.js loaded');
 
     // Observe DOM insertions to re-run explicit binding if the nav is re-rendered
     try {
-      var observer = new MutationObserver(function (mutations) {
-        // If navbar/toggle elements are added later, bind them
+      var observer = new MutationObserver(function () {
         if (document.querySelector(TOGGLE_SELECTORS)) {
           findAndBindExplicit();
         }
@@ -106,17 +108,21 @@ console.log('theme-toggle.js loaded');
       // ignore if MutationObserver is not available
     }
 
-    // react to OS-level changes only if user hasn't explicitly set a preference
+    // React to OS-level changes only if user hasn't explicitly set a preference
     try {
       var mq = window.matchMedia('(prefers-color-scheme: dark)');
       if (mq && mq.addEventListener) {
         mq.addEventListener('change', function (e) {
           try {
             if (!localStorage.getItem('theme')) applyTheme(e.matches);
-          } catch (err) { /* ignore */ }
+          } catch (err) {
+            // ignore
+          }
         });
       }
-    } catch (err) { /* ignore */ }
+    } catch (err) {
+      // ignore
+    }
   }
 
   // Run init on DOMContentLoaded and Turbo navigation
