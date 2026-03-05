@@ -36,23 +36,22 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
-  # --- MAILER CONFIG FOR DEVELOPMENT (NEW) ---
+  # --- MAILER CONFIG FOR DEVELOPMENT (MAILTRAP) ---
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.perform_caching       = false
 
   # URLs used in mailer links in dev
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 
-  # Send via Gmail SMTP (or any SMTP provider) in development
+  # Send via Mailtrap SMTP in development
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address:              "smtp.gmail.com",
-    port:                 587,
-    domain:               "gmail.com",
-    user_name:            ENV["SMTP_USERNAME"],
-    password:             ENV["SMTP_PASSWORD"], # Gmail App Password
-    authentication:       :plain,
-    enable_starttls_auto: true
+    user_name: '4d33a6da80597d',        # your Mailtrap "Username"
+    password:  'YOUR_FULL_PASSWORD',    # your Mailtrap "Password" (full value, not ****fb00)
+    address:   'sandbox.smtp.mailtrap.io',
+    host:      'sandbox.smtp.mailtrap.io',
+    port:      '2525',
+    authentication: :login
   }
   # -------------------------------------------
 
