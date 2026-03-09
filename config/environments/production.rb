@@ -16,11 +16,32 @@ Rails.application.configure do
   config.consider_all_requests_local = false
   config.action_controller.perform_caching = true
 
+  # ==========================
+  # CACHING FOR LOAD MANAGEMENT
+  # ==========================
+  # Use Redis (or similar) as a real cache store in production.
+  # Make sure REDIS_URL is set in ENV, e.g.
+  # REDIS_URL=redis://your-redis-host:6379/1
+  config.cache_store = :redis_cache_store, {
+    url: ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" },
+    namespace: "luxecart:cache"
+  }
+
+  # (Optional but recommended) If Rails is serving static files (e.g. in Docker),
+  # you can turn this on and add cache headers so assets are cached by proxies/CDN.
+  # If NGINX/Apache/CDN serves assets directly, you can leave it commented.
+  #
+  # config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
+  # config.public_file_server.headers = {
+  #   "Cache-Control" => "public, max-age=31536000"
+  # }
+
   # Ensures that a master key has been made available in ENV["RAILS_MASTER_KEY"], config/master.key, or an environment
   # key such as config/credentials/production.key. This key is used to decrypt credentials (and other encrypted files).
   # config.require_master_key = true
 
   # Disable serving static files from `public/`, relying on NGINX/Apache to do so instead.
+  # If you are using NGINX/Apache/CDN for assets, keep this commented.
   # config.public_file_server.enabled = false
 
   # Compress CSS using a preprocessor.
@@ -65,6 +86,7 @@ Rails.application.configure do
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
 
   # Use a different cache store in production.
+  # (now using Redis above)
   # config.cache_store = :mem_cache_store
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
@@ -73,7 +95,7 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
-  # === NEW: mailer URL + SMTP settings (for login + order emails) ===
+  # === mailer URL + SMTP settings (for login + order emails) ===
   config.action_mailer.default_url_options = {
     host: ENV.fetch("APP_HOST", "example.com"),
     protocol: "https"

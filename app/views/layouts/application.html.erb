@@ -285,7 +285,94 @@
 
     <%= render "shared/footer" %>
 
-    <!-- Chartkick redraw for Turbo navigation (fixes charts not showing / not refreshing) -->
+    <!-- LuxeCart AI Chat Widget -->
+    <div id="luxecart-chat-widget"
+         style="position: fixed;
+                bottom: 80px;
+                right: 24px;
+                width: 340px;
+                max-width: 90vw;
+                height: 420px;
+                background: #ffffff;
+                border-radius: 16px;
+                box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
+                display: none;
+                flex-direction: column;
+                overflow: hidden;
+                z-index: 9999;
+                border: 1px solid #e5e7eb;">
+
+      <!-- Header -->
+      <div style="display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  padding: 10px 14px;
+                  background: linear-gradient(135deg, #4f46e5, #6366f1);
+                  color: #ffffff;">
+        <div>
+          <div style="font-weight: 600; font-size: 14px;">LuxeCart live assistant</div>
+          <div style="font-size: 11px; opacity: 0.9;">Ask anything about products, orders or sizing.</div>
+        </div>
+        <button type="button"
+                id="luxecart-chat-close"
+                style="background: transparent;
+                       border: none;
+                       color: #fff;
+                       cursor: pointer;
+                       font-size: 16px;
+                       line-height: 1;">
+          ×
+        </button>
+      </div>
+
+      <!-- Messages -->
+      <div id="luxecart-chat-messages"
+           style="flex: 1;
+                  padding: 10px 12px;
+                  overflow-y: auto;
+                  background: #f9fafb;
+                  font-size: 13px;">
+        <div style="margin-bottom: 8px;">
+          <div style="display: inline-block;
+                      padding: 8px 10px;
+                      border-radius: 14px;
+                      background: #eef2ff;
+                      color: #111827;">
+            👋 Hi! I’m the LuxeCart assistant. Ask me about products, orders, or anything else.
+          </div>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <form id="luxecart-chat-form"
+            style="border-top: 1px solid #e5e7eb;
+                   padding: 8px;
+                   display: flex;
+                   gap: 6px;
+                   background: #ffffff;">
+        <input type="text"
+               id="luxecart-chat-input"
+               placeholder="Type your question…"
+               autocomplete="off"
+               style="flex: 1;
+                      border-radius: 9999px;
+                      border: 1px solid #d1d5db;
+                      padding: 6px 10px;
+                      font-size: 13px;">
+        <button type="submit"
+                style="border-radius: 9999px;
+                       border: none;
+                       background: #4f46e5;
+                       color: #ffffff;
+                       padding: 6px 12px;
+                       font-size: 13px;
+                       cursor: pointer;">
+          Send
+        </button>
+      </form>
+    </div>
+
+    <!-- Chartkick redraw for Turbo navigation -->
     <script>
       function redrawChartkickCharts() {
         if (!window.Chartkick) return;
@@ -408,6 +495,127 @@
           toastDiv.style.transform = 'translateY(-24px)';
         }, 5000);
       });
+    </script>
+
+    <%# --- LuxeCart AI Chat JS (UPDATED to call /chat) --- %>
+    <script>
+      function setupLuxecartChat() {
+        const openBtn   = document.getElementById("luxecart-start-live-chat");
+        const widget    = document.getElementById("luxecart-chat-widget");
+        const closeBtn  = document.getElementById("luxecart-chat-close");
+        const form      = document.getElementById("luxecart-chat-form");
+        const input     = document.getElementById("luxecart-chat-input");
+        const messages  = document.getElementById("luxecart-chat-messages");
+
+        if (!widget) return;
+
+        if (openBtn) {
+          openBtn.addEventListener("click", () => {
+            widget.style.display = "flex";
+            if (input) input.focus();
+          });
+        }
+
+        if (closeBtn) {
+          closeBtn.addEventListener("click", () => {
+            widget.style.display = "none";
+          });
+        }
+
+        if (form && input && messages) {
+          form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const text = input.value.trim();
+            if (!text) return;
+
+            addChatBubble(messages, text, "user");
+            input.value = "";
+
+            addChatBubble(messages, "Thinking…", "bot", { temp: true });
+
+            try {
+              const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+
+              const res = await fetch("/chat", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Accept": "application/json",
+                  "X-CSRF-Token": csrf
+                },
+                credentials: "same-origin",
+                body: JSON.stringify({ message: text })
+              });
+
+              removeLastTempBotBubble(messages);
+
+              if (!res.ok) {
+                addChatBubble(
+                  messages,
+                  "Sorry, I’m having trouble replying right now. Please try again in a moment.",
+                  "bot"
+                );
+                return;
+              }
+
+              const data = await res.json();
+              if (data.reply) {
+                addChatBubble(messages, data.reply, "bot");
+              } else {
+                addChatBubble(
+                  messages,
+                  "I didn't get a clear reply from the server, but I'm here to help with orders, products, and sizing.",
+                  "bot"
+                );
+              }
+            } catch (err) {
+              removeLastTempBotBubble(messages);
+              addChatBubble(
+                messages,
+                "Network error while contacting the assistant. Please check your connection and try again.",
+                "bot"
+              );
+            }
+          });
+        }
+      }
+
+      function addChatBubble(container, text, role = "bot", options = {}) {
+        const wrapper = document.createElement("div");
+        wrapper.style.marginBottom = "8px";
+        wrapper.dataset.role = role;
+        if (options.temp) wrapper.dataset.temp = "true";
+
+        const bubble = document.createElement("div");
+        bubble.textContent = text;
+        bubble.style.display = "inline-block";
+        bubble.style.padding = "8px 10px";
+        bubble.style.borderRadius = "14px";
+        bubble.style.maxWidth = "85%";
+        bubble.style.wordBreak = "break-word";
+
+        if (role === "user") {
+          wrapper.style.textAlign = "right";
+          bubble.style.background = "#4f46e5";
+          bubble.style.color = "#ffffff";
+        } else {
+          bubble.style.background = "#e5e7eb";
+          bubble.style.color = "#111827";
+        }
+
+        wrapper.appendChild(bubble);
+        container.appendChild(wrapper);
+        container.scrollTop = container.scrollHeight;
+      }
+
+      function removeLastTempBotBubble(container) {
+        const nodes = Array.from(container.querySelectorAll("[data-temp='true'][data-role='bot']"));
+        const last = nodes[nodes.length - 1];
+        if (last) last.remove();
+      }
+
+      document.addEventListener("turbo:load", setupLuxecartChat);
+      document.addEventListener("DOMContentLoaded", setupLuxecartChat);
     </script>
   </body>
 </html>

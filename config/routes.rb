@@ -171,7 +171,7 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :users, only: [:index, :show]
   end
-
+post "/chat", to: "chat#create"
 
 
   # -------------------------
