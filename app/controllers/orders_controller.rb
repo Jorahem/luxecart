@@ -3,7 +3,28 @@ class OrdersController < ApplicationController
   before_action :load_session_cart
   before_action :ensure_cart_not_empty, only: [:new, :create]
 
-  # Show checkout/order summary page
+
+
+
+def index
+    # Order history for the current user, newest first
+    @orders = current_user.orders
+                          .includes(:order_items, :address)
+                          .order(created_at: :desc)
+  end
+
+  def show
+    @order = current_user.orders
+                         .includes(:order_items, :address)
+                         .find(params[:id])
+  end
+
+
+
+
+
+
+
   def new
     @order = Order.new
     @summary_items = []
@@ -31,7 +52,7 @@ class OrdersController < ApplicationController
     end
   end
 
-  # List current user's orders
+  
   def index
     @orders = current_user.orders.order(created_at: :desc)
   end

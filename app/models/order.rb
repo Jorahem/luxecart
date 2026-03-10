@@ -19,7 +19,7 @@ class Order < ApplicationRecord
   }
 
   # -----------------------------
-  # Tracking History (NEW)
+  # Tracking History (existing)
   # -----------------------------
   has_many :order_tracking_events, dependent: :destroy
 
@@ -67,6 +67,18 @@ class Order < ApplicationRecord
     delivered? && !received?
   end
 
+  # --- Order history helpers (NEW) ---
+
+  # Total order amount, based on associated order_items.
+  # Adjust :price / :price_cents to match your schema.
+  def total_amount
+    if order_items.column_names.include?("price_cents")
+      order_items.sum("quantity * price_cents") / 100.0
+    else
+      order_items.sum("quantity * price")
+    end
+  end
+
   private
 
   # Create first event for newly created orders
@@ -89,12 +101,12 @@ class Order < ApplicationRecord
 
     msg =
       case new_status
-      when "pending" then "Order placed"
-      when "paid" then "Payment confirmed"
+      when "pending"   then "Order placed"
+      when "paid"      then "Payment confirmed"
       when "processing" then "Order is being processed"
-      when "shipped" then "Order shipped"
+      when "shipped"   then "Order shipped"
       when "delivered" then "Order delivered"
-      when "received" then "Customer marked order as received"
+      when "received"  then "Customer marked order as received"
       when "cancelled" then "Order cancelled"
       else "Status updated to #{new_status}"
       end
@@ -110,8 +122,9 @@ class Order < ApplicationRecord
   end
 
   after_initialize do
-  self.admin_seen = false if self.admin_seen.nil?
-end
+    self.admin_seen = false if self.admin_seen.nil?
+  end
+
   # Generates a reasonably human-friendly and unique order number.
   # Format example: ORD20260117-4f3c9a8b
   def generate_order_number

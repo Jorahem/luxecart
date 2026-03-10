@@ -52,28 +52,47 @@
                 %>
 
                 <tr class="hover:bg-white/5">
+                  <!-- Order number -->
                   <td class="px-4 py-4 text-white font-semibold">
                     <%= o.order_number.presence || "##{o.id}" %>
                   </td>
 
+                  <!-- Status pill -->
                   <td class="px-4 py-4">
                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold" style="<%= status_style %>">
                       <%= status.humanize %>
                     </span>
                   </td>
 
+                  <!-- Tracking number (optional) -->
                   <td class="px-4 py-4 text-slate-200 font-semibold">
-                    <%= o.tracking_number.presence || "—" %>
+                    <%= o.respond_to?(:tracking_number) && o.tracking_number.present? ? o.tracking_number : "—" %>
                   </td>
 
+                  <!-- Total amount -->
                   <td class="px-4 py-4 text-slate-200">
-                    <%= number_to_currency(o.total_price) rescue o.total_price %>
+                    <% total =
+                      if o.respond_to?(:total_amount)
+                        o.total_amount
+                      elsif o.respond_to?(:total_price)
+                        o.total_price
+                      else
+                        nil
+                      end %>
+
+                    <% if total.present? %>
+                      <%= number_to_currency(total) %>
+                    <% else %>
+                      —
+                    <% end %>
                   </td>
 
+                  <!-- Created date -->
                   <td class="px-4 py-4 text-slate-200">
-                    <%= o.created_at.strftime("%Y-%m-%d") rescue "—" %>
+                    <%= o.created_at.present? ? o.created_at.strftime("%Y-%m-%d") : "—" %>
                   </td>
 
+                  <!-- Track / details link -->
                   <td class="px-4 py-4 text-right">
                     <%= link_to "Track",
                           order_path(o),
