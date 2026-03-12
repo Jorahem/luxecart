@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_11_000100) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_12_152132) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
@@ -64,30 +64,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_11_000100) do
     t.index ["user_id"], name: "index_addresses_on_user_id"
   end
 
-  create_table "admin_activities", force: :cascade do |t|
-    t.bigint "admin_id", null: false
-    t.string "action", null: false
-    t.string "trackable_type"
-    t.bigint "trackable_id"
-    t.text "metadata"
-    t.string "ip_address"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["admin_id"], name: "index_admin_activities_on_admin_id"
-    t.index ["trackable_type", "trackable_id"], name: "index_admin_activities_on_trackable_type_and_trackable_id"
-  end
-
   create_table "admins", force: :cascade do |t|
     t.string "email", null: false
     t.string "password_digest", null: false
     t.string "role", default: "admin", null: false
     t.string "remember_token"
     t.datetime "remember_token_expires_at"
-    t.integer "failed_attempts", default: 0, null: false
-    t.boolean "locked", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_admins_on_email", unique: true
+    t.index ["remember_token"], name: "index_admins_on_remember_token"
   end
 
   create_table "brands", force: :cascade do |t|
@@ -356,7 +342,6 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_11_000100) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "users"
-  add_foreign_key "admin_activities", "admins"
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "products"
   add_foreign_key "carts", "users"

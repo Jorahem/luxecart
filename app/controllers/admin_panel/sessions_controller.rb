@@ -8,11 +8,12 @@ module AdminPanel
 
     def create
       admin = Admin.find_by(email: params[:email].to_s.downcase)
-      if admin&.authenticate(params[:password]) && !admin.locked?
+
+      if admin&.authenticate(params[:password])
         session[:admin_id] = admin.id
         redirect_to admin_dashboard_path, notice: "Welcome, #{admin.email}!"
       else
-        flash.now[:alert] = "Incorrect email or password, or account locked."
+        flash.now[:alert] = "Incorrect email or password."
         render :new, status: :unauthorized
       end
     end

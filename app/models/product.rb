@@ -16,6 +16,7 @@ class Product < ApplicationRecord
   # Likes association
   has_many :likes, dependent: :destroy
   has_many :likers, through: :likes, source: :user
+  has_many :liked_products, through: :likes, source: :product
 
   # Serialize tags (SQLite-safe) - Updated for Rails 7.1+
   serialize :tags, type: Array, coder: YAML
@@ -28,11 +29,11 @@ class Product < ApplicationRecord
   validates :stock_quantity, numericality: { greater_than_or_equal_to: 0, only_integer: true }
 
   # Scopes (based on REAL columns)
-  scope :featured, -> { where(featured: true) }
-  scope :in_stock, -> { where('stock_quantity > ?', 0) }
+  scope :featured,    -> { where(featured: true) }
+  scope :in_stock,    -> { where('stock_quantity > ?', 0) }
   scope :by_category, ->(category_id) { where(category_id: category_id) }
-  scope :by_brand, ->(brand_id) { where(brand_id: brand_id) }
-  scope :price_range, ->(min, max) { where(price: min..max) }
+  scope :by_brand,    ->(brand_id)    { where(brand_id: brand_id) }
+  scope :price_range, ->(min, max)    { where(price: min..max) }
 
   # Status enum (generates scopes like .active, .draft)
   enum status: { draft: 0, active: 1, archived: 2 }
@@ -50,9 +51,6 @@ class Product < ApplicationRecord
     name_changed? || super
   end
 
-
-    has_many :likes, dependent: :destroy
-
   # Simple recommendation by category and popularity
   def similar_products(limit: 8)
     scope = Product.where(category_id: category_id)
@@ -63,48 +61,40 @@ class Product < ApplicationRecord
     scope.limit(limit)
   end
 
-
-
-  before_save :update_search_vector
-
+  # Full-text & fuzzy search (these assume search_vector/name indexes exist;
+  # they will just act as WHERE filters; no callback needed)
   scope :full_text_search, ->(query) {
     return none if query.blank?
 
-    sanitized = ActiveRecord::Base.sanitize_sql_array(["plainto_tsquery('simple', unaccent(?))", query])
+    sanitized = ActiveRecord::Base.sanitize_sql_array(
+      ["plainto_tsquery('simple', unaccent(?))", query]
+    )
+
     where("search_vector @@ #{sanitized}")
       .order(Arel.sql("ts_rank(search_vector, #{sanitized}) DESC"))
   }
 
   scope :name_fuzzy_search, ->(query, threshold: 0.3) {
     return none if query.blank?
+
     where("similarity(unaccent(name), unaccent(?)) >= ?", query, threshold)
       .order(Arel.sql("similarity(unaccent(name), unaccent('#{query}')) DESC"))
   }
 
-  private
-
-  def update_search_vector
-    self.search_vector = [
-      "setweight(to_tsvector('simple', unaccent(coalesce(name, ''))), 'A')",
-      "setweight(to_tsvector('simple', unaccent(coalesce(brand, ''))), 'B')",
-      "setweight(to_tsvector('simple', unaccent(coalesce(description, ''))), 'C')"
-    ].join(" || ")
-      .yield_self { |sql| Product.sanitize_sql([sql]) } # ensure safe
-  end
-
-    has_many :likes, dependent: :destroy
-  has_many :liked_products, through: :likes, source: :product
-
+  # Recommendation based on liked products
   def recommended_products(limit: 12)
     return Product.none if liked_products.empty?
 
     Product
       .joins(:likes)
-      .where(likes: { user_id: User
-        .joins(:likes)
-        .where(likes: { product_id: liked_products.select(:id) })
-        .where.not(id: id)
-      })
+      .where(
+        likes: {
+          user_id: User
+            .joins(:likes)
+            .where(likes: { product_id: liked_products.select(:id) })
+            .where.not(id: id)
+        }
+      )
       .where.not(id: liked_products.select(:id))
       .group('products.id')
       .order(Arel.sql('COUNT(likes.id) DESC'))
