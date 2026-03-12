@@ -3,28 +3,45 @@ class OrdersController < ApplicationController
   before_action :load_session_cart
   before_action :ensure_cart_not_empty, only: [:new, :create]
 
-
-
-
-def index
+  # ======================
+  # Orders list / history
+  # ======================
+  def index
     # Order history for the current user, newest first
     @orders = current_user.orders
-                          .includes(:order_items, :address)
+                          .includes(:order_items) # no :address
                           .order(created_at: :desc)
+
+    # SAFE: compute total spent in Ruby, no raw SQL with price column
+    @total_spent = @orders.sum do |order|
+      order.order_items.sum do |item|
+        if item.respond_to?(:total_price) && item.total_price.present?
+          item.total_price.to_d
+        elsif item.respond_to?(:unit_price) && item.unit_price.present?
+          item.unit_price.to_d * item.quantity.to_i
+        elsif item.respond_to?(:unit_price_cents) && item.unit_price_cents.present?
+          (item.unit_price_cents.to_d / 100) * item.quantity.to_i
+        else
+          0.to_d
+        end
+      end
+    end
   end
 
+  # ======================
+  # Single order
+  # ======================
   def show
     @order = current_user.orders
-                         .includes(:order_items, :address)
+                         .includes(:order_items) # no :address
                          .find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to orders_path, alert: "Order not found."
   end
 
-
-
-
-
-
-
+  # ======================
+  # New order / checkout
+  # ======================
   def new
     @order = Order.new
     @summary_items = []
@@ -52,43 +69,9 @@ def index
     end
   end
 
-  
-  def index
-    @orders = current_user.orders.order(created_at: :desc)
-  end
-
-  # Show an individual order (customer can only view their own)
-  def show
-    @order = current_user.orders.find(params[:id])
-  rescue ActiveRecord::RecordNotFound
-    redirect_to orders_path, alert: "Order not found."
-  end
-
-  # Customer marks an order as received (final tracking step)
-  # Requires route: patch /orders/:id/mark_received
-  def mark_received
-    @order = current_user.orders.find(params[:id])
-
-    can_mark =
-      if @order.respond_to?(:can_mark_received?)
-        @order.can_mark_received?
-      else
-        @order.status.to_s == "delivered"
-      end
-
-    if can_mark
-      @order.update!(status: :received)
-      redirect_to order_path(@order), notice: "Thanks! Order marked as received."
-    else
-      redirect_to order_path(@order), alert: "This order cannot be marked as received yet."
-    end
-  rescue ActiveRecord::RecordNotFound
-    redirect_to orders_path, alert: "Order not found."
-  rescue ActiveRecord::RecordInvalid => e
-    redirect_to order_path(@order), alert: e.message
-  end
-
-  # Create an order from the session cart
+  # ======================
+  # Create order from session cart
+  # ======================
   def create
     @order = current_user.orders.build(order_params)
     @order.admin_seen = false if @order.respond_to?(:admin_seen)
@@ -132,8 +115,8 @@ def index
     total         = subtotal + shipping_cost + tax
 
     @order.subtotal       = subtotal
-    @order.shipping_cost  = shipping_cost
-    @order.tax            = tax
+    @order.shipping_cost  = shipping_cost if @order.respond_to?(:shipping_cost)
+    @order.tax            = tax           if @order.respond_to?(:tax)
     @order.total_price    = total
     @order.payment_method = params.dig(:order, :payment_method)
 
@@ -147,29 +130,59 @@ def index
       session[:cart] = {}
     end
 
-    # === NEW: send order confirmation email ===
+    # Send order confirmation email (best‑effort)
     begin
       OrderMailer.order_confirmation(@order).deliver_later
     rescue => e
       Rails.logger.error "Order confirmation email failed: #{e.class} - #{e.message}"
     end
-    # ========================================
 
     respond_to do |format|
       format.html { redirect_to order_path(@order), notice: "Order placed successfully." }
       format.json { render json: { success: true, order_id: @order.id } }
     end
-  rescue ActionController::ParameterMissing => e
+  rescue ActionController::ParameterMissing
     redirect_to new_order_path, alert: "Please fill in the checkout form before placing the order."
   rescue ActiveRecord::RecordInvalid => e
     flash.now[:alert] = e.message
     render :new, status: :unprocessable_entity
   end
 
+  # ======================
+  # Mark order received
+  # ======================
+  def mark_received
+    @order = current_user.orders.find(params[:id])
+
+    can_mark =
+      if @order.respond_to?(:can_mark_received?)
+        @order.can_mark_received?
+      else
+        @order.status.to_s == "delivered"
+      end
+
+    if can_mark
+      @order.update!(status: :received)
+      redirect_to order_path(@order), notice: "Thanks! Order marked as received."
+    else
+      redirect_to order_path(@order), alert: "This order cannot be marked as received yet."
+    end
+  rescue ActiveRecord::RecordNotFound
+    redirect_to orders_path, alert: "Order not found."
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_to order_path(@order), alert: e.message
+  end
+
+  # ======================
+  # Success page (after payment)
+  # ======================
   def success
     @order = Order.find(params[:id])
   end
 
+  # ======================
+  # Private helpers
+  # ======================
   private
 
   def load_session_cart

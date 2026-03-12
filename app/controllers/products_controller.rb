@@ -1,6 +1,15 @@
 class ProductsController < ApplicationController
   before_action :set_product, only: [:show]
 
+
+
+  include TrackRecentProducts
+
+  def show
+    @product = Product.find(params[:id])
+    track_recent_product(@product)
+  end
+
   # GET /products
   def index
     # Build a cache key that reflects filters & pagination
@@ -12,12 +21,12 @@ class ProductsController < ApplicationController
       (params[:page] || 1).to_i
     ].join(":")
 
-    @products, @categories, @selected_category =
+    product_ids, category_ids, selected_category_id =
       Rails.cache.fetch(cache_key, expires_in: 5.minutes) do
         products = Product.all
 
-        # Eager load associations used in view (adjust as needed)
-        products = products.includes(:categories) if Product.reflect_on_association(:categories)
+        # Eager load association used in view (single category)
+        products = products.includes(:category)
 
         selected_category = nil
 
@@ -26,31 +35,26 @@ class ProductsController < ApplicationController
         # -----------------------------
         category_param = params[:category].to_s.strip.downcase
         if %w[men-shoes women-shoes children-shoes].include?(category_param)
-          shoes_category =
-            if Product.reflect_on_association(:categories)
-              Category.find_by('lower(name) = ?', 'shoes')
-            else
-              Category.find_by('lower(name) = ?', 'shoes')
-            end
+          shoes_category = Category.find_by('lower(name) = ?', 'shoes')
 
           if shoes_category
             # Filter base scope to Shoes category
-            if Product.reflect_on_association(:categories)
-              products = products.joins(:categories).where(categories: { id: shoes_category.id }).distinct
-            else
-              products = products.where(category_id: shoes_category.id) if Product.column_names.include?('category_id')
-            end
+            products = products.where(category_id: shoes_category.id)
 
             # Extra filter by product name using the prefix we used in seeds
             case category_param
             when 'men-shoes'
-              products = products.where("products.name ILIKE :m OR products.name ILIKE :m2",
-                                        m: "Men%'",
-                                        m2: "%Men's%")
+              products = products.where(
+                "products.name ILIKE :m OR products.name ILIKE :m2",
+                m:  "Men%'",
+                m2: "%Men's%"
+              )
             when 'women-shoes'
-              products = products.where("products.name ILIKE :w OR products.name ILIKE :w2",
-                                        w: "Women%'",
-                                        w2: "%Women's%")
+              products = products.where(
+                "products.name ILIKE :w OR products.name ILIKE :w2",
+                w:  "Women%'",
+                w2: "%Women's%"
+              )
             when 'children-shoes'
               # our seeds use "Kids ..." for children shoes
               products = products.where("products.name ILIKE ?", "Kids%")
@@ -80,11 +84,7 @@ class ProductsController < ApplicationController
             end
 
             if selected_category
-              if Product.reflect_on_association(:categories)
-                products = products.joins(:categories).where(categories: { id: selected_category.id }).distinct
-              else
-                products = products.where(category_id: selected_category.id) if Product.column_names.include?('category_id')
-              end
+              products = products.where(category_id: selected_category.id)
             else
               products = products.none
             end
@@ -92,7 +92,7 @@ class ProductsController < ApplicationController
         end
 
         # -----------------------------
-        # Search (unchanged)
+        # Search
         # -----------------------------
         if params[:q].present?
           q = params[:q].strip
@@ -100,7 +100,7 @@ class ProductsController < ApplicationController
         end
 
         # -----------------------------
-        # Sorting (unchanged)
+        # Sorting
         # -----------------------------
         case params[:sort]
         when 'price_asc'
@@ -117,19 +117,25 @@ class ProductsController < ApplicationController
           end
         end
 
-        # -----------------------------
-        # Pagination (unchanged)
-        # -----------------------------
-        if defined?(Kaminari)
-          products = products.page(params[:page]).per(12)
-        else
-          products = products.limit(100)
-        end
+        # Cache only simple data: IDs
+        all_product_ids = products.pluck(:id)
+        category_ids    = Category.limit(20).pluck(:id)
+        selected_id     = selected_category&.id
 
-        categories = Category.limit(20) if defined?(Category)
-
-        [products, categories, selected_category]
+        [all_product_ids, category_ids, selected_id]
       end
+
+    # Rebuild relations from cached IDs and paginate AFTER cache
+    products_scope = Product.where(id: product_ids).includes(:category)
+
+    if defined?(Kaminari)
+      @products = products_scope.page(params[:page]).per(12)
+    else
+      @products = products_scope.limit(100)
+    end
+
+    @categories = Category.where(id: category_ids || [])
+    @selected_category = selected_category_id && Category.find_by(id: selected_category_id)
   end
 
   # GET /products/:id or /products/:slug

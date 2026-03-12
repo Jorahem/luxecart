@@ -1,0 +1,11 @@
+<% recs = current_user.recommended_products %>
+<% if recs.any? %>
+  <section class="mt-10">
+    <h2 class="text-xl font-semibold mb-4">Recommended for you</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <% recs.each do |product| %>
+        <%= render "products/card", product: product %>
+      <% end %>
+    </div>
+  </section>
+<% end %>

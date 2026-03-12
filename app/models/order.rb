@@ -67,15 +67,19 @@ class Order < ApplicationRecord
     delivered? && !received?
   end
 
-  # --- Order history helpers (NEW) ---
+  # --- Order history helpers (FIXED) ---
 
   # Total order amount, based on associated order_items.
-  # Adjust :price / :price_cents to match your schema.
+  # Uses total_price if present; otherwise falls back to unit_price * quantity.
   def total_amount
-    if order_items.column_names.include?("price_cents")
-      order_items.sum("quantity * price_cents") / 100.0
+    if order_items.column_names.include?("total_price")
+      order_items.sum("total_price")
+    elsif order_items.column_names.include?("unit_price")
+      order_items.sum("quantity * unit_price")
+    elsif order_items.column_names.include?("unit_price_cents")
+      order_items.sum("quantity * unit_price_cents") / 100.0
     else
-      order_items.sum("quantity * price")
+      0.0
     end
   end
 

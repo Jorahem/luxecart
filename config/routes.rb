@@ -178,4 +178,6 @@ post "/chat", to: "chat#create"
   # Health check
   # -------------------------
   get "up" => "rails/health#show", as: :rails_health_check
+
+    get "search", to: "search#index"
 end

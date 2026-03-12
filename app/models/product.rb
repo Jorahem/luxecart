@@ -49,4 +49,65 @@ class Product < ApplicationRecord
   def should_generate_new_friendly_id?
     name_changed? || super
   end
+
+
+    has_many :likes, dependent: :destroy
+
+  # Simple recommendation by category and popularity
+  def similar_products(limit: 8)
+    scope = Product.where(category_id: category_id)
+                   .where.not(id: id)
+                   .left_joins(:likes)
+                   .group('products.id')
+                   .order(Arel.sql('COUNT(likes.id) DESC'), created_at: :desc)
+    scope.limit(limit)
+  end
+
+
+
+  before_save :update_search_vector
+
+  scope :full_text_search, ->(query) {
+    return none if query.blank?
+
+    sanitized = ActiveRecord::Base.sanitize_sql_array(["plainto_tsquery('simple', unaccent(?))", query])
+    where("search_vector @@ #{sanitized}")
+      .order(Arel.sql("ts_rank(search_vector, #{sanitized}) DESC"))
+  }
+
+  scope :name_fuzzy_search, ->(query, threshold: 0.3) {
+    return none if query.blank?
+    where("similarity(unaccent(name), unaccent(?)) >= ?", query, threshold)
+      .order(Arel.sql("similarity(unaccent(name), unaccent('#{query}')) DESC"))
+  }
+
+  private
+
+  def update_search_vector
+    self.search_vector = [
+      "setweight(to_tsvector('simple', unaccent(coalesce(name, ''))), 'A')",
+      "setweight(to_tsvector('simple', unaccent(coalesce(brand, ''))), 'B')",
+      "setweight(to_tsvector('simple', unaccent(coalesce(description, ''))), 'C')"
+    ].join(" || ")
+      .yield_self { |sql| Product.sanitize_sql([sql]) } # ensure safe
+  end
+
+    has_many :likes, dependent: :destroy
+  has_many :liked_products, through: :likes, source: :product
+
+  def recommended_products(limit: 12)
+    return Product.none if liked_products.empty?
+
+    Product
+      .joins(:likes)
+      .where(likes: { user_id: User
+        .joins(:likes)
+        .where(likes: { product_id: liked_products.select(:id) })
+        .where.not(id: id)
+      })
+      .where.not(id: liked_products.select(:id))
+      .group('products.id')
+      .order(Arel.sql('COUNT(likes.id) DESC'))
+      .limit(limit)
+  end
 end

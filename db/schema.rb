@@ -10,9 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_02_18_190000) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_11_000100) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_trgm"
   enable_extension "plpgsql"
+  enable_extension "unaccent"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -133,6 +135,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_18_190000) do
     t.index ["active"], name: "index_categories_on_active"
     t.index ["parent_id"], name: "index_categories_on_parent_id"
     t.index ["slug"], name: "index_categories_on_slug", unique: true
+  end
+
+  create_table "categorizations", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.bigint "category_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_categorizations_on_category_id"
+    t.index ["product_id", "category_id"], name: "index_categorizations_on_product_id_and_category_id", unique: true
+    t.index ["product_id"], name: "index_categorizations_on_product_id"
   end
 
   create_table "contact_messages", force: :cascade do |t|
@@ -269,9 +281,12 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_18_190000) do
     t.datetime "updated_at", null: false
     t.string "image_url"
     t.integer "stock"
+    t.tsvector "search_vector"
     t.index ["brand_id"], name: "index_products_on_brand_id"
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["featured"], name: "index_products_on_featured"
+    t.index ["name"], name: "index_products_on_name_trgm", opclass: :gin_trgm_ops, using: :gin
+    t.index ["search_vector"], name: "index_products_on_search_vector", using: :gin
     t.index ["sku"], name: "index_products_on_sku", unique: true
     t.index ["slug"], name: "index_products_on_slug", unique: true
     t.index ["status"], name: "index_products_on_status"
@@ -345,6 +360,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_18_190000) do
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "products"
   add_foreign_key "carts", "users"
+  add_foreign_key "categorizations", "categories"
+  add_foreign_key "categorizations", "products"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
   add_foreign_key "order_tracking_events", "orders"

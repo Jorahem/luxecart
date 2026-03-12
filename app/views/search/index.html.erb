@@ -1,0 +1,19 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <h1 class="text-2xl font-bold mb-4">Search results</h1>
+
+  <% if @query.present? %>
+    <p class="text-sm text-slate-400 mb-4">
+      Showing results for "<span class="font-semibold"><%= @query %></span>"
+    </p>
+  <% end %>
+
+  <% if @products.any? %>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <% @products.each do |product| %>
+        <%= render "products/card", product: product %>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-slate-400">No products found. Try a different keyword.</p>
+  <% end %>
+</div>

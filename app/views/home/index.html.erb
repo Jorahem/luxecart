@@ -121,6 +121,34 @@
     </div>
   </section>
 
+
+
+
+
+
+
+
+
+
+
+
+  <%# somewhere on the page, maybe under hero %>
+<% recents = recent_products rescue Product.none %>
+<% if recents.any? %>
+  <section class="mt-8">
+    <h2 class="text-lg font-semibold mb-3">Recently viewed</h2>
+    <div class="flex gap-3 overflow-x-auto pb-2">
+      <% recents.each do |product| %>
+        <%= render "products/card_small", product: product %>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+
+
+
+
   <!-- FEATURED PRODUCTS (larger grid) -->
   <section class="fade-in-up delay-2">
     <div class="flex items-center justify-between mb-4">
