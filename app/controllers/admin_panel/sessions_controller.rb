@@ -23,4 +23,3 @@ module AdminPanel
       redirect_to admin_login_path, notice: "Logged out."
     end
   end
-end

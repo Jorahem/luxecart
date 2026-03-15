@@ -17,17 +17,19 @@ class ApplicationController < ActionController::Base
   end
 
   # Called by Devise after a successful sign in.
-  # Set a friendly flash, send login email, then delegate to Devise's default path.
+  # Set a friendly flash, send login email (async), then delegate to Devise's default path.
   def after_sign_in_path_for(resource_or_scope)
     resource = resource_or_scope.is_a?(Symbol) ? current_user : resource_or_scope
 
     name = display_name_for(resource)
     flash[:notice] = "Welcome back, #{name}!"
 
-    # Login notification email
+    # Login notification email (do NOT block login request)
     begin
-      # Use deliver_now for simplicity; switch to deliver_later if Active Job is configured
-      UserMailer.login_notification(resource).deliver_now
+      # Recommended: only send in production, and do it async
+      if Rails.env.production?
+        UserMailer.login_notification(resource).deliver_later
+      end
     rescue => e
       Rails.logger.error "Login notification email failed: #{e.class} - #{e.message}"
     end
